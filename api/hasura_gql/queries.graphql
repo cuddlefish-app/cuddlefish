@@ -1,0 +1,30 @@
+# Updating at least one column is necessary in order to get any results returned
+# even though in this case it's a meaningless update.
+mutation GetRepoIdByGitHubRepoId($github_repo_id: String!) {
+  insert_repositories(
+    objects: [{ github_repository_id: $github_repo_id }]
+    on_conflict: {
+      constraint: repositories_github_repository_id_key
+      update_columns: [github_repository_id]
+    }
+  ) {
+    returning {
+      id
+    }
+  }
+}
+
+query FileBlameLines($repo_id: uuid!, $file_path: String!, $commit: String!) {
+  blamelines(
+    where: {
+      repo_id: { _eq: $repo_id }
+      current_file_path: { _eq: $file_path }
+      current_commit: { _eq: $commit }
+    }
+  ) {
+    original_commit
+    original_file_path
+    original_line_number
+    current_line_number
+  }
+}
