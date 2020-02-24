@@ -1,6 +1,12 @@
-mod hasura;
+#![feature(async_closure)]
 
+mod github;
+mod hasura;
+use failure::ensure;
+use failure::format_err;
+use failure::Error;
 use futures;
+use git2::Repository;
 use hyper;
 use hyper::service::make_service_fn;
 use hyper::service::service_fn;
@@ -10,25 +16,157 @@ use hyper::Response;
 use hyper::Server;
 use hyper::StatusCode;
 use juniper::FieldResult;
+use juniper::GraphQLObject;
 use juniper::RootNode;
+use log::error;
 use log::info;
+use log::trace;
+use std::path::Path;
+use std::path::PathBuf;
 use std::sync::Arc;
 
-async fn clone_repo(repo_id: &str) /*-> std::path::PathBuf*/ {}
+type CFResult<T> = Result<T, Error>;
 
-async fn get_blame(repo_id: &str, file_path: &str, commit: &str) {
+/// A UUID corresponding to the Hasura id of a repository.
+pub struct RepoId(String);
+
+#[derive(Debug, GraphQLObject)]
+pub struct BlameLine {
+  original_commit: String,
+  original_file_path: String,
+  // i32 is the only primitive integer type supported by juniper.
+  original_line_number: i32,
+}
+
+fn mirror_dir(repo_id: &RepoId) -> PathBuf {
+  // repo_id is a UUID so it's safe to use in file paths.
+  Path::new(&std::env::var("MIRRORS_DIR").expect("MIRRORS_DIR env var not set"))
+    .join(repo_id.0.to_string())
+}
+
+async fn git_repo(repo_id: &RepoId) -> CFResult<Repository> {
+  let expected_path = mirror_dir(&repo_id);
+
+  // If the repo already exists, then we open and return it.
+  if expected_path.exists() && expected_path.is_dir() {
+    trace!(
+      "Returning existing repo at expected_path {}",
+      expected_path.to_string_lossy()
+    );
+    let repo = Repository::open(&expected_path)?;
+    return Ok(repo);
+  }
+
+  // Lookup repo url.
+  let github_node_id = hasura::repo_id_to_github_node_id(repo_id)
+    .await?
+    .ok_or_else(|| format_err!("can't find github node id for repo {}", repo_id.0))?;
+  let repo_url = github::repo_url(&github_node_id).await?.ok_or_else(|| {
+    format_err!(
+      "can't find github repository with node id {}",
+      github_node_id
+    )
+  })?;
+
+  info!("Cloning repo {}...", repo_url);
+  // TODO how to actually make this a --mirror clone with git2-rs?
+  // let repo = RepoBuilder::new()
+  //   .bare(true)
+  //   .clone(&repo_url, &expected_path)?;
+  let git_clone_successful = std::process::Command::new("git")
+    .arg("clone")
+    .arg("--mirror")
+    .arg(repo_url)
+    .arg(&expected_path)
+    .status()?
+    .success();
+  ensure!(git_clone_successful, "git clone was not successful");
+  info!("Clone complete.");
+
+  let repo = Repository::open(&expected_path)?;
+
+  // TODO: Check disk space and send alert once it passes 50%.
+
+  Ok(repo)
+}
+
+/// Does the given commit exist in the local repo?
+fn commit_exists(repo: &Repository, commit: &str) -> bool {
+  match repo.revparse_single(commit) {
+    Err(_) => false,
+    Ok(obj) => obj.as_commit().is_some(),
+  }
+}
+
+async fn git_blame(repo_id: &RepoId, file_path: &str, commit: &str) -> CFResult<Vec<BlameLine>> {
+  trace!(
+    "git_blame repo_id = {}, file_path = {}, commit = {}",
+    repo_id.0,
+    file_path,
+    commit
+  );
+
   // Check if this stuff exists in hasura blamelines table. If so, return that.
-  match hasura::get_blame_lines(repo_id, file_path, commit).await? {
-    Some(blamelines) => blamelines,
-    None => {}
+  if let Some(blamelines) = hasura::get_blame_lines(repo_id, file_path, commit).await? {
+    return Ok(blamelines);
   }
 
   // Check if repo_id is cloned in the filesystem. If not then do a clone.
+  let repo = git_repo(repo_id).await?;
 
-  // Check if we have commit locally. If not do a git remote update.
-  // run git blame
+  // Do a `git remote update` or `git pull` if need be. We may have already
+  // pulled this commit to get the blame on a different file, or it may have
+  // gotten pulled down incidentally previously.
+  if !commit_exists(&repo, commit) {
+    info!(
+      "Commit {} not found in repo {}. Pulling all changes.",
+      commit, repo_id.0
+    );
+
+    // TODO: figure out how to get git2-rs to do the same thing.
+    let git_remote_update_successful = std::process::Command::new("git")
+      .arg("remote")
+      .arg("update")
+      .current_dir(mirror_dir(&repo_id))
+      .status()?
+      .success();
+    ensure!(git_remote_update_successful);
+  }
+  ensure!(
+    commit_exists(&repo, commit),
+    "commit still doesn't exist after pulling"
+  );
+
+  // Run git blame
+  trace!("Running git blame...");
+  let blame = repo.blame_file(Path::new(file_path), None)?;
+  trace!("... git blame done");
+
   // Calculate blameline info.
-  // Insert blamelines into hasura in one transaction.
+  let mut blamelines = vec![];
+  for blamehunk in blame.iter() {
+    // The .path() should only ever be None in unicode situations on Windows
+    // (https://docs.rs/git2/0.11.0/git2/struct.BlameHunk.html#method.path).
+    let hunk_file_path = blamehunk
+      .path()
+      .expect("Could not get BlameHunk.path()")
+      .to_string_lossy()
+      .to_string();
+    let hunk_commit = blamehunk.orig_commit_id().to_string();
+    let hunk_start_line = blamehunk.orig_start_line();
+
+    for hunkline in 0..blamehunk.lines_in_hunk() {
+      blamelines.push(BlameLine {
+        original_commit: hunk_commit.clone(),
+        original_file_path: hunk_file_path.clone(),
+        original_line_number: (hunk_start_line + hunkline) as i32,
+      });
+    }
+  }
+
+  // TODO: Insert blamelines into hasura in one transaction.
+
+  Ok(blamelines)
 }
 
 struct Query;
@@ -50,6 +188,7 @@ impl Query {
 
 struct Mutation;
 
+// TODO: start thread should return the new thread object, not blamelines.
 #[juniper::graphql_object]
 impl Mutation {
   async fn startGitHubThread(
@@ -57,19 +196,29 @@ impl Mutation {
     file_path: String,
     last_file_commit: String,
     comment_content: String,
-  ) -> FieldResult<i32> {
-    // TODO: Check that the user is allowed read access to the repo. For now all
-    // repos must be public.
+  ) -> FieldResult<Vec<BlameLine>> {
+    info!("startGitHubThread mutation");
 
-    // Lookup our repo_id for the github_repo_id
-    let repo_id = hasura::github_repo_id_to_repo_id(&github_repo_id).await?;
+    let run = async || -> CFResult<Vec<BlameLine>> {
+      // TODO: Check that the user is allowed read access to the repo. For now
+      // all repos must be public.
 
-    // Get blame info for the repo_id at last_file_commit
-    let blame = get_blame(&repo_id, &file_path, &last_file_commit).await;
+      // Lookup our repo_id for the github_node_id. This will create a new one
+      // if we aren't yet tracking this repo.
+      let repo_id = hasura::github_node_id_to_repo_id(&github_repo_id).await?;
 
-    // Insert new thread in hasura
+      // Get blame info for the repo_id at last_file_commit
+      let blame = git_blame(&repo_id, &file_path, &last_file_commit).await?;
 
-    Ok(19821891)
+      // TODO: Insert new thread in hasura
+
+      Ok(blame)
+    };
+
+    run().await.map_err(|err| {
+      error!("{:?}", err);
+      juniper::FieldError::new("internal server error", juniper::Value::Null)
+    })
   }
 }
 

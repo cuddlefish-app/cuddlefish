@@ -8,6 +8,10 @@ set -euf -o pipefail
 # when running locally.
 
 # Add --silent flag so these secrets don't end up in CI logs.
-yarn --silent apollo schema:download hasura_gql/schema.json \
+yarn --silent apollo schema:download gql/hasura/schema.json \
     --endpoint=$HASURA_GQL_ENDPOINT \
     # --header="X-Hasura-Admin-Secret: $HASURA_ACCESS_KEY"
+
+yarn --silent apollo schema:download gql/github/schema.json \
+    --endpoint=https://api.github.com/graphql \
+    --header="Authorization: bearer $GITHUB_API_TOKEN"
