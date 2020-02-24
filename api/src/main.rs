@@ -6,6 +6,8 @@ use failure::ensure;
 use failure::format_err;
 use failure::Error;
 use futures;
+use git2::BlameOptions;
+use git2::Oid;
 use git2::Repository;
 use hyper;
 use hyper::service::make_service_fn;
@@ -139,7 +141,10 @@ async fn git_blame(repo_id: &RepoId, file_path: &str, commit: &str) -> CFResult<
 
   // Run git blame
   trace!("Running git blame...");
-  let blame = repo.blame_file(Path::new(file_path), None)?;
+  let blame = repo.blame_file(
+    Path::new(file_path),
+    Some(BlameOptions::new().newest_commit(Oid::from_str(commit)?)),
+  )?;
   trace!("... git blame done");
 
   // Calculate blameline info.
