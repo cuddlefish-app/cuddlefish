@@ -2,6 +2,7 @@ import { Octokit } from "@octokit/core";
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Route, Switch, useParams } from "react-router-dom";
 import "./App.css";
+import CodeAndComments from "./CodeAndComments";
 
 // GitHub API v4 doesn't yet support usage without authentication: https://github.community/t/api-v4-permit-access-without-token/13833.
 
@@ -34,6 +35,7 @@ function BlobPage() {
   };
 
   const octokit = new Octokit();
+  // TODO use other hooks, eg useMemo here instead.
   const [commitSHA, setCommitSHA] = useState(null as null | string);
   const [fileContents, setFileContents] = useState(null as null | string);
 
@@ -70,7 +72,9 @@ function BlobPage() {
     }
   });
 
-  return <div>{fileContents}</div>;
+  if (fileContents !== null)
+    return <CodeAndComments fileContents={fileContents}></CodeAndComments>;
+  else return <div>hold on...</div>;
 }
 
 function NotFound() {
