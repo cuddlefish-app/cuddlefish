@@ -4,7 +4,6 @@ import {
   BorderBox,
   Box,
   Button,
-  CircleBadge,
   Flex,
   Grid,
   Popover,
@@ -12,13 +11,10 @@ import {
   Text,
   TextInput,
 } from "@primer/components";
-import {
-  CommentDiscussionIcon,
-  PaperAirplaneIcon,
-} from "@primer/octicons-react";
-import React, { useState } from "react";
+import { PaperAirplaneIcon } from "@primer/octicons-react";
+import React, { useMemo, useRef, useState } from "react";
 import SyntaxHighlighter from "react-syntax-highlighter";
-import createElement from "react-syntax-highlighter/create-element";
+import createElement from "react-syntax-highlighter/dist/esm/create-element";
 import { githubGist } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 const MyPreTag: React.FC = (props) => (
@@ -31,6 +27,7 @@ const MyPreTag: React.FC = (props) => (
       // So that indents, etc actually show up.
       whiteSpace: "pre",
     }}
+    className="codetable"
   >
     {props.children}
   </table>
@@ -101,16 +98,51 @@ const ThreadPopover: React.FC = (props) => (
   </Popover>
 );
 
+const NewThreadPopover: React.FC<{
+  onSubmit: (message: string) => any;
+  inputRef: any;
+}> = (props) => {
+  const [message, setMessage] = useState("" as string);
+  return (
+    <Popover open={true} caret="right-top">
+      <Popover.Content width={248} padding={2}>
+        <Box>
+          <form
+            onSubmit={(event) => {
+              props.onSubmit(message);
+              setMessage("");
+
+              // So that the browser doesn't refresh.
+              event.preventDefault();
+            }}
+          >
+            <TextInput
+              placeholder="Start a new thread..."
+              variant="small"
+              marginRight={1}
+              width={"176px"}
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
+              ref={props.inputRef}
+            ></TextInput>
+            <Button>
+              <PaperAirplaneIcon size={16}></PaperAirplaneIcon>
+            </Button>
+          </form>
+        </Box>
+      </Popover.Content>
+    </Popover>
+  );
+};
+
 type LineHover = {
   kind: "line";
   linenumber: number;
 };
 
 const CodeAndComments: React.FC<{ fileContents: string }> = (props) => {
-  const [hoverState, setHoverState] = useState({
-    kind: "line",
-    linenumber: 5,
-  } as null | LineHover);
+  const [hoverState, setHoverState] = useState(null as null | LineHover);
+  const newThreadInputRef = useRef(null as null | HTMLInputElement);
 
   function LineOfCode({
     row,
@@ -123,20 +155,17 @@ const CodeAndComments: React.FC<{ fileContents: string }> = (props) => {
     stylesheet: any;
     useInlineStyles: any;
   }) {
-    // const isHovered = hoverState?.linenumber == lineNumber + 1;
-
     return (
       <tr
-        onClick={() => console.log(`clicked line ${lineNumber}`)}
-        onMouseEnter={() => {
-          console.log(`nmouseenter ${lineNumber + 1}`);
-          setHoverState({ kind: "line", linenumber: lineNumber + 1 });
-        }}
+        // TODO: in the future this should focus the text input on existing threads.
+        onDoubleClick={() => newThreadInputRef.current?.focus()}
+        onMouseMove={() =>
+          setHoverState({ kind: "line", linenumber: lineNumber + 1 })
+        }
         // These are the values from GitHub.
         style={{
           lineHeight: "20px",
           fontSize: "12px",
-          // backgroundColor: isHovered ? "grey" : "transparent",
         }}
       >
         <td
@@ -194,39 +223,47 @@ const CodeAndComments: React.FC<{ fileContents: string }> = (props) => {
     ));
   };
 
+  // See https://github.com/react-syntax-highlighter/react-syntax-highlighter/issues/302
+  const syntaxHighlighted = useMemo(
+    () => (
+      <SyntaxHighlighter
+        renderer={mySyntaxRenderer}
+        // "github-gist" actually appears to be closer to github's actual styling than "github".
+        style={githubGist}
+        PreTag={MyPreTag}
+        CodeTag={"tbody"}
+      >
+        {props.fileContents}
+      </SyntaxHighlighter>
+    ),
+    [props.fileContents]
+  );
+
   return (
     <Flex justifyContent="center" width="100%">
       <Grid gridTemplateColumns="repeat(2, auto)">
         {/* TODO: where are the "small", "medium", etc sizes documented? */}
         <Box width={272}>
           <Relative>
-            <Absolute top={25} right={1}>
-              <CircleBadge size={36} backgroundColor="blue.4">
-                <CircleBadge.Icon
-                  icon={CommentDiscussionIcon}
-                  color="white"
-                ></CircleBadge.Icon>
-              </CircleBadge>
-            </Absolute>
-
-            <Absolute top={20 * (5 - 1)} left={0}>
+            <Absolute top={20 * 4} left={0}>
               <ThreadPopover></ThreadPopover>
             </Absolute>
+
+            {hoverState && (
+              <Absolute top={20 * (hoverState.linenumber - 1)} left={2}>
+                <NewThreadPopover
+                  // TODO: do something more interesting onSubmit, also ignore empty strings.
+                  onSubmit={console.log}
+                  inputRef={newThreadInputRef}
+                ></NewThreadPopover>
+              </Absolute>
+            )}
           </Relative>
         </Box>
         <BorderBox
           style={{ overflowX: "auto", marginTop: "13px", width: "768px" }}
         >
-          <Text>{JSON.stringify(hoverState)}</Text>
-          <SyntaxHighlighter
-            renderer={mySyntaxRenderer}
-            // "github-gist" actually appears to be closer to github's actual styling than "github".
-            style={githubGist}
-            PreTag={MyPreTag}
-            CodeTag={"tbody"}
-          >
-            {props.fileContents}
-          </SyntaxHighlighter>
+          {syntaxHighlighted}
         </BorderBox>
       </Grid>
     </Flex>

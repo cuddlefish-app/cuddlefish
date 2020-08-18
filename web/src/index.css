@@ -15,3 +15,7 @@ body {
   -o-user-select: none;
   user-select: none;
 }
+
+.codetable tr:hover {
+  background-color: ivory;
+}

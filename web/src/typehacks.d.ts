@@ -1,1 +1,1 @@
-declare module "react-syntax-highlighter/create-element";
+declare module "react-syntax-highlighter/dist/esm/create-element";
