@@ -1,36 +1,61 @@
 # Updating at least one column is necessary in order to get any results returned
 # even though in this case it's a meaningless update.
-mutation GetRepoIdByGitHubNodeId($github_node_id: String!) {
-  insert_repositories(
-    objects: [{ github_node_id: $github_node_id }]
-    on_conflict: {
-      constraint: repositories_github_node_id_key
-      update_columns: [github_node_id]
-    }
-  ) {
-    returning {
-      id
-    }
-  }
-}
+# mutation GetRepoIdByGitHubNodeId($github_node_id: String!) {
+#   insert_repositories(
+#     objects: [{ github_node_id: $github_node_id }]
+#     on_conflict: {
+#       constraint: repositories_github_node_id_key
+#       update_columns: [github_node_id]
+#     }
+#   ) {
+#     returning {
+#       id
+#     }
+#   }
+# }
 
-query LookupRepoById($repo_id: uuid!) {
-  repositories_by_pk(id: $repo_id) {
-    github_node_id
-  }
-}
+# query LookupRepoById($repo_id: uuid!) {
+#   repositories_by_pk(id: $repo_id) {
+#     github_node_id
+#   }
+# }
 
-query FileBlameLines($repo_id: uuid!, $file_path: String!, $commit: String!) {
-  blamelines(
-    where: {
-      repo_id: { _eq: $repo_id }
-      current_file_path: { _eq: $file_path }
-      current_commit: { _eq: $commit }
-    }
-  ) {
-    original_commit
-    original_file_path
-    original_line_number
-    current_line_number
-  }
-}
+# query FileBlameLines($repo_id: uuid!, $file_path: String!, $commit: String!) {
+#   blamelines(
+#     where: {
+#       repo_id: { _eq: $repo_id }
+#       current_file_path: { _eq: $file_path }
+#       current_commit: { _eq: $commit }
+#     }
+#   ) {
+#     original_commit
+#     original_file_path
+#     original_line_number
+#     current_line_number
+#   }
+# }
+
+# mutation NewThread(
+#   $repo_id: uuid!
+#   $original_commit: String!
+#   $original_file_path: String!
+#   $original_line_number: Int!
+#   $author: uuid!
+#   $body: String!
+# ) {
+#   insert_threads(
+#     objects: [
+#       {
+#         repo_id: $repo_id
+#         original_commit: $original_commit
+#         original_file_path: $original_file_path
+#         original_line_number: $original_line_number
+#         comments: { data: [{ author: $author, body: $body }] }
+#       }
+#     ]
+#   ) {
+#     returning {
+#       id
+#     }
+#   }
+# }
