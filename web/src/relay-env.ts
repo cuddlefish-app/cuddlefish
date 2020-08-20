@@ -13,7 +13,6 @@ import {
 const url = "https://cuddlefish-hasura.herokuapp.com/v1/graphql";
 
 function fetchQuery(operation: RequestParameters, variables: Variables) {
-  console.log(process.env.HASURA_ADMIN_SECRET);
   return fetch(url, {
     method: "POST",
     headers: {
