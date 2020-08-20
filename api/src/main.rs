@@ -199,36 +199,6 @@ impl Mutation {
   async fn noop() -> FieldResult<i32> {
     Ok(0)
   }
-
-  // async fn startGitHubThread(
-  //   github_repo_id: String,
-  //   file_path: String,
-  //   last_file_commit: String,
-  //   comment_content: String,
-  // ) -> FieldResult<Vec<BlameLine>> {
-  //   info!("startGitHubThread mutation");
-
-  //   let run = async || -> CFResult<Vec<BlameLine>> {
-  //     // TODO: Check that the user is allowed read access to the repo. For now
-  //     // all repos must be public.
-
-  //     // Lookup our repo_id for the github_node_id. This will create a new one
-  //     // if we aren't yet tracking this repo.
-  //     let repo_id = hasura::github_node_id_to_repo_id(&github_repo_id).await?;
-
-  //     // Get blame info for the repo_id at last_file_commit
-  //     let blame = git_blame(&repo_id, &file_path, &last_file_commit).await?;
-
-  //     // TODO: Insert new thread in hasura
-
-  //     Ok(blame)
-  //   };
-
-  //   run().await.map_err(|err| {
-  //     error!("{:?}", err);
-  //     juniper::FieldError::new("internal server error", juniper::Value::Null)
-  //   })
-  // }
 }
 
 #[tokio::main]
