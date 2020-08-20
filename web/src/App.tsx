@@ -1,8 +1,10 @@
 import { Octokit } from "@octokit/core";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
+import { RelayEnvironmentProvider } from "react-relay/hooks";
 import { BrowserRouter, Route, Switch, useParams } from "react-router-dom";
 import "./App.css";
 import CodeAndComments from "./CodeAndComments";
+import relayenv from "./relay-env";
 
 // GitHub API v4 doesn't yet support usage without authentication: https://github.community/t/api-v4-permit-access-without-token/13833.
 
@@ -14,14 +16,19 @@ function useAsyncEffect(eff: () => Promise<any>) {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Switch>
-        <Route path="/:owner/:repo/blob/:branch/*">
-          <BlobPage />
-        </Route>
-        <Route component={NotFound} />
-      </Switch>
-    </BrowserRouter>
+    <RelayEnvironmentProvider environment={relayenv}>
+      <BrowserRouter>
+        <Switch>
+          <Route path="/:owner/:repo/blob/:branch/*">
+            {/* TODO: make suspense more interesting! We get suspense while waiting on Relay queries. */}
+            <Suspense fallback={<div>suspense!</div>}>
+              <BlobPage />
+            </Suspense>
+          </Route>
+          <Route component={NotFound} />
+        </Switch>
+      </BrowserRouter>
+    </RelayEnvironmentProvider>
   );
 }
 
@@ -72,8 +79,14 @@ function BlobPage() {
     }
   });
 
-  if (fileContents !== null)
-    return <CodeAndComments fileContents={fileContents}></CodeAndComments>;
+  if (fileContents !== null && commitSHA !== null)
+    return (
+      <CodeAndComments
+        filePath={filePath}
+        fileContents={fileContents}
+        commitSHA={commitSHA}
+      ></CodeAndComments>
+    );
   else return <div>hold on...</div>;
 }
 

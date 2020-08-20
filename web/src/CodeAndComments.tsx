@@ -13,9 +13,11 @@ import {
 } from "@primer/components";
 import { PaperAirplaneIcon } from "@primer/octicons-react";
 import React, { useMemo, useRef, useState } from "react";
+import { graphql, useLazyLoadQuery } from "react-relay/hooks";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import createElement from "react-syntax-highlighter/dist/esm/create-element";
 import { githubGist } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { CodeAndComments_blamelines_Query } from "./__generated__/CodeAndComments_blamelines_Query.graphql";
 
 const MyPreTag: React.FC = (props) => (
   <table
@@ -140,7 +142,51 @@ type LineHover = {
   linenumber: number;
 };
 
-const CodeAndComments: React.FC<{ fileContents: string }> = (props) => {
+const CodeAndComments: React.FC<{
+  filePath: string;
+  fileContents: string;
+  commitSHA: string;
+}> = (props) => {
+  const blamelines = useLazyLoadQuery<CodeAndComments_blamelines_Query>(
+    graphql`
+      query CodeAndComments_blamelines_Query(
+        $repoId: String!
+        $filePath: String!
+        $commitSHA: String!
+      ) {
+        BlameLines(
+          repoId: $repoId
+          filePath: $filePath
+          lastFileCommit: $commitSHA
+        ) {
+          originalCommit
+          originalFilePath
+          originalLineNumber
+        }
+      }
+    `,
+    {
+      // TODO: fix this nonsense.
+      repoId: "github-MDEwOlJlcG9zaXRvcnkyNDEyMzk3MDg=",
+      filePath: props.filePath,
+      commitSHA: props.commitSHA,
+    }
+  );
+
+  // Check that we have the same number of `blamelines` as we have lines in the `fileContents`.
+  // If there are trailing newlines at the end of the file, git blame will remove just the last one. Luckily git blame
+  // does not interfere with newlines at the beginning of a file howevere.
+  if (props.fileContents.endsWith("\n")) {
+    console.assert(
+      props.fileContents.slice(0, -1).split(/\r?\n/).length ===
+        blamelines.BlameLines.length
+    );
+  } else {
+    console.assert(
+      props.fileContents.split(/\r?\n/).length === blamelines.BlameLines.length
+    );
+  }
+
   const [hoverState, setHoverState] = useState(null as null | LineHover);
   const newThreadInputRef = useRef(null as null | HTMLInputElement);
 
