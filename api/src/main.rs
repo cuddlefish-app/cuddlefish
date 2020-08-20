@@ -3,7 +3,6 @@ mod hasura;
 use failure::ensure;
 use failure::format_err;
 use failure::Error;
-use futures;
 use git2::BlameOptions;
 use git2::Oid;
 use git2::Repository;
@@ -15,6 +14,7 @@ use hyper::Method;
 use hyper::Response;
 use hyper::Server;
 use hyper::StatusCode;
+use juniper::EmptySubscription;
 use juniper::FieldResult;
 use juniper::GraphQLObject;
 use juniper::RootNode;
@@ -235,7 +235,11 @@ impl Mutation {
 async fn main() {
   env_logger::init();
 
-  let root_node = Arc::new(RootNode::new(Query, Mutation));
+  let root_node = Arc::new(RootNode::new(
+    Query,
+    Mutation,
+    EmptySubscription::<()>::new(),
+  ));
 
   let make_service = make_service_fn(|_| {
     let root_node = root_node.clone();
@@ -249,9 +253,9 @@ async fn main() {
           info!("--> {} {}", method, uri);
 
           (match (&method, uri.as_ref()) {
-            (&Method::GET, "/") => juniper_hyper::graphiql("/graphql").await,
+            (&Method::GET, "/") => juniper_hyper::graphiql("/graphql", None).await,
             (&Method::GET, "/graphql") | (&Method::POST, "/graphql") => {
-              juniper_hyper::graphql_async(root_node, Arc::new(()), req).await
+              juniper_hyper::graphql(root_node, Arc::new(()), req).await
             }
             _ => {
               let mut response = Response::new(Body::empty());
