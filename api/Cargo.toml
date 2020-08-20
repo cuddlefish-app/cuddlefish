@@ -5,9 +5,9 @@ authors = ["Samuel Ainsworth <skainsworth@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-env_logger = "0.7.1"
-failure = "0.1.8"
-futures = "0.3.5"
+env_logger = "0.7"
+failure = "0.1"
+futures = "0.3"
 git2 = "0.13"
 graphql_client = "0.9"
 hyper = "0.13"
