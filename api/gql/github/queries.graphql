@@ -1,3 +1,4 @@
+# This query costs 1 point. Can do 5000/hr.
 query RepoUrl($id: ID!) {
   node(id: $id) {
     __typename
