@@ -13,7 +13,7 @@ import {
 } from "@primer/components";
 import { PaperAirplaneIcon } from "@primer/octicons-react";
 import React, { useMemo, useRef, useState } from "react";
-import { graphql, useLazyLoadQuery } from "react-relay/hooks";
+import { graphql, useLazyLoadQuery, useMutation } from "react-relay/hooks";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import createElement from "react-syntax-highlighter/dist/esm/create-element";
 import { githubGist } from "react-syntax-highlighter/dist/esm/styles/hljs";
@@ -100,11 +100,38 @@ const ThreadPopover: React.FC = (props) => (
   </Popover>
 );
 
+// TODO: split this into a separate file
 const NewThreadPopover: React.FC<{
-  onSubmit: (message: string) => any;
+  linenumber: number;
+  blameline: {
+    readonly originalCommit: string;
+    readonly originalFilePath: string;
+    readonly originalLineNumber: number;
+  };
   inputRef: any;
 }> = (props) => {
   const [message, setMessage] = useState("" as string);
+  const [submit, isInFlight] = useMutation(graphql`
+    mutation CodeAndComments_newthread_Mutation(
+      $original_commit: String!
+      $original_file_path: String!
+      $original_line_number: Int!
+      $body: String!
+    ) {
+      insert_threads(
+        objects: [
+          {
+            original_commit: $original_commit
+            original_file_path: $original_file_path
+            original_line_number: $original_line_number
+            comments: { data: [{ body: $body }] }
+          }
+        ]
+      ) {
+        affected_rows
+      }
+    }
+  `);
   return (
     <Popover open={true} caret="right-top">
       <Popover.Content width={248} padding={2}>
@@ -112,8 +139,17 @@ const NewThreadPopover: React.FC<{
           <form
             onSubmit={(event) => {
               if (message.trim().length > 0) {
-                props.onSubmit(message);
-                setMessage("");
+                submit({
+                  variables: {
+                    original_commit: props.blameline.originalCommit,
+                    original_file_path: props.blameline.originalFilePath,
+                    original_line_number: props.blameline.originalLineNumber,
+                    body: message,
+                  },
+                  onCompleted(data) {
+                    setMessage("");
+                  },
+                });
               }
 
               // So that the browser doesn't refresh.
@@ -301,8 +337,8 @@ const CodeAndComments: React.FC<{
             {hoverState && (
               <Absolute top={20 * (hoverState.linenumber - 1)} left={2}>
                 <NewThreadPopover
-                  // TODO: do something more interesting onSubmit, also ignore empty strings.
-                  onSubmit={console.log}
+                  linenumber={hoverState.linenumber}
+                  blameline={blamelines.BlameLines[hoverState.linenumber - 1]}
                   inputRef={newThreadInputRef}
                 ></NewThreadPopover>
               </Absolute>

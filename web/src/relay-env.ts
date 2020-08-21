@@ -18,6 +18,8 @@ function fetchQuery(operation: RequestParameters, variables: Variables) {
     headers: {
       "Content-Type": "application/json",
       "x-hasura-admin-secret": "xxx",
+      "x-hasura-role": "user",
+      "x-hasura-user-id": "frontenduser",
     },
     body: JSON.stringify({
       query: operation.text,
