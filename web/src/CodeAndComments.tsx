@@ -138,6 +138,8 @@ const NewThreadPopover: React.FC<{
         <Box>
           <form
             onSubmit={(event) => {
+              // Note that when the button is disabled, hitting and enter and clicking on the button do not hit this
+              // callback. That's safe for us. If we get here, then we really should be creating a new thread.
               if (message.trim().length > 0) {
                 submit({
                   variables: {
@@ -147,7 +149,18 @@ const NewThreadPopover: React.FC<{
                     body: message,
                   },
                   onCompleted(data) {
+                    // Once we're done sending the message, clear the input box.
                     setMessage("");
+                  },
+                  // Leaving out onError means things fail silently. Most common failure case is a constraint violation
+                  // when a thread already exists but the user tries to start a new one. This is enforced with a
+                  // (commit, file, line) uniqueness constraint on the threads table.
+                  onError(error) {
+                    setMessage("");
+                    console.error(error);
+                    window.alert(
+                      "Error creating a new thread! You should submit this as a GitHub issue!"
+                    );
                   },
                 });
               }
@@ -165,7 +178,7 @@ const NewThreadPopover: React.FC<{
               onChange={(event) => setMessage(event.target.value)}
               ref={props.inputRef}
             ></TextInput>
-            <Button disabled={message.trim().length === 0}>
+            <Button disabled={message.trim().length === 0 || isInFlight}>
               <PaperAirplaneIcon size={16}></PaperAirplaneIcon>
             </Button>
           </form>
