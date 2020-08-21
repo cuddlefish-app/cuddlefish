@@ -82,6 +82,8 @@ function BlobPage() {
   if (fileContents !== null && commitSHA !== null)
     return (
       <CodeAndComments
+        repo_owner={owner}
+        repo_name={repo}
         filePath={filePath}
         fileContents={fileContents}
         commitSHA={commitSHA}

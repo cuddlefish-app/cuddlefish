@@ -26,15 +26,32 @@ use std::sync::Arc;
 
 type CFResult<T> = Result<T, Error>;
 
-/// RepoId of the form `github-MDEwOlJlcG9zaXRvcnkyNDEyMzk3MDg=`. See the README for more info.
-// TODO make this an ADT with a proper parser.
-pub struct RepoId(String);
+/// RepoId identifies a repository. See the README for more info.
+pub enum RepoId {
+  GitHubRepo { owner: String, name: String },
+}
 
-fn repo_id_to_github_node_id(repo_id: &RepoId) -> CFResult<String> {
-  repo_id.0.strip_prefix("github-").map_or_else(
-    || Err(format_err!("bad repo_id {}", repo_id.0)),
-    |base64ish| Ok(base64ish.replace("_", "/")),
-  )
+impl ToString for RepoId {
+  fn to_string(&self) -> String {
+    match self {
+      RepoId::GitHubRepo { owner, name } => format!("github-{}!{}", owner, name),
+    }
+  }
+}
+
+/// Parse a string like "github-cuddlefish-app!cuddlefish" into a `RepoId`.
+fn parse_repo_id(repo_id: &str) -> CFResult<RepoId> {
+  let rest = repo_id
+    .strip_prefix("github-")
+    .ok_or(format_err!("bad repo_id"))?;
+  let split = rest.split('!').collect::<Vec<_>>();
+  match split[..] {
+    [owner, name] => Ok(RepoId::GitHubRepo {
+      owner: owner.into(),
+      name: name.into(),
+    }),
+    _ => Err(format_err!("bad repo_id")),
+  }
 }
 
 #[derive(Debug, GraphQLObject)]
@@ -48,7 +65,7 @@ pub struct BlameLine {
 fn mirror_dir(repo_id: &RepoId) -> PathBuf {
   // repo_id has its `/`s escaped, so it's safe as a file path.
   Path::new(&std::env::var("MIRRORS_DIR").expect("MIRRORS_DIR env var not set"))
-    .join(repo_id.0.to_string())
+    .join(repo_id.to_string())
 }
 
 /// Get a Repository object for a given RepoId. If we already have the repo cloned, great. If not, clone it first.
@@ -65,15 +82,10 @@ async fn git_repo(repo_id: &RepoId) -> CFResult<Repository> {
     return Ok(repo);
   }
 
-  // Lookup repo url based on repo_id -> github global node id.
-  let github_node_id = repo_id_to_github_node_id(repo_id)?;
-  let repo_url = github::repo_url(&github_node_id).await?.ok_or_else(|| {
-    format_err!(
-      "can't find github repository with node id \"{}\"",
-      github_node_id
-    )
-  })?;
-
+  // We could also fetch this from the GitHub API, but it's really pretty easy to just do it ourselves.
+  let repo_url = match repo_id {
+    RepoId::GitHubRepo { owner, name } => format!("https://github.com/{}/{}", owner, name),
+  };
   info!("repo_url = {}", repo_url);
 
   info!("Cloning repo {}...", repo_url);
@@ -106,17 +118,10 @@ fn commit_exists(repo: &Repository, commit: &str) -> bool {
 async fn git_blame(repo_id: &RepoId, file_path: &str, commit: &str) -> CFResult<Vec<BlameLine>> {
   trace!(
     "git_blame repo_id = \"{}\", file_path = \"{}\", commit = \"{}\"",
-    repo_id.0,
+    repo_id.to_string(),
     file_path,
     commit
   );
-
-  ensure!(repo_id.0.len() > 0, "invalid repo_id");
-
-  // Check if this stuff exists in hasura blamelines table. If so, return that.
-  // if let Some(blamelines) = hasura::get_blame_lines(repo_id, file_path, commit).await? {
-  //   return Ok(blamelines);
-  // }
 
   // Check if repo_id is cloned in the filesystem. If not then do a clone.
   let repo = git_repo(repo_id).await?;
@@ -127,7 +132,8 @@ async fn git_blame(repo_id: &RepoId, file_path: &str, commit: &str) -> CFResult<
   if !commit_exists(&repo, commit) {
     info!(
       "Commit {} not found in repo {}. Pulling all changes.",
-      commit, repo_id.0
+      commit,
+      repo_id.to_string()
     );
 
     // TODO: figure out how to get git2-rs to do the same thing.
@@ -186,7 +192,8 @@ impl Query {
     file_path: String,
     last_file_commit: String,
   ) -> FieldResult<Vec<BlameLine>> {
-    let blame = git_blame(&RepoId(repo_id), &file_path, &last_file_commit).await?;
+    let repo_id_parsed = parse_repo_id(&repo_id)?;
+    let blame = git_blame(&repo_id_parsed, &file_path, &last_file_commit).await?;
     Ok(blame)
   }
 }

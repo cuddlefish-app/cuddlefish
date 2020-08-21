@@ -143,6 +143,8 @@ type LineHover = {
 };
 
 const CodeAndComments: React.FC<{
+  repo_owner: string;
+  repo_name: string;
   filePath: string;
   fileContents: string;
   commitSHA: string;
@@ -166,8 +168,7 @@ const CodeAndComments: React.FC<{
       }
     `,
     {
-      // TODO: fix this nonsense.
-      repoId: "github-MDEwOlJlcG9zaXRvcnkyNDEyMzk3MDg=",
+      repoId: `github-${props.repo_owner}!${props.repo_name}`,
       filePath: props.filePath,
       commitSHA: props.commitSHA,
     }
