@@ -8,6 +8,12 @@ import relayenv from "./relay-env";
 
 // GitHub API v4 doesn't yet support usage without authentication: https://github.community/t/api-v4-permit-access-without-token/13833.
 
+export function internalError() {
+  window.alert(
+    "Oops! Cuddlefish made a booboo. Please check the console for any messages, and pester some humans by creating an issue on GitHub!"
+  );
+}
+
 function useAsyncEffect(eff: () => Promise<any>) {
   useEffect(() => {
     eff();
