@@ -18,7 +18,10 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import createElement from "react-syntax-highlighter/dist/esm/create-element";
 import { githubGist } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import NewThreadPopover from "./NewThreadPopover";
-import { CodeAndComments_blamelines_Query } from "./__generated__/CodeAndComments_blamelines_Query.graphql";
+import {
+  CodeAndComments_blamelines_Query,
+  CodeAndComments_blamelines_QueryResponse,
+} from "./__generated__/CodeAndComments_blamelines_Query.graphql";
 
 const MyPreTag: React.FC = (props) => (
   <table
@@ -53,7 +56,7 @@ const MessageBuble: React.FC<{ me?: boolean }> = (props) => (
   </BorderBox>
 );
 
-const ThreadPopover: React.FC = (props) => (
+const ExampleThreadPopover: React.FC = (props) => (
   <Popover open={true} caret="right-top">
     <Popover.Content width={248} padding={2}>
       <Flex flexWrap="nowrap">
@@ -257,21 +260,11 @@ const CodeAndComments: React.FC<{
       <Grid gridTemplateColumns="repeat(2, auto)">
         {/* TODO: where are the "small", "medium", etc sizes documented? */}
         <Box width={272}>
-          <Relative>
-            <Absolute top={20 * 4} left={0}>
-              <ThreadPopover></ThreadPopover>
-            </Absolute>
-
-            {hoverState && (
-              <Absolute top={20 * (hoverState.linenumber - 1)} left={2}>
-                <NewThreadPopover
-                  linenumber={hoverState.linenumber}
-                  blameline={blamelines.BlameLines[hoverState.linenumber - 1]}
-                  inputRef={newThreadInputRef}
-                ></NewThreadPopover>
-              </Absolute>
-            )}
-          </Relative>
+          <Comments
+            hoverState={hoverState}
+            blamelines={blamelines}
+            newThreadInputRef={newThreadInputRef}
+          ></Comments>
         </Box>
         <BorderBox
           style={{ overflowX: "auto", marginTop: "13px", width: "768px" }}
@@ -280,6 +273,34 @@ const CodeAndComments: React.FC<{
         </BorderBox>
       </Grid>
     </Flex>
+  );
+};
+
+const Comments: React.FC<{
+  hoverState: null | LineHover;
+  blamelines: CodeAndComments_blamelines_QueryResponse;
+  newThreadInputRef: React.MutableRefObject<HTMLInputElement | null>;
+}> = ({ hoverState, blamelines, newThreadInputRef }) => {
+  // useSubscription({});
+
+  const threads = useLazyLoadQuery(graphql``, {});
+
+  return (
+    <Relative>
+      <Absolute top={20 * 4} left={0}>
+        <ExampleThreadPopover></ExampleThreadPopover>
+      </Absolute>
+
+      {hoverState && (
+        <Absolute top={20 * (hoverState.linenumber - 1)} left={2}>
+          <NewThreadPopover
+            linenumber={hoverState.linenumber}
+            blameline={blamelines.BlameLines[hoverState.linenumber - 1]}
+            inputRef={newThreadInputRef}
+          ></NewThreadPopover>
+        </Absolute>
+      )}
+    </Relative>
   );
 };
 
