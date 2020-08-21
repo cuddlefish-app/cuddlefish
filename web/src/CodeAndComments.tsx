@@ -111,8 +111,10 @@ const NewThreadPopover: React.FC<{
         <Box>
           <form
             onSubmit={(event) => {
-              props.onSubmit(message);
-              setMessage("");
+              if (message.trim().length > 0) {
+                props.onSubmit(message);
+                setMessage("");
+              }
 
               // So that the browser doesn't refresh.
               event.preventDefault();
@@ -127,7 +129,7 @@ const NewThreadPopover: React.FC<{
               onChange={(event) => setMessage(event.target.value)}
               ref={props.inputRef}
             ></TextInput>
-            <Button>
+            <Button disabled={message.trim().length === 0}>
               <PaperAirplaneIcon size={16}></PaperAirplaneIcon>
             </Button>
           </form>
