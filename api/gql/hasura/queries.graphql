@@ -27,14 +27,14 @@
 # }
 
 # It's annoying that we have to do so much of this query in Rust-land, but oh well.
-mutation InsertBlamelines($blamelines: [blamelines_insert_input!]!) {
-  insert_blamelines(
-    objects: $blamelines
-    on_conflict: { constraint: blamelines_pkey, update_columns: [] }
-  ) {
-    affected_rows
-  }
-}
+# mutation InsertBlamelines() {
+#   insert_blamelines(
+#     objects: []
+#     on_conflict: { constraint: blamelines_pkey, update_columns: [] }
+#   ) {
+#     affected_rows
+#   }
+# }
 
 # Updating at least one column is necessary in order to get any results returned
 # even though in this case it's a meaningless update.
