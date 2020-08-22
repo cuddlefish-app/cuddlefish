@@ -31,6 +31,37 @@ async fn hasura_request<B: serde::ser::Serialize + ?Sized, T: serde::de::Deseria
   }
 }
 
+// This is the naughty bit:
+#[derive(graphql_client::GraphQLQuery)]
+#[graphql(
+  schema_path = "gql/hasura/schema.json",
+  query_path = "gql/hasura/queries.graphql",
+  response_derives = "Debug"
+)]
+pub struct InsertBlamelines;
+
+// pub async fn insert_blamelines(blamelines: Vec<BlameLine>) -> CFResult<()> {
+//   let res: insert_blamelines::ResponseData = hasura_request(&InsertBlamelines::build_query(
+//     insert_blamelines::Variables {
+//       github_node_id: github_node_id.into(),
+//     },
+//   ))
+//   .await?;
+//   let repos = res
+//     .insert_repositories
+//     .ok_or_else(|| {
+//       format_err!(
+//         "expected `insert_repositories` on GetRepoIdByGitHubNodeId response with node id {}",
+//         github_node_id
+//       )
+//     })?
+//     .returning;
+//   match &repos[..] {
+//     [repo] => Ok(RepoId(repo.id.to_string())),
+//     _ => bail!("expected exactly one repository in GetRepoIdByGitHubNodeId response"),
+//   }
+// }
+
 // #[derive(graphql_client::GraphQLQuery)]
 // #[graphql(
 //   schema_path = "gql/hasura/schema.json",

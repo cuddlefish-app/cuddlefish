@@ -1,3 +1,41 @@
+# mutation InsertBlameLines() {
+#   insert_blamelines(
+#     objects: [
+#       {
+#         original_line: {
+#           data: { commit: "asdf", file_path: "src/asdf.py", line_number: 19 }
+#           on_conflict: { constraint: lines_pkey, update_columns: [commit] }
+#         }
+#         x_commit: "af2"
+#         x_file_path: "src/foobar.hs"
+#         x_line_number: 123
+#       }
+#       {
+#         original_line: {
+#           data: { commit: "asdf", file_path: "src/asdf.py", line_number: 19 }
+#           on_conflict: { constraint: lines_pkey, update_columns: [commit] }
+#         }
+#         x_commit: "aasdff2"
+#         x_file_path: "src/foobasdfar.hs"
+#         x_line_number: 12389
+#       }
+#     ]
+#     on_conflict: { constraint: blamelines_pkey, update_columns: [] }
+#   ) {
+#     affected_rows
+#   }
+# }
+
+# It's annoying that we have to do so much of this query in Rust-land, but oh well.
+mutation InsertBlamelines($blamelines: [blamelines_insert_input!]!) {
+  insert_blamelines(
+    objects: $blamelines
+    on_conflict: { constraint: blamelines_pkey, update_columns: [] }
+  ) {
+    affected_rows
+  }
+}
+
 # Updating at least one column is necessary in order to get any results returned
 # even though in this case it's a meaningless update.
 # mutation GetRepoIdByGitHubNodeId($github_node_id: String!) {
