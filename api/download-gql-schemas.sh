@@ -10,7 +10,7 @@ set -euf -o pipefail
 # Add --silent flag so these secrets don't end up in CI logs.
 yarn --silent apollo schema:download gql/hasura/schema.json \
     --endpoint=$HASURA_GQL_ENDPOINT \
-    # --header="X-Hasura-Admin-Secret: $HASURA_ACCESS_KEY"
+    --header="X-Hasura-Admin-Secret: $HASURA_ADMIN_SECRET"
 
 yarn --silent apollo schema:download gql/github/schema.json \
     --endpoint=https://api.github.com/graphql \
