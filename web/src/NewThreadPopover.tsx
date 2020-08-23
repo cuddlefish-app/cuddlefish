@@ -21,17 +21,21 @@ const NewThreadPopover: React.FC<{
       $original_line_number: Int!
       $body: String!
     ) {
-      insert_threads(
-        objects: [
-          {
-            original_commit: $original_commit
-            original_file_path: $original_file_path
-            original_line_number: $original_line_number
-            comments: { data: [{ body: $body }] }
-          }
-        ]
+      insert_threads_one(
+        object: {
+          original_commit: $original_commit
+          original_file_path: $original_file_path
+          original_line_number: $original_line_number
+          comments: { data: [{ body: $body }] }
+        }
       ) {
-        affected_rows
+        id
+        comments {
+          id
+          created_at
+          author_id
+          body
+        }
       }
     }
   `);
