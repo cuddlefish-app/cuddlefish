@@ -54,53 +54,122 @@ const MessageBuble: React.FC<{ me?: boolean }> = (props) => (
   </BorderBox>
 );
 
-const ExampleThreadPopover: React.FC = (props) => (
-  <Popover open={true} caret="right-top">
-    <Popover.Content width={248} padding={2}>
-      <Flex flexWrap="nowrap">
-        {/* Wrapping in a box is necessary to avoid weird shrinking effects. */}
-        <Box>
-          <Avatar
-            src="https://avatars.githubusercontent.com/drshrey"
-            marginTop={1}
-          />
-        </Box>
-        <Box flexGrow={1} marginLeft={1}>
-          <MessageBuble>
-            Why is this an if instead of a switch statement?
-          </MessageBuble>
-          <MessageBuble>Actually does this ever happen?</MessageBuble>
-        </Box>
-      </Flex>
-      <Flex flexWrap="nowrap">
-        <Box flexGrow={1} marginRight={1}>
-          <MessageBuble me>
-            I think it's because `user` could be null
-          </MessageBuble>
-        </Box>
-        {/* Wrapping in a box is necessary to avoid weird shrinking effects. */}
-        <Box>
-          <Avatar
-            src="https://avatars.githubusercontent.com/samuela"
-            marginTop="2px"
-          />
-        </Box>
-      </Flex>
+function chunkBy<T>(arr: readonly T[], key: (_: T) => any): T[][] {
+  // Don't mutate the argument for the caller.
+  let arr1 = [...arr];
+  let chunks = [];
+  while (arr1.length > 0) {
+    // This cast is safe since arr1.length > 0.
+    let first = arr1.shift() as T;
+    let newchunk = [first];
+    const k = key(first);
+    while (arr1.length > 0 && key(arr1[0]) === k) {
+      // Again, cast is safe since we know that arr1.length > 0.
+      newchunk.push(arr1.shift() as T);
+    }
+    chunks.push(newchunk);
+  }
+  return chunks;
+}
 
-      <Box marginTop={2}>
-        <TextInput
-          placeholder="Comment..."
-          variant="small"
-          marginRight={1}
-          width={"176px"}
-        ></TextInput>
-        <Button>
-          <PaperAirplaneIcon size={16}></PaperAirplaneIcon>
-        </Button>
+const CommentChunk: React.FC<{
+  comments: {
+    id: unknown;
+    body: string;
+    author_id: string;
+    created_at: unknown;
+  }[];
+}> = ({ comments }) => {
+  // We are guaranteed that comments is non-empty and that all author_id's are the same.
+  // const author_id = comments[0].author_id;
+
+  // TODO obv
+  const me = true;
+  return (
+    <Flex flexWrap="nowrap" flexDirection={me ? "row-reverse" : "row"}>
+      {/* Wrapping in a box is necessary to avoid weird shrinking effects. */}
+      <Box marginX={1}>
+        <Avatar
+          src="https://avatars.githubusercontent.com/samuela"
+          marginTop={1}
+        />
       </Box>
-    </Popover.Content>
-  </Popover>
-);
+      <Box flexGrow={1}>
+        {comments.map((comment) => (
+          <MessageBuble me={me} key={comment.id as string}>
+            {comment.body}
+          </MessageBuble>
+        ))}
+      </Box>
+    </Flex>
+  );
+};
+
+const ThreadPopover: React.FC<{
+  inputRef: any;
+  blameline: {
+    original_commit: string;
+    original_file_path: string;
+    original_line_number: number;
+    x_commit: string;
+    x_file_path: string;
+    x_line_number: number;
+    original_line: {
+      threads: ReadonlyArray<{
+        id: unknown;
+        comments: ReadonlyArray<{
+          id: unknown;
+          body: string;
+          author_id: string;
+          created_at: unknown;
+        }>;
+      }>;
+    } | null;
+  };
+}> = ({ inputRef, blameline }) => {
+  // We should always be able to find the corresponding original line.
+  if (blameline.original_line === null) {
+    throw internalError(Error("blameline has null original_line"));
+  }
+  // There should always be a thread to render.
+  if (blameline.original_line.threads.length !== 1) {
+    throw internalError(Error("threads.length !== 1"));
+  }
+
+  // Comments come in ordered by `created_at` thanks to our query.
+  let thread = blameline.original_line.threads[0];
+  let comments = thread.comments;
+
+  // Thread should always have at least one comment.
+  if (comments.length === 0) {
+    throw internalError(Error(`Thread ${thread.id} has no comments!`));
+  }
+
+  let chunkedComments = chunkBy(comments, (c) => c.author_id);
+
+  return (
+    <Popover open={true} caret="right-top">
+      <Popover.Content width={248} padding={2}>
+        {chunkedComments.map((chunk, i) => (
+          <CommentChunk comments={chunk} key={i} />
+        ))}
+
+        <Box marginTop={2}>
+          <TextInput
+            placeholder="Comment..."
+            variant="small"
+            marginRight={1}
+            width={"176px"}
+            ref={inputRef}
+          ></TextInput>
+          <Button>
+            <PaperAirplaneIcon size={16}></PaperAirplaneIcon>
+          </Button>
+        </Box>
+      </Popover.Content>
+    </Popover>
+  );
+};
 
 // Returns whether or not the blameline info has been successfully calculated and dumped into the blamelines table.
 function useCalcBlameLines(
@@ -195,7 +264,7 @@ const CodeAndComments: React.FC<{
   // }
 
   const [hoverState, setHoverState] = useState(null as null | LineHover);
-  const newThreadInputRef = useRef(null as null | HTMLInputElement);
+  const inputRef = useRef(null as null | HTMLInputElement);
 
   function LineOfCode({
     row,
@@ -211,7 +280,7 @@ const CodeAndComments: React.FC<{
     return (
       <tr
         // TODO: in the future this should focus the text input on existing threads.
-        onDoubleClick={() => newThreadInputRef.current?.focus()}
+        onDoubleClick={() => inputRef.current?.focus()}
         onMouseMove={() =>
           setHoverState({ kind: "line", linenumber: lineNumber + 1 })
         }
@@ -306,7 +375,7 @@ const CodeAndComments: React.FC<{
               filePath={filePath}
               fileContents={fileContents}
               hoverState={hoverState}
-              newThreadInputRef={newThreadInputRef}
+              inputRef={inputRef}
             />
           )}
         </Box>
@@ -325,8 +394,8 @@ const Comments: React.FC<{
   filePath: string;
   fileContents: string;
   hoverState: null | LineHover;
-  newThreadInputRef: React.MutableRefObject<HTMLInputElement | null>;
-}> = ({ commitSHA, filePath, hoverState, newThreadInputRef }) => {
+  inputRef: React.MutableRefObject<HTMLInputElement | null>;
+}> = ({ commitSHA, filePath, hoverState, inputRef }) => {
   // TODO subscribe to updates.
   // useSubscription({});
 
@@ -352,9 +421,11 @@ const Comments: React.FC<{
           original_line {
             threads(where: { resolved: { _eq: false } }) {
               id
-              comments {
-                author_id
+              comments(order_by: { created_at: asc }) {
+                id
                 body
+                author_id
+                created_at
               }
             }
           }
@@ -363,23 +434,32 @@ const Comments: React.FC<{
     `,
     { commitSHA, filePath }
   );
-  // console.log(threads);
 
   // Performance hack: This is slow, don't do it on every render.
+  const relevantBlameLines = useMemo(
+    () =>
+      threads.blamelines.filter(
+        (bl) => bl.original_line && bl.original_line.threads.length > 0
+      ),
+    [threads.blamelines]
+  );
   const existingThreads = useMemo(
     () =>
-      threads.blamelines
-        .filter((bl) => bl.original_line && bl.original_line.threads.length > 0)
-        .map((bl) => (
-          <Absolute
-            top={20 * (bl.x_line_number - 1)}
-            left={0}
-            key={bl.x_line_number}
-          >
-            <ExampleThreadPopover></ExampleThreadPopover>
-          </Absolute>
-        )),
-    [threads.blamelines]
+      relevantBlameLines.map((bl) => (
+        <Absolute
+          top={20 * (bl.x_line_number - 1)}
+          left={0}
+          key={bl.x_line_number}
+        >
+          <ThreadPopover
+            blameline={bl}
+            inputRef={
+              hoverState?.linenumber === bl.x_line_number ? inputRef : null
+            }
+          />
+        </Absolute>
+      )),
+    [relevantBlameLines, hoverState, inputRef]
   );
 
   return (
@@ -391,9 +471,8 @@ const Comments: React.FC<{
           .length === 0 && (
           <Absolute top={20 * (hoverState.linenumber - 1)} left={2}>
             <NewThreadPopover
-              linenumber={hoverState.linenumber}
               blameline={threads.blamelines[hoverState.linenumber - 1]}
-              inputRef={newThreadInputRef}
+              inputRef={inputRef}
             ></NewThreadPopover>
           </Absolute>
         )}

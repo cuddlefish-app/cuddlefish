@@ -13,6 +13,9 @@ export function internalError(error?: Error) {
   window.alert(
     "Oops! Cuddlefish made a booboo. Please check the console for any messages, and pester some humans by creating an issue on GitHub!"
   );
+
+  // This helps us do things like `throw internalError(Error("bad thing"))`.
+  return error;
 }
 
 export function githubRepoId(repo_owner: string, repo_name: string) {
