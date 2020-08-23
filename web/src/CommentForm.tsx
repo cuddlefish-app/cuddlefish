@@ -8,7 +8,8 @@ const CommentForm: React.FC<{
   inputRef: any;
   onSubmit: () => any;
   disabled: boolean;
-}> = ({ message, setMessage, inputRef, onSubmit, disabled }) => {
+  placeholder: string;
+}> = ({ message, setMessage, inputRef, onSubmit, disabled, placeholder }) => {
   return (
     <form
       onSubmit={(event) => {
@@ -23,7 +24,7 @@ const CommentForm: React.FC<{
       }}
     >
       <TextInput
-        placeholder="Start a new thread..."
+        placeholder={placeholder}
         variant="small"
         marginRight={1}
         width={"176px"}

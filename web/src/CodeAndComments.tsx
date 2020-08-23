@@ -3,21 +3,19 @@ import {
   Avatar,
   BorderBox,
   Box,
-  Button,
   Flex,
   Grid,
   Popover,
   Relative,
   Text,
-  TextInput,
 } from "@primer/components";
-import { PaperAirplaneIcon } from "@primer/octicons-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { graphql, useLazyLoadQuery, useMutation } from "react-relay/hooks";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import createElement from "react-syntax-highlighter/dist/esm/create-element";
 import { githubGist } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { githubRepoId, internalError } from "./App";
+import CommentForm from "./CommentForm";
 import NewThreadPopover from "./NewThreadPopover";
 import { CodeAndComments_threads_Query } from "./__generated__/CodeAndComments_threads_Query.graphql";
 
@@ -146,6 +144,17 @@ const ThreadPopover: React.FC<{
   }
 
   let chunkedComments = chunkBy(comments, (c) => c.author_id);
+  const [message, setMessage] = useState("" as string);
+  const [submit, isInFlight] = useMutation(graphql`
+    mutation CodeAndComments_NewComment_Mutation(
+      $body: String!
+      $thread_id: uuid!
+    ) {
+      insert_comments_one(object: { body: $body, thread_id: $thread_id }) {
+        id
+      }
+    }
+  `);
 
   return (
     <Popover open={true} caret="right-top">
@@ -155,16 +164,28 @@ const ThreadPopover: React.FC<{
         ))}
 
         <Box marginTop={2}>
-          <TextInput
+          <CommentForm
             placeholder="Comment..."
-            variant="small"
-            marginRight={1}
-            width={"176px"}
-            ref={inputRef}
-          ></TextInput>
-          <Button>
-            <PaperAirplaneIcon size={16}></PaperAirplaneIcon>
-          </Button>
+            message={message}
+            setMessage={setMessage}
+            inputRef={inputRef}
+            onSubmit={() => {
+              submit({
+                variables: { body: message, thread_id: thread.id },
+                updater(store, data) {
+                  console.log("new comment updater");
+                },
+                onCompleted(data) {
+                  setMessage("");
+                },
+                onError(error) {
+                  setMessage("");
+                  internalError(error);
+                },
+              });
+            }}
+            disabled={isInFlight}
+          ></CommentForm>
         </Box>
       </Popover.Content>
     </Popover>

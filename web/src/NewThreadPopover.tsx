@@ -40,6 +40,7 @@ const NewThreadPopover: React.FC<{
       <Popover.Content width={248} padding={2}>
         <Box>
           <CommentForm
+            placeholder="Start a new thread..."
             message={message}
             setMessage={setMessage}
             inputRef={props.inputRef}
@@ -60,8 +61,6 @@ const NewThreadPopover: React.FC<{
                 onCompleted(data) {
                   // Once we're done sending the message, clear the input box.
                   setMessage("");
-                  console.log("new thread mut done");
-                  console.log(data);
                 },
                 // Leaving out onError means things fail silently. Most common failure case is a constraint violation
                 // when a thread already exists but the user tries to start a new one. This is enforced with a
