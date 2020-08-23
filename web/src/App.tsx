@@ -1,5 +1,5 @@
 import { Octokit } from "@octokit/core";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RelayEnvironmentProvider } from "react-relay/hooks";
 import { BrowserRouter, Route, Switch, useParams } from "react-router-dom";
 import "./App.css";
@@ -29,9 +29,7 @@ function App() {
         <Switch>
           <Route path="/:owner/:repo/blob/:branch/*">
             {/* TODO: make suspense more interesting! We get suspense while waiting on Relay queries. */}
-            <Suspense fallback={<div>suspense!</div>}>
-              <BlobPage />
-            </Suspense>
+            <BlobPage />
           </Route>
           <Route component={NotFound} />
         </Switch>
