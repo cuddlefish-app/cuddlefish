@@ -1,11 +1,21 @@
-# Pushing
+# Hasura and Postgres
+
+## Schema
+
+### Threads
+
+The `threads` table stores all the threads. It should be unique on `(commit, file, linenumber)` when `resolved == false`.
+
+TODO: actually apply that constraint with a partial unique index: https://stackoverflow.com/questions/16236365/postgresql-conditionally-unique-constraint.
+
+## Pushing
 
 When a new Hasura version is released:
 
 - Update the Dockerfile
 - `make push-and-release`
 
-# Troubleshooting
+## Troubleshooting
 
 If you get an error like
 
