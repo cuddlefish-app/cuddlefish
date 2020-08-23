@@ -27,9 +27,11 @@ dependencies = [
  "hyper",
  "juniper",
  "juniper_hyper",
+ "lazy_static",
  "log",
  "reqwest",
  "serde",
+ "serde_json",
  "tokio",
 ]
 

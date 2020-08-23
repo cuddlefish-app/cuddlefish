@@ -1,5 +1,6 @@
 mod github;
 mod hasura;
+use failure::bail;
 use failure::ensure;
 use failure::format_err;
 use failure::Error;
@@ -18,6 +19,7 @@ use juniper::EmptySubscription;
 use juniper::FieldResult;
 use juniper::GraphQLObject;
 use juniper::RootNode;
+use lazy_static::lazy_static;
 use log::info;
 use log::trace;
 use std::path::Path;
@@ -50,7 +52,7 @@ fn parse_repo_id(repo_id: &str) -> CFResult<RepoId> {
       owner: owner.into(),
       name: name.into(),
     }),
-    _ => Err(format_err!("bad repo_id")),
+    _ => bail!("bad repo_id"),
   }
 }
 
@@ -115,7 +117,7 @@ fn commit_exists(repo: &Repository, commit: &str) -> bool {
   }
 }
 
-async fn git_blame(repo_id: &RepoId, file_path: &str, commit: &str) -> CFResult<Vec<BlameLine>> {
+async fn git_blame(repo_id: &RepoId, commit: &str, file_path: &str) -> CFResult<Vec<BlameLine>> {
   trace!(
     "git_blame repo_id = \"{}\", file_path = \"{}\", commit = \"{}\"",
     repo_id.to_string(),
@@ -187,14 +189,9 @@ struct Query;
 
 #[juniper::graphql_object]
 impl Query {
-  async fn BlameLines(
-    repo_id: String,
-    file_path: String,
-    last_file_commit: String,
-  ) -> FieldResult<Vec<BlameLine>> {
-    let repo_id_parsed = parse_repo_id(&repo_id)?;
-    let blame = git_blame(&repo_id_parsed, &file_path, &last_file_commit).await?;
-    Ok(blame)
+  // See https://github.com/hasura/graphql-engine/issues/5621.
+  async fn noop() -> FieldResult<bool> {
+    Ok(true)
   }
 }
 
@@ -202,15 +199,34 @@ struct Mutation;
 
 #[juniper::graphql_object]
 impl Mutation {
-  // See https://github.com/hasura/graphql-engine/issues/5621.
-  async fn noop() -> FieldResult<i32> {
-    Ok(0)
+  // There are situations in which it makes sense to allow anonymous users to call this endpoint. Eg, there are comments
+  // on a file but its latest commit version has not been git blamed yet, so the line association info is not yet
+  // present in the blamelines table.
+  async fn CalculateBlameLines(
+    repo_id: String,
+    last_commit: String,
+    file_path: String,
+  ) -> FieldResult<bool> {
+    // TODO: check if it's already in the database to save a few electrons here.
+    let repo_id_parsed = parse_repo_id(&repo_id)?;
+    let blamelines = git_blame(&repo_id_parsed, &last_commit, &file_path).await?;
+    // Insert into the blamelines table. Existing values ok.
+    hasura::insert_blamelines(&last_commit, &file_path, blamelines).await?;
+    Ok(true)
   }
+}
+
+lazy_static! {
+  static ref HASURA_ADMIN_SECRET: String =
+    std::env::var("HASURA_ADMIN_SECRET").expect("HASURA_ADMIN_SECRET env var not set");
 }
 
 #[tokio::main]
 async fn main() {
   env_logger::init();
+
+  // Fail fast if we're missing environment variables we need.
+  lazy_static::initialize(&HASURA_ADMIN_SECRET);
 
   let root_node = Arc::new(RootNode::new(
     Query,
