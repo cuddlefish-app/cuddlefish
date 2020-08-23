@@ -12,16 +12,14 @@ import {
   TextInput,
 } from "@primer/components";
 import { PaperAirplaneIcon } from "@primer/octicons-react";
-import React, { useMemo, useRef, useState } from "react";
-import { graphql, useLazyLoadQuery } from "react-relay/hooks";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { graphql, useLazyLoadQuery, useMutation } from "react-relay/hooks";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import createElement from "react-syntax-highlighter/dist/esm/create-element";
 import { githubGist } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { githubRepoId, internalError } from "./App";
 import NewThreadPopover from "./NewThreadPopover";
-import {
-  CodeAndComments_blamelines_Query,
-  CodeAndComments_blamelines_QueryResponse,
-} from "./__generated__/CodeAndComments_blamelines_Query.graphql";
+import { CodeAndComments_threads_Query } from "./__generated__/CodeAndComments_threads_Query.graphql";
 
 const MyPreTag: React.FC = (props) => (
   <table
@@ -104,7 +102,59 @@ const ExampleThreadPopover: React.FC = (props) => (
   </Popover>
 );
 
-// TODO: split this into a separate file
+// Returns whether or not the blameline info has been successfully calculated and dumped into the blamelines table.
+function useCalcBlameLines(
+  repo_owner: string,
+  repo_name: string,
+  filePath: string,
+  commitSHA: string
+) {
+  const repoId = githubRepoId(repo_owner, repo_name);
+  const [calcBlameLines, waiting] = useMutation(graphql`
+    mutation CodeAndComments_calcblamelines_Mutation(
+      $repoId: String!
+      $commit: String!
+      $filePath: String!
+    ) {
+      CalculateBlameLines(
+        repoId: $repoId
+        lastCommit: $commit
+        filePath: $filePath
+      )
+    }
+  `);
+  useEffect(() => {
+    calcBlameLines({
+      variables: { repoId, commit: commitSHA, filePath: filePath },
+      onError: internalError,
+    });
+  }, [repoId, commitSHA, filePath, calcBlameLines]);
+
+  return !waiting;
+}
+
+function useFileContents(
+  repo_owner: string,
+  repo_name: string,
+  commitSHA: string,
+  filePath: string
+) {
+  const [fileContents, setFileContents] = useState(null as null | string);
+  useEffect(() => {
+    (async () => {
+      try {
+        const fileResponse = await fetch(
+          `https://raw.githubusercontent.com/${repo_owner}/${repo_name}/${commitSHA}/${filePath}`
+        );
+        setFileContents(await fileResponse.text());
+      } catch (error) {
+        // TODO: 404 when the file/repo doesn't exist or it's just not public.
+        console.error(error);
+      }
+    })();
+  }, [repo_owner, repo_name, commitSHA, filePath]);
+  return fileContents;
+}
 
 type LineHover = {
   kind: "line";
@@ -115,47 +165,34 @@ const CodeAndComments: React.FC<{
   repo_owner: string;
   repo_name: string;
   filePath: string;
-  fileContents: string;
   commitSHA: string;
-}> = (props) => {
-  const blamelines = useLazyLoadQuery<CodeAndComments_blamelines_Query>(
-    graphql`
-      query CodeAndComments_blamelines_Query(
-        $repoId: String!
-        $filePath: String!
-        $commitSHA: String!
-      ) {
-        BlameLines(
-          repoId: $repoId
-          filePath: $filePath
-          lastFileCommit: $commitSHA
-        ) {
-          originalCommit
-          originalFilePath
-          originalLineNumber
-        }
-      }
-    `,
-    {
-      repoId: `github-${props.repo_owner}!${props.repo_name}`,
-      filePath: props.filePath,
-      commitSHA: props.commitSHA,
-    }
+}> = ({ repo_owner, repo_name, filePath, commitSHA }) => {
+  const fileContents = useFileContents(
+    repo_owner,
+    repo_name,
+    commitSHA,
+    filePath
+  );
+  const blameDone = useCalcBlameLines(
+    repo_owner,
+    repo_name,
+    filePath,
+    commitSHA
   );
 
-  // Check that we have the same number of `blamelines` as we have lines in the `fileContents`.
-  // If there are trailing newlines at the end of the file, git blame will remove just the last one. Luckily git blame
-  // does not interfere with newlines at the beginning of a file howevere.
-  if (props.fileContents.endsWith("\n")) {
-    console.assert(
-      props.fileContents.slice(0, -1).split(/\r?\n/).length ===
-        blamelines.BlameLines.length
-    );
-  } else {
-    console.assert(
-      props.fileContents.split(/\r?\n/).length === blamelines.BlameLines.length
-    );
-  }
+  // // Check that we have the same number of `blamelines` as we have lines in the `fileContents`.
+  // // If there are trailing newlines at the end of the file, git blame will remove just the last one. Luckily git blame
+  // // does not interfere with newlines at the beginning of a file howevere.
+  // if (fileContents.endsWith("\n")) {
+  //   console.assert(
+  //     fileContents.slice(0, -1).split(/\r?\n/).length ===
+  //       blamelines.BlameLines.length
+  //   );
+  // } else {
+  //   console.assert(
+  //     fileContents.split(/\r?\n/).length === blamelines.BlameLines.length
+  //   );
+  // }
 
   const [hoverState, setHoverState] = useState(null as null | LineHover);
   const newThreadInputRef = useRef(null as null | HTMLInputElement);
@@ -239,20 +276,22 @@ const CodeAndComments: React.FC<{
     ));
   };
 
-  // See https://github.com/react-syntax-highlighter/react-syntax-highlighter/issues/302
+  // See https://github.com/react-syntax-highlighter/react-syntax-highlighter/issues/302.
+  // SyntaxHighlighter doesn't like null strings understandably, so we need to check for that.
   const syntaxHighlighted = useMemo(
-    () => (
-      <SyntaxHighlighter
-        renderer={mySyntaxRenderer}
-        // "github-gist" actually appears to be closer to github's actual styling than "github".
-        style={githubGist}
-        PreTag={MyPreTag}
-        CodeTag={"tbody"}
-      >
-        {props.fileContents}
-      </SyntaxHighlighter>
-    ),
-    [props.fileContents]
+    () =>
+      fileContents !== null ? (
+        <SyntaxHighlighter
+          renderer={mySyntaxRenderer}
+          // "github-gist" actually appears to be closer to github's actual styling than "github".
+          style={githubGist}
+          PreTag={MyPreTag}
+          CodeTag={"tbody"}
+        >
+          {fileContents}
+        </SyntaxHighlighter>
+      ) : null,
+    [fileContents]
   );
 
   return (
@@ -260,11 +299,16 @@ const CodeAndComments: React.FC<{
       <Grid gridTemplateColumns="repeat(2, auto)">
         {/* TODO: where are the "small", "medium", etc sizes documented? */}
         <Box width={272}>
-          <Comments
-            hoverState={hoverState}
-            blamelines={blamelines}
-            newThreadInputRef={newThreadInputRef}
-          ></Comments>
+          {/* TODO show a "loading thing" before we render the Comments component. */}
+          {blameDone && fileContents !== null && (
+            <Comments
+              commitSHA={commitSHA}
+              filePath={filePath}
+              fileContents={fileContents}
+              hoverState={hoverState}
+              newThreadInputRef={newThreadInputRef}
+            />
+          )}
         </Box>
         <BorderBox
           style={{ overflowX: "auto", marginTop: "13px", width: "768px" }}
@@ -277,29 +321,82 @@ const CodeAndComments: React.FC<{
 };
 
 const Comments: React.FC<{
+  commitSHA: string;
+  filePath: string;
+  fileContents: string;
   hoverState: null | LineHover;
-  blamelines: CodeAndComments_blamelines_QueryResponse;
   newThreadInputRef: React.MutableRefObject<HTMLInputElement | null>;
-}> = ({ hoverState, blamelines, newThreadInputRef }) => {
+}> = ({ commitSHA, filePath, hoverState, newThreadInputRef }) => {
+  // TODO subscribe to updates.
   // useSubscription({});
 
-  const threads = useLazyLoadQuery(graphql``, {});
+  // TODO: use the better query version
+  const threads = useLazyLoadQuery<CodeAndComments_threads_Query>(
+    graphql`
+      query CodeAndComments_threads_Query(
+        $commitSHA: String!
+        $filePath: String!
+      ) {
+        blamelines(
+          where: {
+            x_commit: { _eq: $commitSHA }
+            x_file_path: { _eq: $filePath }
+          }
+        ) {
+          original_commit
+          original_file_path
+          original_line_number
+          x_commit
+          x_file_path
+          x_line_number
+          original_line {
+            threads(where: { resolved: { _eq: false } }) {
+              id
+              comments {
+                author_id
+                body
+              }
+            }
+          }
+        }
+      }
+    `,
+    { commitSHA, filePath }
+  );
+  // console.log(threads);
+
+  // Performance hack: This is slow, don't do it on every render.
+  const existingThreads = useMemo(
+    () =>
+      threads.blamelines
+        .filter((bl) => bl.original_line && bl.original_line.threads.length > 0)
+        .map((bl) => (
+          <Absolute
+            top={20 * (bl.x_line_number - 1)}
+            left={0}
+            key={bl.x_line_number}
+          >
+            <ExampleThreadPopover></ExampleThreadPopover>
+          </Absolute>
+        )),
+    [threads.blamelines]
+  );
 
   return (
     <Relative>
-      <Absolute top={20 * 4} left={0}>
-        <ExampleThreadPopover></ExampleThreadPopover>
-      </Absolute>
+      {existingThreads}
 
-      {hoverState && (
-        <Absolute top={20 * (hoverState.linenumber - 1)} left={2}>
-          <NewThreadPopover
-            linenumber={hoverState.linenumber}
-            blameline={blamelines.BlameLines[hoverState.linenumber - 1]}
-            inputRef={newThreadInputRef}
-          ></NewThreadPopover>
-        </Absolute>
-      )}
+      {hoverState &&
+        threads.blamelines[hoverState.linenumber - 1].original_line?.threads
+          .length === 0 && (
+          <Absolute top={20 * (hoverState.linenumber - 1)} left={2}>
+            <NewThreadPopover
+              linenumber={hoverState.linenumber}
+              blameline={threads.blamelines[hoverState.linenumber - 1]}
+              inputRef={newThreadInputRef}
+            ></NewThreadPopover>
+          </Absolute>
+        )}
     </Relative>
   );
 };

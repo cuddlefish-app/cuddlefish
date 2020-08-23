@@ -7,13 +7,14 @@ import { internalError } from "./App";
 const NewThreadPopover: React.FC<{
   linenumber: number;
   blameline: {
-    readonly originalCommit: string;
-    readonly originalFilePath: string;
-    readonly originalLineNumber: number;
+    original_commit: string;
+    original_file_path: string;
+    original_line_number: number;
   };
   inputRef: any;
 }> = (props) => {
   const [message, setMessage] = useState("" as string);
+  // TODO: add an updater to this bad boy so that threads show up as soon as the user submits them.
   const [submit, isInFlight] = useMutation(graphql`
     mutation NewThreadPopover_newthread_Mutation(
       $original_commit: String!
@@ -46,10 +47,16 @@ const NewThreadPopover: React.FC<{
               if (message.trim().length > 0) {
                 submit({
                   variables: {
-                    original_commit: props.blameline.originalCommit,
-                    original_file_path: props.blameline.originalFilePath,
-                    original_line_number: props.blameline.originalLineNumber,
+                    original_commit: props.blameline.original_commit,
+                    original_file_path: props.blameline.original_file_path,
+                    original_line_number: props.blameline.original_line_number,
                     body: message,
+                  },
+                  // optimisticUpdater: (store) => console.log(store),
+                  updater: (store, data) => {
+                    console.log("updater");
+                    console.log(store.getRoot());
+                    console.log(data);
                   },
                   onCompleted(data) {
                     // Once we're done sending the message, clear the input box.
@@ -60,8 +67,7 @@ const NewThreadPopover: React.FC<{
                   // (commit, file, line) uniqueness constraint on the threads table.
                   onError(error) {
                     setMessage("");
-                    console.error(error);
-                    internalError();
+                    internalError(error);
                   },
                 });
               }

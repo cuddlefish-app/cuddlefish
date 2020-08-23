@@ -8,16 +8,15 @@ import relayenv from "./relay-env";
 
 // GitHub API v4 doesn't yet support usage without authentication: https://github.community/t/api-v4-permit-access-without-token/13833.
 
-export function internalError() {
+export function internalError(error?: Error) {
+  if (error) console.log(error);
   window.alert(
     "Oops! Cuddlefish made a booboo. Please check the console for any messages, and pester some humans by creating an issue on GitHub!"
   );
 }
 
-function useAsyncEffect(eff: () => Promise<any>) {
-  useEffect(() => {
-    eff();
-  });
+export function githubRepoId(repo_owner: string, repo_name: string) {
+  return `github-${repo_owner}!${repo_name}`;
 }
 
 function App() {
@@ -38,6 +37,37 @@ function App() {
   );
 }
 
+// Get the latest commit for a branch of a GitHub repo.
+function useLatestCommitSHA(
+  repo_owner: string,
+  repo_name: string,
+  branch: string
+) {
+  const [commitSHA, setCommitSHA] = useState(null as null | string);
+
+  useEffect(() => {
+    const octokit = new Octokit();
+    (async () => {
+      try {
+        const commitResponse = await octokit.request(
+          "GET /repos/:owner/:repo/commits/:branch",
+          {
+            owner: repo_owner,
+            repo: repo_name,
+            branch,
+          }
+        );
+        setCommitSHA(commitResponse.data.sha);
+      } catch (error) {
+        // TODO: 404 when the repo doesn't exist or it's just not public.
+        internalError(error);
+      }
+    })();
+  }, [repo_owner, repo_name, branch]);
+
+  return commitSHA;
+}
+
 function BlobPage() {
   // For whatever reason, react-router dumps the wildcard path match into key 0.
   const { 0: filePath, owner, repo, branch } = useParams() as {
@@ -46,56 +76,17 @@ function BlobPage() {
     repo: string;
     branch: string;
   };
-
-  const octokit = new Octokit();
-  // TODO use other hooks, eg useMemo here instead.
-  const [commitSHA, setCommitSHA] = useState(null as null | string);
-  const [fileContents, setFileContents] = useState(null as null | string);
-
-  useAsyncEffect(async () => {
-    try {
-      const commitResponse = await octokit.request(
-        "GET /repos/:owner/:repo/commits/:branch",
-        {
-          owner,
-          repo,
-          branch,
-        }
-      );
-      setCommitSHA(commitResponse.data.sha);
-    } catch (error) {
-      // TODO: 404 when the repo doesn't exist or it's just not public.
-      console.error(error);
-    }
-  });
-
-  useAsyncEffect(async () => {
-    if (commitSHA == null) {
-      setFileContents(null);
-      return;
-    }
-    try {
-      const fileResponse = await fetch(
-        `https://raw.githubusercontent.com/${owner}/${repo}/${commitSHA}/${filePath}`
-      );
-      setFileContents(await fileResponse.text());
-    } catch (error) {
-      // TODO: 404 when the file/repo doesn't exist or it's just not public.
-      console.error(error);
-    }
-  });
-
-  if (fileContents !== null && commitSHA !== null)
+  const commitSHA = useLatestCommitSHA(owner, repo, branch);
+  if (commitSHA !== null)
     return (
       <CodeAndComments
         repo_owner={owner}
         repo_name={repo}
         filePath={filePath}
-        fileContents={fileContents}
         commitSHA={commitSHA}
-      ></CodeAndComments>
+      />
     );
-  else return <div>hold on...</div>;
+  else return <div>fetching latest commit...</div>;
 }
 
 function NotFound() {
