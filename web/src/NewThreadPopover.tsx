@@ -9,6 +9,9 @@ const NewThreadPopover: React.FC<{
     original_commit: string;
     original_file_path: string;
     original_line_number: number;
+    x_commit: string;
+    x_file_path: string;
+    x_line_number: number;
   };
   inputRef: any;
 }> = (props) => {
@@ -30,7 +33,7 @@ const NewThreadPopover: React.FC<{
         }
       ) {
         id
-        comments {
+        comments(order_by: { created_at: asc }) {
           id
           created_at
           author_id
@@ -56,23 +59,28 @@ const NewThreadPopover: React.FC<{
                   original_line_number: props.blameline.original_line_number,
                   body: message,
                 },
-                // optimisticUpdater: (store) => console.log(store),
-                updater: (store, data) => {
-                  console.log("updater");
-                  console.log(store.getRoot());
-                  console.log(data);
-                },
-                onCompleted(data) {
-                  // Once we're done sending the message, clear the input box.
-                  setMessage("");
+                updater: (store) => {
+                  const newThreadRec = store.getRootField("insert_threads_one");
+                  store
+                    .get(
+                      `client:root:blamelines(where:{"x_commit":{"_eq":"${
+                        props.blameline.x_commit
+                      }"},"x_file_path":{"_eq":"${
+                        props.blameline.x_file_path
+                      }"}}):${props.blameline.x_line_number - 1}:original_line`
+                    )
+                    ?.setLinkedRecords(
+                      [newThreadRec],
+                      'threads(where:{"resolved":{"_eq":false}})'
+                    );
                 },
                 // Leaving out onError means things fail silently. Most common failure case is a constraint violation
                 // when a thread already exists but the user tries to start a new one. This is enforced with a
                 // (commit, file, line) uniqueness constraint on the threads table.
-                onError(error) {
-                  setMessage("");
-                  internalError(error);
-                },
+                onError: internalError,
+                // We don't bother with an onComplete callback here because it ends up throwing React warnings that
+                // we're doing stuff on an unmounted component... Fair enough. There's nothing else that needs to be
+                // done on completion.
               });
             }}
             disabled={isInFlight}

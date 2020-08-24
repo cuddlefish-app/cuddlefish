@@ -127,7 +127,12 @@ const ThreadPopover: React.FC<{
       $thread_id: uuid!
     ) {
       insert_comments_one(object: { body: $body, thread_id: $thread_id }) {
+        # Even though they aren't directly used, these fields are important because they control what goes into the
+        # Relay Store.
         id
+        created_at
+        author_id
+        body
       }
     }
   `);
@@ -148,8 +153,26 @@ const ThreadPopover: React.FC<{
             onSubmit={() => {
               submit({
                 variables: { body: message, thread_id: thread.id },
-                updater(store, data) {
-                  console.log("new comment updater");
+                updater(store) {
+                  const linkName = 'comments(order_by:{"created_at":"asc"})';
+                  const threadRec = store.get(thread.id as string);
+                  const newCommentRec = store.getRootField(
+                    "insert_comments_one"
+                  );
+                  const existingComments = threadRec?.getLinkedRecords(
+                    linkName
+                  );
+                  if (
+                    existingComments === null ||
+                    existingComments === undefined
+                  )
+                    throw internalError(
+                      Error("no existing comments in relay store")
+                    );
+                  threadRec?.setLinkedRecords(
+                    [...existingComments, newCommentRec],
+                    linkName
+                  );
                 },
                 onCompleted(data) {
                   setMessage("");
