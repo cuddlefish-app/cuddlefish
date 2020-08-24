@@ -7,7 +7,12 @@ import {
   Relative,
 } from "@primer/components";
 import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { graphql, useLazyLoadQuery, useMutation } from "react-relay/hooks";
+import {
+  graphql,
+  useLazyLoadQuery,
+  useMutation,
+  useSubscription,
+} from "react-relay/hooks";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import createElement from "react-syntax-highlighter/dist/esm/create-element";
 import { githubGist } from "react-syntax-highlighter/dist/esm/styles/hljs";
@@ -281,8 +286,40 @@ const Comments: React.FC<{
   focusLine: null | number;
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
 }> = ({ commitSHA, filePath, hoverLine, focusLine, inputRef }) => {
-  // TODO subscribe to updates.
-  // useSubscription({});
+  useSubscription({
+    subscription: graphql`
+      subscription CodeAndComments_threads_Subscription(
+        $commitSHA: String!
+        $filePath: String!
+      ) {
+        blamelines(
+          where: {
+            x_commit: { _eq: $commitSHA }
+            x_file_path: { _eq: $filePath }
+          }
+        ) {
+          original_commit
+          original_file_path
+          original_line_number
+          x_commit
+          x_file_path
+          x_line_number
+          original_line {
+            threads(where: { resolved: { _eq: false } }) {
+              id
+              comments(order_by: { created_at: asc }) {
+                id
+                body
+                author_id
+                created_at
+              }
+            }
+          }
+        }
+      }
+    `,
+    variables: { commitSHA, filePath },
+  });
 
   // TODO: use the better query version
   const threads = useLazyLoadQuery<CodeAndComments_threads_Query>(

@@ -33,6 +33,7 @@
     "relay-compiler-language-typescript": "^13.0.1",
     "relay-config": "^10.0.1",
     "styled-components": "^5.1.1",
+    "subscriptions-transport-ws": "^0.9.18",
     "typescript": "^3.7.2"
   },
   "scripts": {
