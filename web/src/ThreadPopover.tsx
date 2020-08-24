@@ -179,7 +179,7 @@ const ThreadPopover: React.FC<{
                 },
                 onError(error) {
                   setMessage("");
-                  internalError(error);
+                  throw internalError(error);
                 },
               });
             }}

@@ -14,8 +14,8 @@ export function internalError(error?: Error) {
     "Oops! Cuddlefish made a booboo. Please check the console for any messages, and pester some humans by creating an issue on GitHub!"
   );
 
-  // This helps us do things like `throw internalError(Error("bad thing"))`.
-  return error;
+  // This helps us do things like `{ onError: internalError }`.
+  throw error;
 }
 
 export function githubRepoId(repo_owner: string, repo_name: string) {
@@ -61,7 +61,7 @@ function useLatestCommitSHA(
         setCommitSHA(commitResponse.data.sha);
       } catch (error) {
         // TODO: 404 when the repo doesn't exist or it's just not public.
-        internalError(error);
+        throw internalError(error);
       }
     })();
   }, [repo_owner, repo_name, branch]);
