@@ -16,6 +16,12 @@ body {
   user-select: none;
 }
 
+.focusLine tr.focusLine,
+.focusLine tr.focusLine:hover,
 .codetable tr:hover {
   background-color: ivory;
+}
+/* Order here is important! If we have a line focused, then turn off the hover nonsense. */
+.focusLine tr:hover {
+  background-color: unset;
 }

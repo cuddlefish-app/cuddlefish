@@ -86,11 +86,6 @@ function useFileContents(
   return fileContents;
 }
 
-type LineHover = {
-  kind: "line";
-  linenumber: number;
-};
-
 const CodeAndComments: React.FC<{
   repo_owner: string;
   repo_name: string;
@@ -124,8 +119,21 @@ const CodeAndComments: React.FC<{
   //   );
   // }
 
-  const [hoverState, setHoverState] = useState(null as null | LineHover);
+  // Collapsing this into a single state unfortunately doesn't work because that would require re-rendering the
+  // SyntaxHighlighter stuff.
+  const [hoverLine, setHoverLine] = useState(null as null | number);
+  const [focusLine, setFocusLine] = useState(null as null | number);
   const inputRef = useRef(null as null | HTMLInputElement);
+
+  // An effect that does the DOM-hackery necessary to get focus lines working.
+  useEffect(() => {
+    // Add focusLine class to the line that is currently focused.
+    const lineTr = document.getElementById(`LineOfCode-${focusLine}`);
+    lineTr?.classList.add("focusLine");
+
+    // Remove class on cleanup.
+    return () => lineTr?.classList.remove("focusLine");
+  });
 
   function LineOfCode({
     row,
@@ -140,16 +148,22 @@ const CodeAndComments: React.FC<{
   }) {
     return (
       <tr
-        // TODO: in the future this should focus the text input on existing threads.
-        onDoubleClick={() => inputRef.current?.focus()}
-        onMouseMove={() =>
-          setHoverState({ kind: "line", linenumber: lineNumber + 1 })
-        }
+        // Double-clicking on a line focuses on the line.
+        onDoubleClick={() => {
+          inputRef.current?.focus();
+          setFocusLine(lineNumber + 1);
+        }}
+        // When you click on another line, clear the focused line.
+        onClick={() => setFocusLine(null)}
+        // When you hover on a line, set the hoverLine.
+        onMouseMove={() => setHoverLine(lineNumber + 1)}
         // These are the values from GitHub.
         style={{
           lineHeight: "20px",
           fontSize: "12px",
         }}
+        // Set id so that we can pluck them out and do some DOM hackery to get focusLine set correctly.
+        id={`LineOfCode-${lineNumber + 1}`}
       >
         <td
           style={{
@@ -226,7 +240,12 @@ const CodeAndComments: React.FC<{
 
   return (
     <Flex justifyContent="center" width="100%">
-      <Grid gridTemplateColumns="repeat(2, auto)">
+      <Grid
+        gridTemplateColumns="repeat(2, auto)"
+        // Clear the hover line when the mouse leaves the CodeAndComments area. This makes it a lot more user-friendly
+        // when trying to get rid of NewThreadPopover thing.
+        onMouseLeave={() => setHoverLine(null)}
+      >
         {/* TODO: where are the "small", "medium", etc sizes documented? */}
         <Box width={272}>
           {/* TODO show a "loading thing" before we render the Comments component. */}
@@ -236,7 +255,8 @@ const CodeAndComments: React.FC<{
                 commitSHA={commitSHA}
                 filePath={filePath}
                 fileContents={fileContents}
-                hoverState={hoverState}
+                hoverLine={hoverLine}
+                focusLine={focusLine}
                 inputRef={inputRef}
               />
             </Suspense>
@@ -244,6 +264,7 @@ const CodeAndComments: React.FC<{
         </Box>
         <BorderBox
           style={{ overflowX: "auto", marginTop: "13px", width: "768px" }}
+          className={focusLine !== null ? "focusLine" : ""}
         >
           {syntaxHighlighted}
         </BorderBox>
@@ -256,9 +277,10 @@ const Comments: React.FC<{
   commitSHA: string;
   filePath: string;
   fileContents: string;
-  hoverState: null | LineHover;
+  hoverLine: null | number;
+  focusLine: null | number;
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
-}> = ({ commitSHA, filePath, hoverState, inputRef }) => {
+}> = ({ commitSHA, filePath, hoverLine, focusLine, inputRef }) => {
   // TODO subscribe to updates.
   // useSubscription({});
 
@@ -316,26 +338,28 @@ const Comments: React.FC<{
         >
           <ThreadPopover
             blameline={bl}
-            inputRef={
-              hoverState?.linenumber === bl.x_line_number ? inputRef : null
-            }
+            inputRef={hoverLine === bl.x_line_number ? inputRef : null}
           />
         </Absolute>
       )),
-    [relevantBlameLines, hoverState, inputRef]
+    [relevantBlameLines, hoverLine, inputRef]
   );
+
+  // The line on which the NewThreadPopover should be on, if any. There's still a sporadic bug where the
+  // NewThreadPopover input doesn't focus when double-clicking on a line...
+  const newThreadLine = focusLine !== null ? focusLine : hoverLine;
 
   return (
     <Relative>
       {existingThreads}
 
-      {hoverState &&
-        threads.blamelines[hoverState.linenumber - 1].original_line?.threads
-          .length === 0 && (
-          <Absolute top={20 * (hoverState.linenumber - 1)} left={2}>
+      {newThreadLine !== null &&
+        threads.blamelines[newThreadLine - 1].original_line?.threads.length ===
+          0 && (
+          <Absolute top={20 * (newThreadLine - 1)} left={2}>
             <NewThreadPopover
-              blameline={threads.blamelines[hoverState.linenumber - 1]}
-              inputRef={inputRef}
+              blameline={threads.blamelines[newThreadLine - 1]}
+              inputRef={hoverLine === newThreadLine ? inputRef : null}
             ></NewThreadPopover>
           </Absolute>
         )}
