@@ -16,7 +16,6 @@ const NewThreadPopover: React.FC<{
   inputRef: any;
 }> = (props) => {
   const [message, setMessage] = useState("" as string);
-  // TODO: add an updater to this bad boy so that threads show up as soon as the user submits them.
   const [submit, isInFlight] = useMutation(graphql`
     mutation NewThreadPopover_newthread_Mutation(
       $original_commit: String!
