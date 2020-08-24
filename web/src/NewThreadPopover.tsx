@@ -14,7 +14,7 @@ const NewThreadPopover: React.FC<{
     x_line_number: number;
   };
   inputRef: any;
-}> = (props) => {
+}> = ({ blameline, inputRef }) => {
   const [message, setMessage] = useState("" as string);
   const [submit, isInFlight] = useMutation(graphql`
     mutation NewThreadPopover_newthread_Mutation(
@@ -32,6 +32,7 @@ const NewThreadPopover: React.FC<{
         }
       ) {
         id
+        # Including order_by should be a no-op, but unfortunately it's necessary for Relay...
         comments(order_by: { created_at: asc }) {
           id
           created_at
@@ -49,13 +50,13 @@ const NewThreadPopover: React.FC<{
             placeholder="Start a new thread..."
             message={message}
             setMessage={setMessage}
-            inputRef={props.inputRef}
+            inputRef={inputRef}
             onSubmit={() => {
               submit({
                 variables: {
-                  original_commit: props.blameline.original_commit,
-                  original_file_path: props.blameline.original_file_path,
-                  original_line_number: props.blameline.original_line_number,
+                  original_commit: blameline.original_commit,
+                  original_file_path: blameline.original_file_path,
+                  original_line_number: blameline.original_line_number,
                   body: message,
                 },
                 updater: (store) => {
@@ -63,10 +64,10 @@ const NewThreadPopover: React.FC<{
                   store
                     .get(
                       `client:root:blamelines(where:{"x_commit":{"_eq":"${
-                        props.blameline.x_commit
-                      }"},"x_file_path":{"_eq":"${
-                        props.blameline.x_file_path
-                      }"}}):${props.blameline.x_line_number - 1}:original_line`
+                        blameline.x_commit
+                      }"},"x_file_path":{"_eq":"${blameline.x_file_path}"}}):${
+                        blameline.x_line_number - 1
+                      }:original_line`
                     )
                     ?.setLinkedRecords(
                       [newThreadRec],
