@@ -61,7 +61,7 @@ function App() {
             <Route path="/">home page</Route>
             <Route component={NotFound} />
           </Switch>
-        </CustomAuthProvider>{" "}
+        </CustomAuthProvider>
       </BrowserRouter>
     </RelayEnvironmentProvider>
   );
