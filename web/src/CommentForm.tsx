@@ -23,11 +23,12 @@ const CommentForm: React.FC<{
         event.preventDefault();
       }}
     >
+      {/* TODO: flex grow this stuff instead of hard-coding the width. */}
       <TextInput
         placeholder={placeholder}
         variant="small"
         marginRight={1}
-        width={"176px"}
+        width={"174px"}
         value={message}
         onChange={(event) => setMessage(event.target.value)}
         ref={inputRef}
