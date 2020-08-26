@@ -68,7 +68,9 @@ function App() {
 }
 
 // Get the latest commit for a branch of a GitHub repo.
-function useLatestCommitSHA(
+// TODO: better to use the latest commit that touched the file we're currently looking at, not the whole repo. This is
+// hard though. There's no v3 API route for this AFAICT, and ofc v4 API requires an auth_token. See https://stackoverflow.com/questions/15831313/is-it-possible-to-get-commits-history-for-one-file-in-github-api.
+function useLatestBranchCommitSHA(
   repo_owner: string,
   repo_name: string,
   branch: string
@@ -106,7 +108,7 @@ function BlobPage() {
     repo: string;
     branch: string;
   };
-  const commitSHA = useLatestCommitSHA(owner, repo, branch);
+  const commitSHA = useLatestBranchCommitSHA(owner, repo, branch);
   if (commitSHA !== null)
     return (
       <CodeAndComments
