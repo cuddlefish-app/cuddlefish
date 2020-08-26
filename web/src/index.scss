@@ -23,9 +23,15 @@ body {
 .focusLine tr.focusLine:hover,
 .codetable tr:hover {
   /* This is the GitHub line focus color. `ivory` and `wheat` are also good options. */
-  background-color: #fffbdd;
+  // background-color: #fffbdd;
+  background-color: ivory;
 }
 /* Order here is important! If we have a line focused, then turn off the hover nonsense. */
 .focusLine tr:hover {
   background-color: unset;
+}
+
+.focusLine tr.focusLine,
+.focusLine tr.focusLine:hover {
+  background-color: #fffbdd;
 }
