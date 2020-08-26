@@ -237,7 +237,9 @@ const CodeAndComments: React.FC<{
           PreTag={MyPreTag}
           CodeTag={"tbody"}
         >
-          {fileContents}
+          {/* Trim off the last whitespace on the file since we don't get blamelines for those lines, and so then bad
+          things happen. This also reflects GitHubs behavior. */}
+          {fileContents.trimEnd()}
         </SyntaxHighlighter>
       ) : null,
     [fileContents]
