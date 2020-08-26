@@ -1,9 +1,17 @@
+import { Auth0Provider } from "@auth0/auth0-react";
 import { Octokit } from "@octokit/core";
 import React, { useEffect, useState } from "react";
 import { RelayEnvironmentProvider } from "react-relay/hooks";
-import { BrowserRouter, Route, Switch, useParams } from "react-router-dom";
+import {
+  BrowserRouter,
+  Route,
+  Switch,
+  useHistory,
+  useParams,
+} from "react-router-dom";
 import "./App.css";
 import CodeAndComments from "./CodeAndComments";
+import Header from "./Header";
 import relayenv from "./relay-env";
 
 // GitHub API v4 doesn't yet support usage without authentication: https://github.community/t/api-v4-permit-access-without-token/13833.
@@ -22,17 +30,38 @@ export function githubRepoId(repo_owner: string, repo_name: string) {
   return `github-${repo_owner}!${repo_name}`;
 }
 
+// See https://auth0.com/blog/complete-guide-to-react-user-authentication/.
+const CustomAuthProvider: React.FC = ({ children }) => {
+  const history = useHistory();
+  return (
+    <Auth0Provider
+      domain="cuddlefish.auth0.com"
+      clientId="PuC9rXk3lxuojdAq5reaa5CB3ibgDH2a"
+      redirectUri={window.location.origin}
+      onRedirectCallback={(appState) => {
+        history.push(appState.returnTo || window.location.pathname);
+      }}
+    >
+      {children}
+    </Auth0Provider>
+  );
+};
+
 function App() {
   return (
     <RelayEnvironmentProvider environment={relayenv}>
       <BrowserRouter>
-        <Switch>
-          <Route path="/:owner/:repo/blob/:branch/*">
-            {/* TODO: make suspense more interesting! We get suspense while waiting on Relay queries. */}
-            <BlobPage />
-          </Route>
-          <Route component={NotFound} />
-        </Switch>
+        {/* Note that CustomAuthProvider must be a child of BrowserRouter. See https://auth0.com/blog/complete-guide-to-react-user-authentication/. */}
+        <CustomAuthProvider>
+          <Header />
+          <Switch>
+            <Route path="/:owner/:repo/blob/:branch/*">
+              <BlobPage />
+            </Route>
+            <Route path="/">home page</Route>
+            <Route component={NotFound} />
+          </Switch>
+        </CustomAuthProvider>{" "}
       </BrowserRouter>
     </RelayEnvironmentProvider>
   );

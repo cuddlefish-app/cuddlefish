@@ -1,16 +1,31 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# web frontend
 
-## Available Scripts
+## Auth0 setup
 
-In the project directory, you can run:
+We use Auth0 for user auth. We have a single Auth0 "Application" titled "cuddlefish". It's of the "Single Page Application" type and the following settings:
 
-### `yarn start`
+- Domain: cuddlefish.auth0.com
+- Allowed Callback URLs: `http://localhost:3000`
+- Allowed Logout URLs: `http://localhost:3000`
+- Allowed Web Origins: `http://localhost:3000`
+
+Auth0 gets cranky if these aren't exactly specified this way. Auth0 also doesn't support wildcard URLs except for in subdomains.
+
+## create-react-app
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). In the project directory, you can run:
+
+### `SASS_PATH=node_modules:src yarn start`
 
 Runs the app in the development mode.<br />
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
+
+### `yarn relay --watch`
+
+Build the Relay `__generated__` interface files. Run this and `yarn start` at the same time.
 
 ### `yarn test`
 
