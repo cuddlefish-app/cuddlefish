@@ -2,6 +2,7 @@
 use crate::BlameLine;
 use crate::CFResult;
 use failure::bail;
+use graphql_client::GraphQLQuery;
 use serde_json::json;
 
 // This name comes from GraphQL/Hasura, so it's not camel case.
@@ -86,104 +87,21 @@ pub async fn insert_blamelines(
   Ok(())
 }
 
-// #[derive(graphql_client::GraphQLQuery)]
-// #[graphql(
-//   schema_path = "gql/hasura/schema.json",
-//   query_path = "gql/hasura/queries.graphql",
-//   response_derives = "Debug"
-// )]
-// pub struct GetRepoIdByGitHubNodeId;
+#[derive(graphql_client::GraphQLQuery)]
+#[graphql(
+  schema_path = "gql/hasura/schema.json",
+  query_path = "gql/hasura/queries.graphql",
+  response_derives = "Debug"
+)]
+pub struct LookupExistingBlamelines;
 
-// /// Conversion from a GitHub node id for a repository to a hasura repo_id.
-// /// Upserts into the repositories table if this repo isn't tracked yet.
-// pub async fn github_node_id_to_repo_id(github_node_id: &str) -> CFResult<RepoId> {
-//   // TODO: should query hasura, on failure check github to see that it's a legit
-//   // node id and then insert into hasura and return.
-//   let res: get_repo_id_by_git_hub_node_id::ResponseData = hasura_request(
-//     &GetRepoIdByGitHubNodeId::build_query(get_repo_id_by_git_hub_node_id::Variables {
-//       github_node_id: github_node_id.into(),
-//     }),
-//   )
-//   .await?;
-//   let repos = res
-//     .insert_repositories
-//     .ok_or_else(|| {
-//       format_err!(
-//         "expected `insert_repositories` on GetRepoIdByGitHubNodeId response with node id {}",
-//         github_node_id
-//       )
-//     })?
-//     .returning;
-//   match &repos[..] {
-//     [repo] => Ok(RepoId(repo.id.to_string())),
-//     _ => bail!("expected exactly one repository in GetRepoIdByGitHubNodeId response"),
-//   }
-// }
-
-// #[derive(graphql_client::GraphQLQuery)]
-// #[graphql(
-//   schema_path = "gql/hasura/schema.json",
-//   query_path = "gql/hasura/queries.graphql",
-//   response_derives = "Debug"
-// )]
-// pub struct LookupRepoById;
-
-// /// Lookup the GitHub node id for a RepoId. Can be None if repo_id is not found.
-// pub async fn repo_id_to_github_node_id(repo_id: &RepoId) -> CFResult<Option<String>> {
-//   let res: lookup_repo_by_id::ResponseData =
-//     hasura_request(&LookupRepoById::build_query(lookup_repo_by_id::Variables {
-//       repo_id: repo_id.0.to_string(),
-//     }))
-//     .await?;
-//   Ok(res.repositories_by_pk.map(|x| x.github_node_id))
-// }
-
-// #[derive(graphql_client::GraphQLQuery)]
-// #[graphql(
-//   schema_path = "gql/hasura/schema.json",
-//   query_path = "gql/hasura/queries.graphql",
-//   response_derives = "Debug"
-// )]
-// pub struct FileBlameLines;
-
-// pub async fn get_blame_lines(
-//   repo_id: &RepoId,
-//   file_path: &str,
-//   commit: &str,
-// ) -> CFResult<Option<Vec<BlameLine>>> {
-//   let res: file_blame_lines::ResponseData =
-//     hasura_request(&FileBlameLines::build_query(file_blame_lines::Variables {
-//       repo_id: repo_id.0.to_string(),
-//       file_path: file_path.into(),
-//       commit: commit.into(),
-//     }))
-//     .await?;
-
-//   let mut hasura_blamelines = res.blamelines;
-//   hasura_blamelines.sort_by(|a, b| a.current_line_number.cmp(&b.current_line_number));
-
-//   // Defensively check that all current_line_numbers exist.
-//   ensure!(
-//     hasura_blamelines
-//       .iter()
-//       .enumerate()
-//       .all(|(i, x)| i + 1 == x.current_line_number as usize),
-//     "Hasura blamelines table is missing lines!"
-//   );
-
-//   let blamelines: Vec<BlameLine> = hasura_blamelines
-//     .iter()
-//     .map(|x| BlameLine {
-//       original_commit: x.original_commit.to_string(),
-//       original_file_path: x.original_file_path.to_string(),
-//       // This cast should always be fine.
-//       original_line_number: x.original_line_number as i32,
-//     })
-//     .collect();
-
-//   if blamelines.is_empty() {
-//     Ok(None)
-//   } else {
-//     Ok(Some(blamelines))
-//   }
-// }
+pub async fn lookup_existing_blamelines(commit: &str, file_path: &str) -> CFResult<bool> {
+  let res: lookup_existing_blamelines::ResponseData = ADMIN_hasura_request(
+    &LookupExistingBlamelines::build_query(lookup_existing_blamelines::Variables {
+      commit: commit.into(),
+      file_path: file_path.into(),
+    }),
+  )
+  .await?;
+  Ok(res.blamelines_by_pk.is_some())
+}

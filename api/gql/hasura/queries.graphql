@@ -1,99 +1,17 @@
-# mutation InsertBlameLines() {
-#   insert_blamelines(
-#     objects: [
-#       {
-#         original_line: {
-#           data: { commit: "asdf", file_path: "src/asdf.py", line_number: 19 }
-#           on_conflict: { constraint: lines_pkey, update_columns: [commit] }
-#         }
-#         x_commit: "af2"
-#         x_file_path: "src/foobar.hs"
-#         x_line_number: 123
-#       }
-#       {
-#         original_line: {
-#           data: { commit: "asdf", file_path: "src/asdf.py", line_number: 19 }
-#           on_conflict: { constraint: lines_pkey, update_columns: [commit] }
-#         }
-#         x_commit: "aasdff2"
-#         x_file_path: "src/foobasdfar.hs"
-#         x_line_number: 12389
-#       }
-#     ]
-#     on_conflict: { constraint: blamelines_pkey, update_columns: [] }
-#   ) {
-#     affected_rows
-#   }
-# }
-
-# It's annoying that we have to do so much of this query in Rust-land, but oh well.
-# mutation InsertBlamelines() {
-#   insert_blamelines(
-#     objects: []
-#     on_conflict: { constraint: blamelines_pkey, update_columns: [] }
-#   ) {
-#     affected_rows
-#   }
-# }
-
-# Updating at least one column is necessary in order to get any results returned
-# even though in this case it's a meaningless update.
-# mutation GetRepoIdByGitHubNodeId($github_node_id: String!) {
-#   insert_repositories(
-#     objects: [{ github_node_id: $github_node_id }]
-#     on_conflict: {
-#       constraint: repositories_github_node_id_key
-#       update_columns: [github_node_id]
-#     }
-#   ) {
-#     returning {
-#       id
-#     }
-#   }
-# }
-
-# query LookupRepoById($repo_id: uuid!) {
-#   repositories_by_pk(id: $repo_id) {
-#     github_node_id
-#   }
-# }
-
-# query FileBlameLines($repo_id: uuid!, $file_path: String!, $commit: String!) {
-#   blamelines(
-#     where: {
-#       repo_id: { _eq: $repo_id }
-#       current_file_path: { _eq: $file_path }
-#       current_commit: { _eq: $commit }
-#     }
-#   ) {
-#     original_commit
-#     original_file_path
-#     original_line_number
-#     current_line_number
-#   }
-# }
-
-# mutation NewThread(
-#   $repo_id: uuid!
-#   $original_commit: String!
-#   $original_file_path: String!
-#   $original_line_number: Int!
-#   $author: uuid!
-#   $body: String!
-# ) {
-#   insert_threads(
-#     objects: [
-#       {
-#         repo_id: $repo_id
-#         original_commit: $original_commit
-#         original_file_path: $original_file_path
-#         original_line_number: $original_line_number
-#         comments: { data: [{ author: $author, body: $body }] }
-#       }
-#     ]
-#   ) {
-#     returning {
-#       id
-#     }
-#   }
-# }
+# We only bother checking the first line, because every file has to have at least one line. We trust that we have the
+# rest in there as well. The answer is simply
+#    {
+#      "data": {
+#        "blamelines_by_pk": null
+#      }
+#    }
+# if the blameline doesn't exist. Otherwise null becomes "blamelines".
+query LookupExistingBlamelines($commit: String!, $file_path: String!) {
+  blamelines_by_pk(
+    x_commit: $commit
+    x_file_path: $file_path
+    x_line_number: 1
+  ) {
+    __typename
+  }
+}

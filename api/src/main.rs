@@ -201,18 +201,25 @@ struct Mutation;
 impl Mutation {
   // There are situations in which it makes sense to allow anonymous users to call this endpoint. Eg, there are comments
   // on a file but its latest commit version has not been git blamed yet, so the line association info is not yet
-  // present in the blamelines table.
+  // present in the blamelines table. Return value is whether or not we had cached values already.
   async fn CalculateBlameLines(
     repo_id: String,
     last_commit: String,
     file_path: String,
   ) -> FieldResult<bool> {
-    // TODO: check if it's already in the database to save a few electrons here.
-    let repo_id_parsed = parse_repo_id(&repo_id)?;
-    let blamelines = git_blame(&repo_id_parsed, &last_commit, &file_path).await?;
-    // Insert into the blamelines table. Existing values ok.
-    hasura::insert_blamelines(&last_commit, &file_path, blamelines).await?;
-    Ok(true)
+    // Check if it's already in the database to save a few electrons here.
+    if hasura::lookup_existing_blamelines(&last_commit, &file_path).await? {
+      trace!("blamelines already exist in hasura!");
+      Ok(true)
+    } else {
+      trace!("blamelines do not yet exist in hasura.");
+      // Not in the database, have to calculate the git blame.
+      let repo_id_parsed = parse_repo_id(&repo_id)?;
+      let blamelines = git_blame(&repo_id_parsed, &last_commit, &file_path).await?;
+      // Insert into the blamelines table. Existing values ok.
+      hasura::insert_blamelines(&last_commit, &file_path, blamelines).await?;
+      Ok(false)
+    }
   }
 }
 
