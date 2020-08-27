@@ -56,7 +56,6 @@ const CommentChunk: React.FC<{
     author: { github_username: string };
   }[];
 }> = ({ comments }) => {
-  console.dir(comments[0]);
   // We are guaranteed that comments is non-empty and that all author_id's are the same.
   const { user } = useAuth0();
   const me = comments[0].author_id === user.sub;
