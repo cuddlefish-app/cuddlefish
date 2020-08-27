@@ -8,6 +8,8 @@ We use Auth0 for user auth. We have a single Auth0 "Application" titled "cuddlef
 - Allowed Callback URLs: `http://localhost:3000`
 - Allowed Logout URLs: `http://localhost:3000`
 - Allowed Web Origins: `http://localhost:3000`
+- An API title "hasura" with audience `https://cuddlefish/hasura`
+- A rule "hasura claims on access tokens". (TODO: put this into source control.)
 
 Auth0 gets cranky if these aren't exactly specified this way. Auth0 also doesn't support wildcard URLs except for in subdomains.
 
