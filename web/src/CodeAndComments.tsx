@@ -141,7 +141,7 @@ const CodeAndComments: React.FC<{
 
     // Remove class on cleanup.
     return () => lineTr?.classList.remove("focusLine");
-  });
+  }, [focusLine]);
 
   function LineOfCode({
     row,
@@ -250,7 +250,10 @@ const CodeAndComments: React.FC<{
 
   return (
     <Flex justifyContent="center" width="100%">
-      <Grid gridTemplateColumns="repeat(2, auto)">
+      <Grid
+        gridTemplateColumns="repeat(2, auto)"
+        className={focusLine !== null ? "focusLine" : "noFocusLine"}
+      >
         {/* TODO: where are the "small", "medium", etc sizes documented? */}
         <Box width={272}>
           {/* TODO show a "loading thing" before we render the Comments component. */}
@@ -262,6 +265,8 @@ const CodeAndComments: React.FC<{
                 fileContents={fileContents}
                 hoverLine={hoverLine}
                 focusLine={focusLine}
+                setHoverLine={setHoverLine}
+                setFocusLine={setFocusLine}
                 inputRef={inputRef}
               />
             </Suspense>
@@ -269,7 +274,6 @@ const CodeAndComments: React.FC<{
         </Box>
         <BorderBox
           style={{ overflowX: "auto", marginTop: "13px", width: "768px" }}
-          className={focusLine !== null ? "focusLine" : ""}
           // Clear the hover line when the mouse leaves the CodeAndComments area. This makes it a lot more user-friendly
           // when trying to get rid of NewThreadPopover thing.
           onMouseLeave={() => setHoverLine(null)}
@@ -287,8 +291,18 @@ const Comments: React.FC<{
   fileContents: string;
   hoverLine: null | number;
   focusLine: null | number;
+  setHoverLine: (_: number | null) => void;
+  setFocusLine: (_: number | null) => void;
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
-}> = ({ commitSHA, filePath, hoverLine, focusLine, inputRef }) => {
+}> = ({
+  commitSHA,
+  filePath,
+  hoverLine,
+  focusLine,
+  setHoverLine,
+  setFocusLine,
+  inputRef,
+}) => {
   // TODO: Lots of warnings like "WebSocket connection to 'wss://cuddlefish-hasura.herokuapp.com/v1/graphql' failed:
   // WebSocket is closed before the connection is established." I'm guessing because Hasura doesn't allow subscriptions
   // from people without auth. Makes sense, but we also can't conditionally call `useSubscription` due to the
@@ -391,14 +405,30 @@ const Comments: React.FC<{
           top={20 * (bl.x_line_number - 1)}
           left={0}
           key={bl.x_line_number}
+          className={
+            "ThreadPopover-outer " +
+            (hoverLine === bl.x_line_number ? "hoverLine " : "") +
+            (focusLine === bl.x_line_number ? "focusLine" : "")
+          }
         >
           <ThreadPopover
             blameline={bl}
             inputRef={hoverLine === bl.x_line_number ? inputRef : null}
+            hoverLine={hoverLine}
+            focusLine={focusLine}
+            setHoverLine={setHoverLine}
+            setFocusLine={setFocusLine}
           />
         </Absolute>
       )),
-    [relevantBlameLines, hoverLine, inputRef]
+    [
+      relevantBlameLines,
+      hoverLine,
+      focusLine,
+      inputRef,
+      setHoverLine,
+      setFocusLine,
+    ]
   );
 
   // The line on which the NewThreadPopover should be on, if any. There's still a sporadic bug where the
@@ -412,10 +442,22 @@ const Comments: React.FC<{
       {newThreadLine !== null &&
         threads.blamelines[newThreadLine - 1].original_line?.threads.length ===
           0 && (
-          <Absolute top={20 * (newThreadLine - 1)} left={2}>
+          <Absolute
+            top={20 * (newThreadLine - 1)}
+            left={2}
+            className={
+              "ThreadPopover-outer " +
+              (hoverLine === newThreadLine ? "hoverLine " : "") +
+              (focusLine === newThreadLine ? "focusLine" : "")
+            }
+          >
             <NewThreadPopover
               blameline={threads.blamelines[newThreadLine - 1]}
               inputRef={hoverLine === newThreadLine ? inputRef : null}
+              hoverLine={hoverLine}
+              focusLine={focusLine}
+              setHoverLine={setHoverLine}
+              setFocusLine={setFocusLine}
             ></NewThreadPopover>
           </Absolute>
         )}

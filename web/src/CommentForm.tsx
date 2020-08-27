@@ -33,7 +33,11 @@ const CommentForm: React.FC<{
         onChange={(event) => setMessage(event.target.value)}
         ref={inputRef}
       ></TextInput>
-      <Button disabled={message.trim().length === 0 || disabled}>
+      <Button
+        disabled={message.trim().length === 0 || disabled}
+        // This fixes the button height.
+        style={{ lineHeight: "initial" }}
+      >
         <PaperAirplaneIcon size={16}></PaperAirplaneIcon>
       </Button>
     </form>

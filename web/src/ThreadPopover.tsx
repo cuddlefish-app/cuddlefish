@@ -11,6 +11,7 @@ import React, { useState } from "react";
 import { graphql, useMutation } from "react-relay/hooks";
 import { internalError } from "./App";
 import CommentForm from "./CommentForm";
+import useClickOutside from "./useClickOutside";
 
 // Each individual message bubble. Blue if it's you that's doing the talkin!
 const MessageBuble: React.FC<{ me?: boolean }> = (props) => (
@@ -102,7 +103,11 @@ const ThreadPopover: React.FC<{
       }>;
     } | null;
   };
-}> = ({ inputRef, blameline }) => {
+  hoverLine: number | null;
+  focusLine: number | null;
+  setHoverLine: (_: number | null) => void;
+  setFocusLine: (_: number | null) => void;
+}> = ({ inputRef, blameline, focusLine, setHoverLine, setFocusLine }) => {
   // We should always be able to find the corresponding original line.
   if (blameline.original_line === null) {
     throw internalError(Error("blameline has null original_line"));
@@ -123,6 +128,12 @@ const ThreadPopover: React.FC<{
 
   let chunkedComments = chunkBy(comments, (c) => c.author_id);
   const [message, setMessage] = useState("" as string);
+  const popoverRef = useClickOutside(() => {
+    if (focusLine === blameline.x_line_number) {
+      setHoverLine(null);
+      setFocusLine(null);
+    }
+  });
 
   // TODO: this throws an error if you're not logged in. Probably also the same issue in NewThreadPopover. Instead we
   // need to do a login with an `appState` that reminds us to finish the mutation once we get back the user creds.
@@ -146,8 +157,22 @@ const ThreadPopover: React.FC<{
   `);
 
   return (
-    <Popover open={true} caret="right-top">
-      <Popover.Content width={248} padding={2}>
+    <Popover
+      open={true}
+      caret="right-top"
+      // box-shadow-large comes from @primer/css.
+      className="ThreadPopover box-shadow-large"
+    >
+      <Popover.Content
+        width={248}
+        padding={2}
+        onDoubleClick={() => {
+          inputRef.current?.focus();
+          setFocusLine(blameline.x_line_number);
+        }}
+        onMouseMove={() => setHoverLine(blameline.x_line_number)}
+        ref={popoverRef}
+      >
         {chunkedComments.map((chunk, i) => (
           <CommentChunk comments={chunk} key={i} />
         ))}

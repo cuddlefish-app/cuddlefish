@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { graphql, useMutation } from "react-relay/hooks";
 import { internalError } from "./App";
 import CommentForm from "./CommentForm";
+import useClickOutside from "./useClickOutside";
 
 const NewThreadPopover: React.FC<{
   blameline: {
@@ -14,8 +15,16 @@ const NewThreadPopover: React.FC<{
     x_line_number: number;
   };
   inputRef: any;
-}> = ({ blameline, inputRef }) => {
+  hoverLine: number | null;
+  focusLine: number | null;
+  setHoverLine: (_: number | null) => void;
+  setFocusLine: (_: number | null) => void;
+}> = ({ blameline, inputRef, setHoverLine, setFocusLine }) => {
   const [message, setMessage] = useState("" as string);
+  const popoverRef = useClickOutside(() => {
+    // Don't wipe hoverLine because that messes up the TextInput focusing.
+    setFocusLine(null);
+  });
   const [submit, isInFlight] = useMutation(graphql`
     mutation NewThreadPopover_newthread_Mutation(
       $original_commit: String!
@@ -46,8 +55,12 @@ const NewThreadPopover: React.FC<{
     }
   `);
   return (
-    <Popover open={true} caret="right-top">
-      <Popover.Content width={248} padding={2}>
+    <Popover
+      open={true}
+      caret="right-top"
+      className="ThreadPopover box-shadow-large"
+    >
+      <Popover.Content width={248} padding={2} ref={popoverRef}>
         <Box>
           <CommentForm
             placeholder="Start a new thread..."
