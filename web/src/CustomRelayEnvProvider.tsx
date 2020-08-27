@@ -63,13 +63,14 @@ function buildRelayEnv(extraHeaders: {}) {
 }
 
 const CustomRelayEnvProvider: React.FC = ({ children }) => {
-  const { isLoading, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
   const [accessToken, setAccessToken] = useState(null as null | string);
 
   // This effect only gets called twice.
   useEffect(() => {
-    getAccessTokenSilently().then(setAccessToken);
-  }, [getAccessTokenSilently]);
+    if (isAuthenticated) getAccessTokenSilently().then(setAccessToken);
+    else setAccessToken(null);
+  }, [getAccessTokenSilently, isAuthenticated]);
 
   // TODO: this useMemo doesn't work and buildRelayEnv ends up getting called 6 times on the BlobPage which is just
   // ludicrous. Also causes all of the downstream queries and useMemos to re-render.
