@@ -296,6 +296,7 @@ const Comments: React.FC<{
   // from people without auth. Makes sense, but we also can't conditionally call `useSubscription` due to the
   // limitations of React hooks. I'm guessing the solution will be to put this subscription in its own component and
   // then conditionally render that component if `isAuthenticated` from `useAuth0` is true.
+  // TODO: don't subscribe for large files. Gotta figure out where the scaling breaks down!
   useSubscription({
     subscription: graphql`
       subscription CodeAndComments_threads_Subscription(
@@ -338,6 +339,7 @@ const Comments: React.FC<{
   // and the mutations in ThreadPopover and NewThreadPopover.
 
   // TODO: use the better query version
+  // TODO: can we filter only those lines that have a thread?
   const threads = useLazyLoadQuery<CodeAndComments_threads_Query>(
     graphql`
       query CodeAndComments_threads_Query(
