@@ -119,7 +119,7 @@ fn commit_exists(repo: &Repository, commit: &str) -> bool {
 
 async fn git_blame(repo_id: &RepoId, commit: &str, file_path: &str) -> CFResult<Vec<BlameLine>> {
   trace!(
-    "git_blame repo_id = \"{}\", file_path = \"{}\", commit = \"{}\"",
+    "git_blame repo_id = \"{}\", commit = \"{}\", file_path = \"{}\"",
     repo_id.to_string(),
     file_path,
     commit
@@ -207,6 +207,13 @@ impl Mutation {
     last_commit: String,
     file_path: String,
   ) -> FieldResult<bool> {
+    trace!(
+      "CalculateBlameLines repo_id = \"{}\", last_commit = \"{}\", file_path = \"{}\"",
+      repo_id.to_string(),
+      last_commit,
+      file_path,
+    );
+
     // Check if it's already in the database to save a few electrons here.
     if hasura::lookup_existing_blamelines(&last_commit, &file_path).await? {
       trace!("blamelines already exist in hasura!");
