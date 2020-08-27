@@ -1,7 +1,6 @@
 import { Auth0Provider } from "@auth0/auth0-react";
 import { Octokit } from "@octokit/core";
 import React, { useEffect, useState } from "react";
-import { RelayEnvironmentProvider } from "react-relay/hooks";
 import {
   BrowserRouter,
   Route,
@@ -11,15 +10,15 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import CodeAndComments from "./CodeAndComments";
+import CustomRelayEnvProvider from "./CustomRelayEnvProvider";
 import Header from "./Header";
-import relayenv from "./relay-env";
 
 // GitHub API v4 doesn't yet support usage without authentication: https://github.community/t/api-v4-permit-access-without-token/13833.
 
 export function internalError(error?: Error) {
   if (error) console.log(error);
   window.alert(
-    "Oops! Cuddlefish made a booboo. Please check the console for any messages, and pester some humans by creating an issue on GitHub!"
+    "Oops! Cuddlefish experienced an internal error :( Please check the console for any messages, and pester some humans by creating an issue on GitHub!"
   );
 
   // This helps us do things like `{ onError: internalError }`.
@@ -37,6 +36,7 @@ const CustomAuthProvider: React.FC = ({ children }) => {
     <Auth0Provider
       domain="cuddlefish.auth0.com"
       clientId="PuC9rXk3lxuojdAq5reaa5CB3ibgDH2a"
+      audience="https://cuddlefish/hasura"
       redirectUri={window.location.origin}
       onRedirectCallback={(appState) => {
         history.push(appState.returnTo || window.location.pathname);
@@ -49,10 +49,10 @@ const CustomAuthProvider: React.FC = ({ children }) => {
 
 function App() {
   return (
-    <RelayEnvironmentProvider environment={relayenv}>
-      <BrowserRouter>
-        {/* Note that CustomAuthProvider must be a child of BrowserRouter. See https://auth0.com/blog/complete-guide-to-react-user-authentication/. */}
-        <CustomAuthProvider>
+    <BrowserRouter>
+      {/* Note that CustomAuthProvider must be a child of BrowserRouter. See https://auth0.com/blog/complete-guide-to-react-user-authentication/. */}
+      <CustomAuthProvider>
+        <CustomRelayEnvProvider>
           <Header />
           <Switch>
             <Route path="/:owner/:repo/blob/:branch/*">
@@ -61,9 +61,9 @@ function App() {
             <Route path="/">home page</Route>
             <Route component={NotFound} />
           </Switch>
-        </CustomAuthProvider>
-      </BrowserRouter>
-    </RelayEnvironmentProvider>
+        </CustomRelayEnvProvider>
+      </CustomAuthProvider>
+    </BrowserRouter>
   );
 }
 
@@ -81,6 +81,8 @@ function useLatestBranchCommitSHA(
     const octokit = new Octokit();
     (async () => {
       try {
+        // This can fail with "GET https://api.github.com/repositories/241239708/commits/main 403 (rate limit exceeded)".
+        // TODO: we should try to use the user's access token if they're signed in.
         const commitResponse = await octokit.request(
           "GET /repos/:owner/:repo/commits/:branch",
           {

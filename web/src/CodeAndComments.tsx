@@ -63,6 +63,9 @@ function useCalcBlameLines(
       variables: { repoId, commit: commitSHA, filePath: filePath },
       onError: internalError,
     });
+    // TODO: Having calcBlameLines in here actually causes a bunch of redundant calls to the API for the same file. This
+    // really sucks. I'm guessing that the RelayEnvProvider reloads too many times and that each time implies a new
+    // calcBlameLines closure.
   }, [repoId, commitSHA, filePath, calcBlameLines]);
 
   return !waiting;
