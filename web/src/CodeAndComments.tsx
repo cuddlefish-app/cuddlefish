@@ -250,12 +250,7 @@ const CodeAndComments: React.FC<{
 
   return (
     <Flex justifyContent="center" width="100%">
-      <Grid
-        gridTemplateColumns="repeat(2, auto)"
-        // Clear the hover line when the mouse leaves the CodeAndComments area. This makes it a lot more user-friendly
-        // when trying to get rid of NewThreadPopover thing.
-        onMouseLeave={() => setHoverLine(null)}
-      >
+      <Grid gridTemplateColumns="repeat(2, auto)">
         {/* TODO: where are the "small", "medium", etc sizes documented? */}
         <Box width={272}>
           {/* TODO show a "loading thing" before we render the Comments component. */}
@@ -275,6 +270,9 @@ const CodeAndComments: React.FC<{
         <BorderBox
           style={{ overflowX: "auto", marginTop: "13px", width: "768px" }}
           className={focusLine !== null ? "focusLine" : ""}
+          // Clear the hover line when the mouse leaves the CodeAndComments area. This makes it a lot more user-friendly
+          // when trying to get rid of NewThreadPopover thing.
+          onMouseLeave={() => setHoverLine(null)}
         >
           {syntaxHighlighted}
         </BorderBox>
