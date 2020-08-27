@@ -35,9 +35,7 @@ function buildRelayEnv(extraHeaders: {}) {
         query: operation.text,
         variables,
       }),
-    }).then((response) => {
-      return response.json();
-    });
+    }).then((response) => response.json());
   }
 
   const subClient = new SubscriptionClient(wsUrl, {
