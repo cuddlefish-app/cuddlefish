@@ -1,5 +1,7 @@
 # Hasura and Postgres
 
+Public access is available and is given the role `anonymous`.
+
 ## Schema
 
 ### Threads
