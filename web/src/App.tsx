@@ -80,6 +80,7 @@ function useLatestBranchCommitSHA(
   useEffect(() => {
     const octokit = new Octokit();
     (async () => {
+      // TODO this would prob just be easier with .then().
       try {
         // This can fail with "GET https://api.github.com/repositories/241239708/commits/main 403 (rate limit exceeded)".
         // TODO: we should try to use the user's access token if they're signed in.
