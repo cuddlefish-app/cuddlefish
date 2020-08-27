@@ -36,8 +36,11 @@ const NewThreadPopover: React.FC<{
         comments(order_by: { created_at: asc }) {
           id
           created_at
-          author_id
           body
+          author_id
+          author {
+            github_username
+          }
         }
       }
     }

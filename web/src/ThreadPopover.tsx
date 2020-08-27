@@ -1,3 +1,4 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import {
   Avatar,
   BorderBox,
@@ -50,21 +51,22 @@ const CommentChunk: React.FC<{
   comments: {
     id: unknown;
     body: string;
-    author_id: string;
     created_at: unknown;
+    author_id: string;
+    author: { github_username: string };
   }[];
 }> = ({ comments }) => {
+  console.dir(comments[0]);
   // We are guaranteed that comments is non-empty and that all author_id's are the same.
-  // const author_id = comments[0].author_id;
-
-  // TODO obv
-  const me = true;
+  const { user } = useAuth0();
+  const me = comments[0].author_id === user.sub;
+  const github_username = comments[0].author.github_username;
   return (
     <Flex flexWrap="nowrap" flexDirection={me ? "row-reverse" : "row"}>
       {/* Wrapping in a box is necessary to avoid weird shrinking effects. */}
       <Box marginX={1}>
         <Avatar
-          src="https://avatars.githubusercontent.com/samuela"
+          src={`https://avatars.githubusercontent.com/${github_username}`}
           marginTop={1}
         />
       </Box>
@@ -94,8 +96,9 @@ const ThreadPopover: React.FC<{
         comments: ReadonlyArray<{
           id: unknown;
           body: string;
-          author_id: string;
           created_at: unknown;
+          author_id: string;
+          author: { github_username: string };
         }>;
       }>;
     } | null;
@@ -121,6 +124,9 @@ const ThreadPopover: React.FC<{
 
   let chunkedComments = chunkBy(comments, (c) => c.author_id);
   const [message, setMessage] = useState("" as string);
+
+  // TODO: this throws an error if you're not logged in. Probably also the same issue in NewThreadPopover. Instead we
+  // need to do a login with an `appState` that reminds us to finish the mutation once we get back the user creds.
   const [submit, isInFlight] = useMutation(graphql`
     mutation ThreadPopover_NewComment_Mutation(
       $body: String!
@@ -131,8 +137,11 @@ const ThreadPopover: React.FC<{
         # Relay Store.
         id
         created_at
-        author_id
         body
+        author_id
+        author {
+          github_username
+        }
       }
     }
   `);

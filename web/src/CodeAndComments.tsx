@@ -320,8 +320,11 @@ const Comments: React.FC<{
               comments(order_by: { created_at: asc }) {
                 id
                 body
-                author_id
                 created_at
+                author_id
+                author {
+                  github_username
+                }
               }
             }
           }
@@ -330,6 +333,9 @@ const Comments: React.FC<{
     `,
     variables: { commitSHA, filePath },
   });
+
+  // TODO there are four things here that should all just be one fragment: the subscription and query in this component
+  // and the mutations in ThreadPopover and NewThreadPopover.
 
   // TODO: use the better query version
   const threads = useLazyLoadQuery<CodeAndComments_threads_Query>(
@@ -356,8 +362,11 @@ const Comments: React.FC<{
               comments(order_by: { created_at: asc }) {
                 id
                 body
-                author_id
                 created_at
+                author_id
+                author {
+                  github_username
+                }
               }
             }
           }
