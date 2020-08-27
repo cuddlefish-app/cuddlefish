@@ -291,6 +291,11 @@ const Comments: React.FC<{
   focusLine: null | number;
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
 }> = ({ commitSHA, filePath, hoverLine, focusLine, inputRef }) => {
+  // TODO: Lots of warnings like "WebSocket connection to 'wss://cuddlefish-hasura.herokuapp.com/v1/graphql' failed:
+  // WebSocket is closed before the connection is established." I'm guessing because Hasura doesn't allow subscriptions
+  // from people without auth. Makes sense, but we also can't conditionally call `useSubscription` due to the
+  // limitations of React hooks. I'm guessing the solution will be to put this subscription in its own component and
+  // then conditionally render that component if `isAuthenticated` from `useAuth0` is true.
   useSubscription({
     subscription: graphql`
       subscription CodeAndComments_threads_Subscription(
