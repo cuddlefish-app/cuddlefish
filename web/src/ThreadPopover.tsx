@@ -6,6 +6,7 @@ import {
   Flex,
   Popover,
   Text,
+  Tooltip,
 } from "@primer/components";
 import React, { useState } from "react";
 import { graphql, useMutation } from "react-relay/hooks";
@@ -65,10 +66,19 @@ const CommentChunk: React.FC<{
     <Flex flexWrap="nowrap" flexDirection={me ? "row-reverse" : "row"}>
       {/* Wrapping in a box is necessary to avoid weird shrinking effects. */}
       <Box marginX={1}>
-        <Avatar
-          src={`https://avatars.githubusercontent.com/${github_username}`}
-          marginTop={1}
-        />
+        {me ? (
+          <Avatar
+            src={`https://avatars.githubusercontent.com/${github_username}`}
+            marginTop={1}
+          />
+        ) : (
+          <Tooltip aria-label={`@${github_username}`} direction="w">
+            <Avatar
+              src={`https://avatars.githubusercontent.com/${github_username}`}
+              marginTop={1}
+            />
+          </Tooltip>
+        )}
       </Box>
       <Box flexGrow={1}>
         {comments.map((comment) => (
@@ -80,6 +90,8 @@ const CommentChunk: React.FC<{
     </Flex>
   );
 };
+
+// TODO: add (code author), (thread author) tags in the tooltips.
 
 const ThreadPopover: React.FC<{
   inputRef: any;
