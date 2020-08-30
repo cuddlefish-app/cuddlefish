@@ -1,0 +1,6 @@
+- name: api
+  definition:
+    # url: ${API_GRAPHQL_ENDPOINT}
+    url: https://7d9f205cd738.ngrok.io/graphql
+    # Use a relatively long timeout for lengthy git checkouts.
+    timeout_seconds: 600
