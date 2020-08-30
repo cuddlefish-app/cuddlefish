@@ -9,5 +9,5 @@ set -euf -o pipefail
 
 # Add --silent flag so these secrets don't end up in CI logs.
 yarn --silent get-graphql-schema \
-    --header="X-Hasura-Admin-Secret=$HASURA_ADMIN_SECRET" \
-    $HASURA_GQL_ENDPOINT > schemas/hasura.graphql
+    --header="X-Hasura-Admin-Secret=$HASURA_GRAPHQL_ADMIN_SECRET" \
+    $HASURA_GRAPHQL_ENDPOINT > schemas/hasura.graphql

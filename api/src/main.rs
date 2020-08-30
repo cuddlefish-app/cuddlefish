@@ -231,8 +231,8 @@ impl Mutation {
 }
 
 lazy_static! {
-  static ref HASURA_ADMIN_SECRET: String =
-    std::env::var("HASURA_ADMIN_SECRET").expect("HASURA_ADMIN_SECRET env var not set");
+  static ref HASURA_GRAPHQL_ADMIN_SECRET: String = std::env::var("HASURA_GRAPHQL_ADMIN_SECRET")
+    .expect("HASURA_GRAPHQL_ADMIN_SECRET env var not set");
 }
 
 #[tokio::main]
@@ -240,7 +240,7 @@ async fn main() {
   env_logger::init();
 
   // Fail fast if we're missing environment variables we need.
-  lazy_static::initialize(&HASURA_ADMIN_SECRET);
+  lazy_static::initialize(&HASURA_GRAPHQL_ADMIN_SECRET);
 
   let root_node = Arc::new(RootNode::new(
     Query,

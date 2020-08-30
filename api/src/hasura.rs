@@ -16,7 +16,10 @@ async fn ADMIN_hasura_request<B: serde::ser::Serialize + ?Sized, T: serde::de::D
   // TODO: don't hardcode URL, header.
   let response = reqwest::Client::new()
     .post("https://cuddlefish-hasura.herokuapp.com/v1/graphql")
-    .header("x-hasura-admin-secret", &*crate::HASURA_ADMIN_SECRET)
+    .header(
+      "x-hasura-admin-secret",
+      &*crate::HASURA_GRAPHQL_ADMIN_SECRET,
+    )
     .json(&json_body)
     .send()
     .await?;
