@@ -13,9 +13,10 @@ use serde_json::json;
 async fn ADMIN_hasura_request<B: serde::ser::Serialize + ?Sized, T: serde::de::DeserializeOwned>(
   json_body: &B,
 ) -> CFResult<T> {
-  // TODO: don't hardcode URL, header.
+  // TODO: don't hardcode URL.
   let response = reqwest::Client::new()
-    .post("https://cuddlefish-hasura.herokuapp.com/v1/graphql")
+    // .post("https://cuddlefish-hasura.herokuapp.com/v1/graphql")
+    .post("http://localhost:8080/v1/graphql")
     .header(
       "x-hasura-admin-secret",
       &*crate::HASURA_GRAPHQL_ADMIN_SECRET,

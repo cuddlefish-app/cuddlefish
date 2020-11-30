@@ -1,6 +1,7 @@
 - name: api
   definition:
     # url: ${API_GRAPHQL_ENDPOINT}
-    url: https://7d9f205cd738.ngrok.io/graphql
+    # See https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds.
+    url: http://host.docker.internal:3001/graphql
     # Use a relatively long timeout for lengthy git checkouts.
     timeout_seconds: 600
