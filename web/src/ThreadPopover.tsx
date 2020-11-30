@@ -91,6 +91,7 @@ const CommentChunk: React.FC<{
   );
 };
 
+// TODO: add people's real name to make things a little more human.
 // TODO: add (code author), (thread author) tags in the tooltips.
 
 const ThreadPopover: React.FC<{
