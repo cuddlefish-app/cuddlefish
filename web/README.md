@@ -27,7 +27,7 @@ You will also see any lint errors in the console.
 
 ### `yarn relay --watch`
 
-Build the Relay `__generated__` interface files. Run this and `yarn start` at the same time.
+Build the Relay `__generated__` interface files. Run this and `yarn start` simultaneously.
 
 ### `yarn test`
 
