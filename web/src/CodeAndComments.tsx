@@ -439,6 +439,8 @@ const Comments: React.FC<{
     <Relative>
       {existingThreads}
 
+      {/* TODO: Sometimes `threads.blamelines[newThreadLine - 1]` is undefined when the useLazyLoadQuery gives back
+      empty blamelines results, eg. when there's issues talking to Hasura. */}
       {newThreadLine !== null &&
         threads.blamelines[newThreadLine - 1].original_line?.threads.length ===
           0 && (
