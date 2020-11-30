@@ -2,6 +2,10 @@
 
 Public access is available and is given the role `anonymous`.
 
+## Development
+
+Run `docker-compose up`. It will run hasura and postgres locally with persistence across runs.
+
 ## Schema
 
 ### Threads
