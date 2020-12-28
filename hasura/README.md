@@ -6,6 +6,10 @@ Public access is available and is given the role `anonymous`.
 
 Run `docker-compose up`. It will run hasura and postgres locally with persistence across runs.
 
+Run `hasura console` in this directory to get the friendly hasura GUI.
+
+If you get an error about the metadata status it's likely because the api server is not yet running. Start the api server and then try reloading metadata.
+
 ## Schema
 
 ### Threads

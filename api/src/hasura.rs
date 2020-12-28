@@ -4,10 +4,11 @@ use crate::CFResult;
 use failure::bail;
 use graphql_client::GraphQLQuery;
 use serde_json::json;
+use std::convert::TryFrom;
 
 // This name comes from GraphQL/Hasura, so it's not camel case.
-// #[allow(non_camel_case_types)]
-// type uuid = String;
+#[allow(non_camel_case_types)]
+type uuid = String;
 
 #[allow(non_snake_case)]
 async fn ADMIN_hasura_request<B: serde::ser::Serialize + ?Sized, T: serde::de::DeserializeOwned>(
@@ -34,8 +35,9 @@ async fn ADMIN_hasura_request<B: serde::ser::Serialize + ?Sized, T: serde::de::D
   }
 }
 
-// See https://github.com/rust-lang/rust/issues/75798 as to why we can't have nice things. We definitely want these to
-// happen in a single transaction which means we need to write the GraphQL ourselves.
+// See https://github.com/rust-lang/rust/issues/75798 and https://github.com/graphql-rust/graphql-client/issues/302 as
+// to why we can't have nice things. We definitely want these to happen in a single transaction which means we need to
+// write the GraphQL ourselves.
 pub async fn insert_blamelines(
   commit: &str,
   file_path: &str,
@@ -97,7 +99,7 @@ pub async fn insert_blamelines(
   query_path = "gql/hasura/queries.graphql",
   response_derives = "Debug"
 )]
-pub struct LookupExistingBlamelines;
+struct LookupExistingBlamelines;
 
 pub async fn lookup_existing_blamelines(commit: &str, file_path: &str) -> CFResult<bool> {
   let res: lookup_existing_blamelines::ResponseData = ADMIN_hasura_request(
@@ -108,4 +110,66 @@ pub async fn lookup_existing_blamelines(commit: &str, file_path: &str) -> CFResu
   )
   .await?;
   Ok(res.blamelines_by_pk.is_some())
+}
+
+#[derive(graphql_client::GraphQLQuery)]
+#[graphql(
+  schema_path = "gql/hasura/schema.json",
+  query_path = "gql/hasura/queries.graphql",
+  response_derives = "Debug"
+)]
+struct UpsertUser;
+
+// GitHub user ID's (and perhaps ID's for other things!) are semantically u64
+// (or just natural numbers), but there's only an Int GraphQL type, and
+// graphql_client maps this to i64.
+fn cast_user_github_id(user_github_id: u64) -> i64 {
+  i64::try_from(user_github_id).expect("this shouldn't be a problem until GitHub has 9e18 users!")
+}
+
+pub async fn upsert_user(
+  github_id: u64,
+  github_name: &str,
+  github_node_id: &str,
+  github_username: &str,
+  github_email: Option<String>,
+) -> CFResult<()> {
+  let res: upsert_user::ResponseData =
+    ADMIN_hasura_request(&UpsertUser::build_query(upsert_user::Variables {
+      github_id: cast_user_github_id(github_id),
+      github_name: github_name.into(),
+      github_node_id: github_node_id.into(),
+      github_username: github_username.into(),
+      github_email: github_email.into(),
+    }))
+    .await?;
+
+  // TODO: This is just a poor man's assert. Can it be made cleaner?
+  match res.insert_users_one {
+    None => bail!("this should never happen as long as hasura is sane"),
+    Some(_) => Ok(()),
+  }
+}
+
+#[derive(graphql_client::GraphQLQuery)]
+#[graphql(
+  schema_path = "gql/hasura/schema.json",
+  query_path = "gql/hasura/queries.graphql",
+  response_derives = "Debug"
+)]
+struct StartUserSession;
+
+pub async fn start_user_session(user_github_id: u64) -> CFResult<String> {
+  let res: start_user_session::ResponseData = ADMIN_hasura_request(&StartUserSession::build_query(
+    start_user_session::Variables {
+      user_github_id: cast_user_github_id(user_github_id),
+    },
+  ))
+  .await?;
+
+  // TODO: This is just a poor man's assert. Can it be made cleaner?
+  match res.insert_user_sessions_one {
+    None => bail!("this should never happen as long as hasura is sane"),
+    Some(x) => Ok(x.id),
+  }
 }

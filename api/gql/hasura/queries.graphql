@@ -15,3 +15,39 @@ query LookupExistingBlamelines($commit: String!, $file_path: String!) {
     __typename
   }
 }
+
+mutation UpsertUser(
+  $github_id: Int!
+  $github_name: String!
+  $github_node_id: String!
+  $github_username: String!
+  $github_email: String
+) {
+  insert_users_one(
+    object: {
+      github_id: $github_id
+      github_name: $github_name
+      github_node_id: $github_node_id
+      github_username: $github_username
+      github_email: $github_email
+    }
+    on_conflict: {
+      constraint: users_github_id_key
+      update_columns: [
+        github_id
+        github_name
+        github_node_id
+        github_username
+        github_email
+      ]
+    }
+  ) {
+    github_id
+  }
+}
+
+mutation StartUserSession($user_github_id: Int!) {
+  insert_user_sessions_one(object: { user_github_id: $user_github_id }) {
+    id
+  }
+}

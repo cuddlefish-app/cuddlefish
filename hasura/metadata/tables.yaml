@@ -36,42 +36,6 @@
 - table:
     schema: public
     name: comments
-  object_relationships:
-  - name: author
-    using:
-      foreign_key_constraint_on: author_id
-  insert_permissions:
-  - role: user
-    permission:
-      check:
-        author_id:
-          _eq: X-Hasura-User-Id
-      set:
-        author_id: x-hasura-User-Id
-      columns:
-      - author_id
-      - body
-      - thread_id
-      backend_only: false
-  select_permissions:
-  - role: anonymous
-    permission:
-      columns:
-      - id
-      - author_id
-      - created_at
-      - body
-      - thread_id
-      filter: {}
-  - role: user
-    permission:
-      columns:
-      - author_id
-      - body
-      - created_at
-      - id
-      - thread_id
-      filter: {}
 - table:
     schema: public
     name: lines
@@ -143,6 +107,9 @@
       - resolved
       filter: {}
       limit: 1000
+- table:
+    schema: public
+    name: user_sessions
 - table:
     schema: public
     name: users
