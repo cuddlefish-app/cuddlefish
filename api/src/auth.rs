@@ -1,7 +1,8 @@
-use crate::{hasura, GitHubUserId};
+use crate::hasura;
+use crate::GitHubUserId;
+use crate::RUNNING_ON_RENDER;
 use chrono::{prelude::Utc, Duration};
 use cookie::{Cookie, SameSite};
-use hasura::{end_user_session, lookup_user_session};
 use hyper::header;
 use hyper::Body;
 use hyper::Response;
@@ -29,6 +30,10 @@ pub async fn login_route(_: Request<Body>) -> Result<Response<Body>, hyper::Erro
 
   // See https://serverfault.com/questions/391181/examples-of-302-vs-303 for a
   // breakdown of all possible HTTP redirects.
+  let callback_url = match std::env::var("RENDER_EXTERNAL_URL") {
+    Ok(url) => format!("{}/oauth/callback/github", url),
+    Err(_) => "http://localhost:3001/oauth/callback/github".to_string(),
+  };
   Ok::<_, hyper::Error>(
     Response::builder()
       .status(StatusCode::TEMPORARY_REDIRECT)
@@ -37,7 +42,7 @@ pub async fn login_route(_: Request<Body>) -> Result<Response<Body>, hyper::Erro
         format!(
           "https://github.com/login/oauth/authorize?client_id={}&redirect_uri={}&state={}",
           &*crate::GITHUB_OAUTH_CLIENT_ID,
-          "http://localhost:3001/oauth/callback/github",
+          callback_url,
           state
         ),
       )
@@ -185,7 +190,6 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
   // set cookie in response with session token
   // TODO: set domain to allow subdowmain access. also update the logout route
   // TODO: should use __Host- prefix here?
-  // TODO: cookie name should prob be a constant.
   let session_token_cookie = Cookie::build(SESSION_TOKEN_COOKIE_NAME, session_token)
     // Only send this cookie over HTTPS. TODO before prod!!!
     // .secure(true)
@@ -214,13 +218,18 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
   .finish();
 
   // Return a response setting the cookie and redirecting to the homepage.
+  let homepage_url = if *RUNNING_ON_RENDER {
+    // TODO this won't work with render's PR previews.
+    "https://cuddlefish.app/"
+  } else {
+    "http://localhost:3000/"
+  };
   Ok(
     Response::builder()
       .status(StatusCode::TEMPORARY_REDIRECT)
       .header(header::SET_COOKIE, format!("{}", session_token_cookie))
       .header(header::SET_COOKIE, format!("{}", user_cookie))
-      // TODO: shouldn't hard code this...
-      .header(header::LOCATION, "http://localhost:3000/")
+      .header(header::LOCATION, homepage_url)
       .body(Body::empty())
       .expect("building response failed"),
   )
@@ -242,7 +251,7 @@ pub async fn logout_route(req: Request<Body>) -> Result<Response<Body>, hyper::E
   if let Ok(cookies) = parse_cookies(&req) {
     if let Some(session_token) = cookies.get(SESSION_TOKEN_COOKIE_NAME) {
       // Try ending the user session...
-      if let Err(_) = end_user_session(session_token).await {
+      if let Err(_) = hasura::end_user_session(session_token).await {
         // If we get an Err from end_user_session it means we got some kind of
         // error talking to hasura.
         return Ok(
@@ -306,7 +315,7 @@ fn parse_cookies(req: &Request<Body>) -> Result<HashMap<&str, &str>, ()> {
 async fn hasura_auth_webhook_inner(req: Request<Body>) -> Result<GitHubUserId, ()> {
   let cookies = parse_cookies(&req)?;
   let session_token = cookies.get(SESSION_TOKEN_COOKIE_NAME).ok_or(())?;
-  let github_user_id = lookup_user_session(session_token)
+  let github_user_id = hasura::lookup_user_session(session_token)
     .await
     // Error with user session lookup query.
     .map_err(|_| ())?

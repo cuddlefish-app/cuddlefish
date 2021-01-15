@@ -13,11 +13,15 @@ import { SubscriptionClient } from "subscriptions-transport-ws";
 
 // What's the real difference between the normal and Relay endpoints? Relay does not seem to work with the Relay
 // endpoint ironically.
-// const url = "https://cuddlefish-hasura.herokuapp.com/v1beta1/relay";
-// TODO: these need to be configurable before we launch.
-const url = "http://localhost:8080/v1/graphql";
+const url =
+  process.env.NODE_ENV === "production"
+    ? "https://hasura.cuddlefish.app/v1/graphql"
+    : "http://localhost:8080/v1/graphql";
 // wss:// is the HTTPS version of ws:// so to speak. See https://stackoverflow.com/questions/46557485/difference-between-ws-and-wss.
-const wsUrl = "ws://localhost:8080/v1/graphql";
+const wsUrl =
+  process.env.NODE_ENV === "production"
+    ? "wss://hasura.cuddlefish.app/v1/graphql"
+    : "ws://localhost:8080/v1/graphql";
 
 function buildRelayEnv(extraHeaders: {}) {
   // Get's repeated 6 times in an average render. Insane...

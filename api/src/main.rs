@@ -241,6 +241,10 @@ lazy_static! {
     .expect("GITHUB_OAUTH_CLIENT_SECRET env var not set");
   static ref API_PASETO_SECRET_KEY: String =
     std::env::var("API_PASETO_SECRET_KEY").expect("API_PASETO_SECRET_KEY env var not set");
+
+  // Whether or not we're running on render at all, either in prod or as an
+  // ephemeral PR environment. See https://render.com/docs/environment-variables.
+  static ref RUNNING_ON_RENDER: bool = std::env::var("RENDER") == Ok("true".to_string());
 }
 
 #[tokio::main]
@@ -252,6 +256,7 @@ async fn main() {
   lazy_static::initialize(&GITHUB_OAUTH_CLIENT_ID);
   lazy_static::initialize(&GITHUB_OAUTH_CLIENT_SECRET);
   lazy_static::initialize(&API_PASETO_SECRET_KEY);
+  lazy_static::initialize(&RUNNING_ON_RENDER);
 
   let root_node = Arc::new(RootNode::new(
     Query,

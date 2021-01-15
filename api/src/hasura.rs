@@ -1,6 +1,7 @@
-/// Calling Hasura endpoints.
+use crate::BlameLine;
 use crate::CFResult;
-use crate::{BlameLine, GitHubUserId};
+use crate::GitHubUserId;
+use crate::RUNNING_ON_RENDER;
 use failure::bail;
 use graphql_client::GraphQLQuery;
 use serde_json::json;
@@ -15,10 +16,13 @@ type uuid = String;
 async fn ADMIN_hasura_request<B: serde::ser::Serialize + ?Sized, T: serde::de::DeserializeOwned>(
   json_body: &B,
 ) -> CFResult<T> {
-  // TODO: don't hardcode URL.
+  let hasura_url = if *RUNNING_ON_RENDER {
+    "https://hasura/v1/graphql"
+  } else {
+    "http://localhost:8080/v1/graphql"
+  };
   let response = reqwest::Client::new()
-    // .post("https://cuddlefish-hasura.herokuapp.com/v1/graphql")
-    .post("http://localhost:8080/v1/graphql")
+    .post(hasura_url)
     .header(
       "x-hasura-admin-secret",
       &*crate::HASURA_GRAPHQL_ADMIN_SECRET,

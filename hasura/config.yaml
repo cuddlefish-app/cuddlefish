@@ -6,12 +6,8 @@ version: 2
 # endpoint: http://localhost:8080
 # endpoint: https://cuddlefish-hasura.herokuapp.com/
 
-# This matches the definition in `docker-compose.yaml`.
+# This matches the definition in `docker-compose.yaml` for development purposes.
 admin_secret: hasurasecret
 
 # This is necessary otherwise hasura CLI looks for a single metadata file.
 metadata_directory: metadata
-# This seems to be completely useless:
-# actions:
-#   kind: synchronous
-#   handler_webhook_baseurl: http://localhost:3000

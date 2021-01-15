@@ -9,9 +9,13 @@ export type UserInfo = {
 type LoggedIn = { isLoggedIn: true; user: UserInfo };
 type AuthState = Anonymous | LoggedIn;
 
+const USER_INFO_COOKIE_NAME = "cf_user_info";
+
 export function useAuthState(): AuthState {
   // undefined when the cookie is not set.
-  const userCookie = Cookies.getJSON("user") as undefined | UserInfo;
+  const userCookie = Cookies.getJSON(USER_INFO_COOKIE_NAME) as
+    | undefined
+    | UserInfo;
   if (userCookie === undefined) {
     return { isLoggedIn: false };
   } else {
@@ -23,10 +27,19 @@ export function useAuthState(): AuthState {
 /// we check `appState` to see what path to return to.
 export function loginWithRedirect(appState: {}) {
   // TODO put appState into local storage.
-  // TODO don't hardcode this
-  window.location.replace("//localhost:3001/login");
+  if (process.env.NODE_ENV === "production") {
+    // TODO this won't work with render's PR previews.
+    window.location.replace("https://api.cuddlefish.app/login");
+  } else {
+    window.location.replace("//localhost:3001/login");
+  }
 }
 
 export function logout() {
-  window.location.replace("//localhost:3001/logout");
+  if (process.env.NODE_ENV === "production") {
+    // TODO this won't work with render's PR previews.
+    window.location.replace("https://api.cuddlefish.app/logout");
+  } else {
+    window.location.replace("//localhost:3001/logout");
+  }
 }
