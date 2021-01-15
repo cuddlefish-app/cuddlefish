@@ -36,6 +36,40 @@
 - table:
     schema: public
     name: comments
+  object_relationships:
+  - name: author
+    using:
+      foreign_key_constraint_on: author_github_id
+  insert_permissions:
+  - role: user
+    permission:
+      check:
+        author_github_id:
+          _eq: X-Hasura-User-Id
+      columns:
+      - author_github_id
+      - body
+      - thread_id
+      backend_only: false
+  select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+      - id
+      - created_at
+      - body
+      - thread_id
+      - author_github_id
+      filter: {}
+  - role: user
+    permission:
+      columns:
+      - id
+      - created_at
+      - body
+      - thread_id
+      - author_github_id
+      filter: {}
 - table:
     schema: public
     name: lines
@@ -110,6 +144,10 @@
 - table:
     schema: public
     name: user_sessions
+  object_relationships:
+  - name: user
+    using:
+      foreign_key_constraint_on: user_github_id
 - table:
     schema: public
     name: users
@@ -117,6 +155,8 @@
   - role: anonymous
     permission:
       columns:
+      - github_id
+      - github_name
       - github_username
       filter: {}
   - role: user

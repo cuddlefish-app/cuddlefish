@@ -1,5 +1,4 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React from "react";
 import { RelayEnvironmentProvider } from "react-relay/hooks";
 import {
   Environment,
@@ -36,12 +35,14 @@ function buildRelayEnv(extraHeaders: {}) {
         query: operation.text,
         variables,
       }),
+      // Necessary to get the cookies sent over.
+      credentials: "include",
     }).then((response) => response.json());
   }
 
   const subClient = new SubscriptionClient(wsUrl, {
     reconnect: true,
-    connectionParams: { headers: extraHeaders },
+    connectionParams: { headers: extraHeaders, credentials: "include" },
   });
 
   // TODO: The types on the relay-runtime and subscriptions-transport-ws libraries are a little broken at the moment.
@@ -61,39 +62,13 @@ function buildRelayEnv(extraHeaders: {}) {
   });
 }
 
+// This isn't really all that custom at the moment...
 const CustomRelayEnvProvider: React.FC = ({ children }) => {
-  const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
-  const [accessToken, setAccessToken] = useState(null as null | string);
-
-  // This effect only gets called twice.
-  useEffect(() => {
-    if (isAuthenticated) getAccessTokenSilently().then(setAccessToken);
-    else setAccessToken(null);
-  }, [getAccessTokenSilently, isAuthenticated]);
-
-  // TODO: this useMemo doesn't work and buildRelayEnv ends up getting called 6 times on the BlobPage which is just
-  // ludicrous. Also causes all of the downstream queries and useMemos to re-render.
-  const relayEnv = useMemo(
-    () =>
-      buildRelayEnv(
-        // When accessToken is null, aka we're not logged in, Hasura defaults us to the `anonymous` role which still
-        // lets us do _some_ queries.
-        accessToken !== null
-          ? {
-              Authorization: `Bearer ${accessToken}`,
-            }
-          : {}
-      ),
-    [accessToken]
-  );
-
-  // TODO: use a user-friendly spinner here.
-  return !isLoading ? (
+  const relayEnv = buildRelayEnv({});
+  return (
     <RelayEnvironmentProvider environment={relayEnv}>
       {children}
     </RelayEnvironmentProvider>
-  ) : (
-    <div>loading auth...</div>
   );
 };
 

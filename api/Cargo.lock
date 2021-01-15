@@ -44,6 +44,7 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
+ "time 0.2.23",
  "tokio",
  "url",
 ]

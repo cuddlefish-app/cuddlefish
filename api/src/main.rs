@@ -1,7 +1,6 @@
+mod auth;
 mod github;
 mod hasura;
-use chrono::{prelude::Utc, Duration};
-use cookie::{Cookie, SameSite};
 use failure::bail;
 use failure::ensure;
 use failure::format_err;
@@ -9,8 +8,7 @@ use failure::Error;
 use git2::BlameOptions;
 use git2::Oid;
 use git2::Repository;
-use hasura::upsert_user;
-use hyper::header;
+use hyper;
 use hyper::service::make_service_fn;
 use hyper::service::service_fn;
 use hyper::Body;
@@ -18,22 +16,19 @@ use hyper::Method;
 use hyper::Response;
 use hyper::Server;
 use hyper::StatusCode;
-use hyper::{self, Request};
 use juniper::EmptySubscription;
 use juniper::FieldResult;
 use juniper::GraphQLObject;
 use juniper::RootNode;
 use lazy_static::lazy_static;
-use log::error;
 use log::info;
 use log::trace;
-use serde::Deserialize;
-use std::collections::HashMap;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 
 type CFResult<T> = Result<T, Error>;
+type GitHubUserId = u64;
 
 /// RepoId identifies a repository. See the README for more info.
 pub enum RepoId {
@@ -237,210 +232,6 @@ impl Mutation {
   }
 }
 
-// TODO: move auth stuff into a separate file.
-async fn login_route(_: Request<Body>) -> Result<Response<Body>, hyper::Error> {
-  // See https://docs.github.com/en/free-pro-team@latest/developers/apps/authorizing-oauth-apps#1-request-a-users-github-identity.
-  // We use a local token since there's really no need for the client to be able
-  // to read anything in it.
-  let state = paseto::tokens::PasetoBuilder::new()
-    .set_encryption_key(Vec::from(&*API_PASETO_SECRET_KEY.as_bytes()))
-    .set_expiration(Utc::now() + Duration::minutes(15))
-    .set_not_before(Utc::now())
-    .build()
-    .expect("failed to construct paseto token");
-
-  // See https://serverfault.com/questions/391181/examples-of-302-vs-303 for a
-  // breakdown of all possible HTTP redirects.
-  Ok::<_, hyper::Error>(
-    Response::builder()
-      .status(StatusCode::TEMPORARY_REDIRECT)
-      .header(
-        header::LOCATION,
-        format!(
-          "https://github.com/login/oauth/authorize?client_id={}&redirect_uri={}&state={}",
-          &*GITHUB_OAUTH_CLIENT_ID, "http://localhost:3001/oauth/callback/github", state
-        ),
-      )
-      .body(Body::empty())
-      .expect("building response failed"),
-  )
-}
-async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body>, ()> {
-  // See https://users.rust-lang.org/t/using-hyper-how-to-get-url-query-string-params/23768/3?u=samuela.
-
-  let query_params = req
-    .uri()
-    .query()
-    .map(|v| {
-      url::form_urlencoded::parse(v.as_bytes())
-        .into_owned()
-        .collect()
-    })
-    .unwrap_or_else(HashMap::new);
-
-  let code = query_params.get("code").ok_or(())?;
-  let state = query_params.get("state").ok_or(())?;
-
-  // TODO: test calling this endpoint with an invalid/expired paseto token.
-
-  // Test that we actually initiated this login flow to prevent CSRF attacks.
-  // See https://owasp.org/www-community/attacks/csrf. Note that we are
-  // protecting ourselves against an attacker attempting to redirect to us
-  // without being able to man-in-the-middle anything. We are still vulnerable
-  // to replay attacks assuming an attacker could get their hands on one of our
-  // paseto tokens. This is much, much less likely however. Perhaps there are
-  // other preventions for that kind of attack as well?
-
-  // Also note that the risk of CSRF attack is greatly mitigated by the fact
-  // that we create and enter a session for the user based on the access token
-  // after calling the GitHub API user info endpoint, not from any other user
-  // information (a cookie, etc). This means that it should not be possible for
-  // an attacker to associate a malicious access token to victim's user account.
-  // I suppose however that there's still the possibility the user doesn't
-  // recognize that they've been logged in to the wrong account, and still
-  // exposes some information thinking that they're logged in to their correct
-  // account.
-
-  // TODO maybe do something more user-friendly when their login link has
-  // expired
-  paseto::tokens::validate_local_token(&state, None, Vec::from(&*API_PASETO_SECRET_KEY.as_bytes()))
-    .map_err(|_| ())?;
-
-  // Trade in code for an access token from GitHub.
-  let access_token_response = reqwest::Client::new()
-    .post("https://github.com/login/oauth/access_token")
-    .header("Accept", "application/json")
-    .query(&[
-      ("client_id", &*GITHUB_OAUTH_CLIENT_ID),
-      ("client_secret", &*GITHUB_OAUTH_CLIENT_SECRET),
-      ("code", code),
-      ("state", state),
-    ])
-    .send()
-    .await
-    // Turn error status codes into rust errors.
-    .and_then(|resp| resp.error_for_status())
-    .map_err(|_| {
-      error!("error getting the github access token");
-      ()
-    })?;
-
-  #[derive(Deserialize)]
-  struct AccessTokenResp {
-    access_token: String,
-  }
-  // Deserialize the access token response into an access token.
-  let access_token = access_token_response
-    .json::<AccessTokenResp>()
-    .await
-    .map_err(|_| {
-      error!("failed to parse the response body from github.com/login/oauth/access_token");
-      ()
-    })?
-    .access_token;
-
-  // TODO: maybe use the gql way?
-  let user_info_response = reqwest::Client::new()
-    .get("https://api.github.com/user")
-    .header("Authorization", format!("token {}", access_token))
-    // Setting a user agent is mandatory when calling api.github.com.
-    .header("User-Agent", "cuddlefish")
-    .send()
-    .await
-    // Turn error status codes into rust errors.
-    .and_then(|resp| resp.error_for_status())
-    .map_err(|_| {
-      error!("error calling api.github.com/user");
-      ()
-    })?;
-
-  #[derive(Deserialize, Debug)]
-  struct UserInfoResp {
-    login: String,
-    id: u64,
-    node_id: String,
-    name: String,
-    // This comes in as null sometimes. Serde seems to handle correctly.
-    company: Option<String>,
-    blog: Option<String>,
-    location: Option<String>,
-    email: Option<String>,
-    hireable: bool,
-    bio: String,
-    twitter_username: Option<String>,
-  }
-  // Deserialize the user info response.
-  let user_info: UserInfoResp = user_info_response.json().await.map_err(|_| {
-    error!("failed to parse the response body from github.com/login/oauth/access_token");
-    ()
-  })?;
-
-  // upsert user info
-  upsert_user(
-    user_info.id,
-    &user_info.name,
-    &user_info.node_id,
-    &user_info.login,
-    user_info.email,
-  )
-  .await
-  .map_err(|_| {
-    error!("failed to upsert user info");
-    ()
-  })?;
-
-  // create new user session
-  let session_token = hasura::start_user_session(user_info.id)
-    .await
-    .map_err(|_| {
-      error!("failed to create new user session");
-      ()
-    })?;
-
-  // set cookie in response with session token
-  // TODO: set domain to allow subdowmain access.
-  // TODO: should use __Host- prefix here?
-  let cookie = Cookie::build("session_token", session_token)
-    // Only send this cookie over HTTPS or to localhost.
-    .secure(true)
-    // Cookie is not accessible via JavaScript.
-    .http_only(true)
-    // Only send this cookie for requests originating from our domain.
-    .same_site(SameSite::Strict)
-    .finish();
-
-  // TODO: redirect somewhere...
-  Ok(
-    Response::builder()
-      .header(hyper::header::SET_COOKIE, format!("{}", cookie))
-      .body(Body::empty())
-      .expect("building response failed"),
-  )
-}
-async fn github_callback_route(req: Request<Body>) -> Result<Response<Body>, hyper::Error> {
-  // See https://docs.github.com/en/free-pro-team@latest/developers/apps/authorizing-oauth-apps#2-users-are-redirected-back-to-your-site-by-github.
-  // TODO simplify
-  match github_callback_route_inner(req).await {
-    Ok(resp) => Ok(resp),
-    Err(_) => Ok(
-      Response::builder()
-        .status(StatusCode::BAD_REQUEST)
-        .body(Body::empty())
-        .expect("building response failed"),
-    ),
-  }
-}
-async fn logout_route(_: Request<Body>) -> Result<Response<Body>, hyper::Error> {
-  // Delete GH access token
-  // Delete session from db
-  // Delete cookie
-  // redirect to the homepage?
-
-  let mut response = Response::new(Body::empty());
-  *response.status_mut() = StatusCode::NOT_IMPLEMENTED;
-  Ok::<_, hyper::Error>(response)
-}
-
 lazy_static! {
   static ref HASURA_GRAPHQL_ADMIN_SECRET: String = std::env::var("HASURA_GRAPHQL_ADMIN_SECRET")
     .expect("HASURA_GRAPHQL_ADMIN_SECRET env var not set");
@@ -486,9 +277,11 @@ async fn main() {
             (&Method::GET, "/graphql") | (&Method::POST, "/graphql") => {
               juniper_hyper::graphql(root_node, Arc::new(()), req).await
             }
-            (&Method::GET, "/login") => login_route(req).await,
-            (&Method::GET, "/oauth/callback/github") => github_callback_route(req).await,
-            (&Method::GET, "/logout") => logout_route(req).await,
+
+            (&Method::GET, "/login") => auth::login_route(req).await,
+            (&Method::GET, "/oauth/callback/github") => auth::github_callback_route(req).await,
+            (&Method::GET, "/logout") => auth::logout_route(req).await,
+            (&Method::GET, "/hasura_auth_webhook") => auth::hasura_auth_webhook(req).await,
 
             _ => Ok::<_, hyper::Error>(
               Response::builder()

@@ -1,4 +1,3 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import {
   Avatar,
   BorderBox,
@@ -11,6 +10,7 @@ import {
 import React, { useState } from "react";
 import { graphql, useMutation } from "react-relay/hooks";
 import { internalError } from "./App";
+import { useAuthState } from "./auth";
 import CommentForm from "./CommentForm";
 import useClickOutside from "./useClickOutside";
 
@@ -54,13 +54,15 @@ const CommentChunk: React.FC<{
     id: unknown;
     body: string;
     created_at: unknown;
-    author_id: string;
+    author_github_id: number;
     author: { github_username: string };
   }[];
 }> = ({ comments }) => {
-  // We are guaranteed that comments is non-empty and that all author_id's are the same.
-  const { user } = useAuth0();
-  const me = comments[0].author_id === user.sub;
+  // We are guaranteed that comments is non-empty and that all author_github_id's are the same.
+  const authState = useAuthState();
+  const me =
+    authState.isLoggedIn &&
+    comments[0].author_github_id === authState.user.github_id;
   const github_username = comments[0].author.github_username;
   return (
     <Flex flexWrap="nowrap" flexDirection={me ? "row-reverse" : "row"}>
@@ -110,7 +112,7 @@ const ThreadPopover: React.FC<{
           id: unknown;
           body: string;
           created_at: unknown;
-          author_id: string;
+          author_github_id: number;
           author: { github_username: string };
         }>;
       }>;
@@ -139,7 +141,7 @@ const ThreadPopover: React.FC<{
     throw internalError(Error(`Thread ${thread.id} has no comments!`));
   }
 
-  let chunkedComments = chunkBy(comments, (c) => c.author_id);
+  let chunkedComments = chunkBy(comments, (c) => c.author_github_id);
   const [message, setMessage] = useState("" as string);
   const popoverRef = useClickOutside(() => {
     if (focusLine === blameline.x_line_number) {
@@ -161,7 +163,7 @@ const ThreadPopover: React.FC<{
         id
         created_at
         body
-        author_id
+        author_github_id
         author {
           github_username
         }

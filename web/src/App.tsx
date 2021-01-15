@@ -1,13 +1,6 @@
-import { Auth0Provider } from "@auth0/auth0-react";
 import { Octokit } from "@octokit/core";
 import React, { useEffect, useState } from "react";
-import {
-  BrowserRouter,
-  Route,
-  Switch,
-  useHistory,
-  useParams,
-} from "react-router-dom";
+import { BrowserRouter, Route, Switch, useParams } from "react-router-dom";
 import "./App.css";
 import CodeAndComments from "./CodeAndComments";
 import CustomRelayEnvProvider from "./CustomRelayEnvProvider";
@@ -16,7 +9,7 @@ import Header from "./Header";
 // GitHub API v4 doesn't yet support usage without authentication: https://github.community/t/api-v4-permit-access-without-token/13833.
 
 export function internalError(error?: Error) {
-  if (error) console.log(error);
+  if (error) console.error(error);
   window.alert(
     "Oops! Cuddlefish experienced an internal error :( Please check the console for any messages, and pester some humans by creating an issue on GitHub!"
   );
@@ -31,20 +24,25 @@ export function githubRepoId(repo_owner: string, repo_name: string) {
 
 // See https://auth0.com/blog/complete-guide-to-react-user-authentication/.
 const CustomAuthProvider: React.FC = ({ children }) => {
-  const history = useHistory();
-  return (
-    <Auth0Provider
-      domain="cuddlefish.auth0.com"
-      clientId="PuC9rXk3lxuojdAq5reaa5CB3ibgDH2a"
-      audience="https://cuddlefish/hasura"
-      redirectUri={window.location.origin}
-      onRedirectCallback={(appState) => {
-        history.push(appState.returnTo || window.location.pathname);
-      }}
-    >
-      {children}
-    </Auth0Provider>
-  );
+  // const history = useHistory();
+  // const [redirectMemo, setRedirectMemo] = useState(null);
+  // return (
+  //   <Auth0Provider
+  //     domain="cuddlefish.auth0.com"
+  //     clientId="PuC9rXk3lxuojdAq5reaa5CB3ibgDH2a"
+  //     audience="https://cuddlefish/hasura"
+  //     redirectUri={window.location.origin}
+  //     onRedirectCallback={(appState) => {
+  //       history.push(appState.returnTo || window.location.pathname);
+  //       setRedirectMemo(appState.redirectMemo);
+  //     }}
+  //   >
+  //     <RedirectMemoContext.Provider value={{ redirectMemo, setRedirectMemo }}>
+  //       {children}
+  //     </RedirectMemoContext.Provider>
+  //   </Auth0Provider>
+  // );{
+  return <>{children}</>;
 };
 
 function App() {
@@ -78,12 +76,16 @@ function useLatestBranchCommitSHA(
   const [commitSHA, setCommitSHA] = useState(null as null | string);
 
   useEffect(() => {
-    const octokit = new Octokit();
     (async () => {
       // TODO this would prob just be easier with .then().
       try {
         // This can fail with "GET https://api.github.com/repositories/241239708/commits/main 403 (rate limit exceeded)".
-        // TODO: we should try to use the user's access token if they're signed in.
+        // TODO: we should try to use the user's access token if they're signed in. that'll require proxying through the
+        // api server.
+
+        // const octokit = new Octokit({ auth: `Bearer ${accessToken}` });
+        const octokit = new Octokit();
+
         const commitResponse = await octokit.request(
           "GET /repos/:owner/:repo/commits/:branch",
           {

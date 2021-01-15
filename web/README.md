@@ -1,17 +1,6 @@
 # web frontend
 
-## Auth0 setup
-
-We use Auth0 for user auth. We have a single Auth0 "Application" titled "cuddlefish". It's of the "Single Page Application" type and the following settings:
-
-- Domain: cuddlefish.auth0.com
-- Allowed Callback URLs: `http://localhost:3000`
-- Allowed Logout URLs: `http://localhost:3000`
-- Allowed Web Origins: `http://localhost:3000`
-- An API title "hasura" with audience `https://cuddlefish/hasura`
-- A rule "hasura claims on access tokens". (TODO: put this into source control.)
-
-Auth0 gets cranky if these aren't exactly specified this way. Auth0 also doesn't support wildcard URLs except for in subdomains.
+TODO: `HASURA_GRAPHQL_ENDPOINT=http://localhost:8080/v1/graphql HASURA_GRAPHQL_ADMIN_SECRET=hasurasecret ./download-gql-schemas.sh`
 
 ## create-react-app
 

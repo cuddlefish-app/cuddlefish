@@ -8,6 +8,14 @@ TODO:
   - https://blog.yoshuawuyts.com/error-handling-survey/
   - https://nick.groenen.me/posts/rust-error-handling/
 
+## Update GraphQL schemas in development
+
+```
+HASURA_GRAPHQL_ENDPOINT=http://localhost:8080/v1/graphql HASURA_GRAPHQL_ADMIN_SECRET=hasurasecret GITHUB_API_TOKEN=<xxx> ./download-gql-schemas.sh
+```
+
+Pro tip: You don't actually need `GITHUB_API_TOKEN` if you only care about updating the hasura schema.
+
 ## Blame server
 
 The blame server is responsible for giving the git blame information for any repo. These queries are pure in the sense that blame info never changes. The blame server is hooked up to Hasura using a Remote Schema so that we can do remote joins across the blame info and the rest of the Hasura database.

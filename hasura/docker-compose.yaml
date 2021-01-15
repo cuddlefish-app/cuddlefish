@@ -28,9 +28,7 @@ services:
       ## enable debugging mode. It is recommended to disable this in production
       HASURA_GRAPHQL_DEV_MODE: "true"
       HASURA_GRAPHQL_ADMIN_SECRET: hasurasecret
-      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anonymous
-      # This is the same in dev and prod.
-      HASURA_GRAPHQL_JWT_SECRET: "{\"type\": \"RS512\", \"key\": \"-----BEGIN CERTIFICATE-----\nMIIDAzCCAeugAwIBAgIJK5EEMf+vKw87MA0GCSqGSIb3DQEBCwUAMB8xHTAbBgNV\nBAMTFGN1ZGRsZWZpc2guYXV0aDAuY29tMB4XDTIwMDIxODAwNTkyMloXDTMzMTAy\nNzAwNTkyMlowHzEdMBsGA1UEAxMUY3VkZGxlZmlzaC5hdXRoMC5jb20wggEiMA0G\nCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDK7iX8m7MZoxb1WTaNstbp75Cm5tLK\nwDKnMJxFmJjlLXJiy/Q/oBosheedt6UKdciVmIU7cuMz/DWd5lYwYKVrnQ6Tbp43\nYIlTLUmTAK4Zys8VjmoA7aJwcrhtnLgjx8YTSFAORWw+Rsosdd0MIWiVClFdVG/x\n0kE1Dkc/ZzcZWWc7HiR1U9skBBOcRoCgD5uXZLA3As53npcXoMTkHa1/mzggXM1w\nY0aJHuqRNZ8l394104oxRWbinwQFCpLMF7VTKOfYfkY1twDGp0NnITjf39N76xct\nmercjCVI4Z9JFhTkjAtTZSteb4fA80JN87a9/enOSrRwFlM3E4lv6xfpAgMBAAGj\nQjBAMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFI6vxTDEjBhGCD+Wk1Pp8F/i\nBHseMA4GA1UdDwEB/wQEAwIChDANBgkqhkiG9w0BAQsFAAOCAQEAjfctua1ijHP7\nFK/EheeDotyar/tdhrUxp1yaszQyF9O+lK05rCRe0jLhYFdg38duTGrZZ9BDtLJA\n0eMVrOgntn1blMtrQN8noZIOmOsNsbnTB8DUG99jwP23fPxt9XLr5/c+xwMXzJom\nT/153BriI9090VsCJqzKgO2wHreSPPAWPfX44goZpzU9GOFJu4ByQhRonqIy8yNX\nBZPAzIQ07QoMrYQ2yC/oB8ciF5VRudQgJj7KFfezT7fL8S8Tzpf6myi7Bq5249Q6\n4l9u/uBcCIfBsnPHtj7P+JuUsSy8+Ajfo6vMmcHXgxds3RqJ5Y9f9TubYEwgwIUV\n0RcLNNvodw==\n-----END CERTIFICATE-----\"}"
+      HASURA_GRAPHQL_AUTH_HOOK: http://host.docker.internal:3001/hasura_auth_webhook
 
 # See https://docs.docker.com/compose/compose-file/#volumes.
 volumes:

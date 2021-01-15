@@ -1,10 +1,11 @@
 /// Calling Hasura endpoints.
-use crate::BlameLine;
 use crate::CFResult;
+use crate::{BlameLine, GitHubUserId};
 use failure::bail;
 use graphql_client::GraphQLQuery;
 use serde_json::json;
 use std::convert::TryFrom;
+use std::convert::TryInto;
 
 // This name comes from GraphQL/Hasura, so it's not camel case.
 #[allow(non_camel_case_types)]
@@ -123,12 +124,13 @@ struct UpsertUser;
 // GitHub user ID's (and perhaps ID's for other things!) are semantically u64
 // (or just natural numbers), but there's only an Int GraphQL type, and
 // graphql_client maps this to i64.
-fn cast_user_github_id(user_github_id: u64) -> i64 {
+fn cast_user_github_id(user_github_id: GitHubUserId) -> i64 {
   i64::try_from(user_github_id).expect("this shouldn't be a problem until GitHub has 9e18 users!")
 }
 
+// TODO should also store GH access tokens
 pub async fn upsert_user(
-  github_id: u64,
+  github_id: GitHubUserId,
   github_name: &str,
   github_node_id: &str,
   github_username: &str,
@@ -159,7 +161,7 @@ pub async fn upsert_user(
 )]
 struct StartUserSession;
 
-pub async fn start_user_session(user_github_id: u64) -> CFResult<String> {
+pub async fn start_user_session(user_github_id: GitHubUserId) -> CFResult<String> {
   let res: start_user_session::ResponseData = ADMIN_hasura_request(&StartUserSession::build_query(
     start_user_session::Variables {
       user_github_id: cast_user_github_id(user_github_id),
@@ -172,4 +174,47 @@ pub async fn start_user_session(user_github_id: u64) -> CFResult<String> {
     None => bail!("this should never happen as long as hasura is sane"),
     Some(x) => Ok(x.id),
   }
+}
+
+#[derive(graphql_client::GraphQLQuery)]
+#[graphql(
+  schema_path = "gql/hasura/schema.json",
+  query_path = "gql/hasura/queries.graphql",
+  response_derives = "Debug"
+)]
+struct LookupSession;
+
+pub async fn lookup_user_session(session_token: &str) -> CFResult<Option<GitHubUserId>> {
+  let res: lookup_session::ResponseData =
+    ADMIN_hasura_request(&LookupSession::build_query(lookup_session::Variables {
+      session_token: session_token.to_owned(),
+    }))
+    .await?;
+
+  match res.user_sessions_by_pk {
+    None => Ok(None),
+    Some(x) => Ok(Some(
+      x.user
+        .github_id
+        .try_into()
+        .expect("github user id doesn't fit into u64"),
+    )),
+  }
+}
+
+#[derive(graphql_client::GraphQLQuery)]
+#[graphql(
+  schema_path = "gql/hasura/schema.json",
+  query_path = "gql/hasura/queries.graphql",
+  response_derives = "Debug"
+)]
+struct EndUserSession;
+
+pub async fn end_user_session(session_token: &str) -> CFResult<()> {
+  ADMIN_hasura_request(&EndUserSession::build_query(end_user_session::Variables {
+    session_token: session_token.to_owned(),
+  }))
+  .await?;
+
+  Ok(())
 }

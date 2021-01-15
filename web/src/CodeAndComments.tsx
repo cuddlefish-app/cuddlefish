@@ -6,7 +6,14 @@ import {
   Grid,
   Relative,
 } from "@primer/components";
-import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  Suspense,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   graphql,
   useLazyLoadQuery,
@@ -18,6 +25,7 @@ import createElement from "react-syntax-highlighter/dist/esm/create-element";
 import { githubGist } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { githubRepoId, internalError } from "./App";
 import NewThreadPopover from "./NewThreadPopover";
+import RedirectMemoContext from "./RedirectMemoContext";
 import ThreadPopover from "./ThreadPopover";
 import { CodeAndComments_threads_Query } from "./__generated__/CodeAndComments_threads_Query.graphql";
 
@@ -158,10 +166,16 @@ const CodeAndComments: React.FC<{
       <tr
         // Double-clicking on a line focuses on the line.
         onDoubleClick={() => {
+          // NOTE: why focus first and then set focusLine? Should it be the
+          // other way around?
           inputRef.current?.focus();
           setFocusLine(lineNumber + 1);
         }}
         // When you click on another line, clear the focused line.
+        // TODO: maybe only clear focus line if we click on a line _other_ than
+        // the focus line? The challenge is that we can't naively access
+        // focusLine from here. Need to wrap it up as interior mutability or
+        // something.
         onClick={() => setFocusLine(null)}
         // When you hover on a line, set the hoverLine.
         onMouseMove={() => setHoverLine(lineNumber + 1)}
@@ -337,7 +351,7 @@ const Comments: React.FC<{
                 id
                 body
                 created_at
-                author_id
+                author_github_id
                 author {
                   github_username
                 }
@@ -380,7 +394,7 @@ const Comments: React.FC<{
                 id
                 body
                 created_at
-                author_id
+                author_github_id
                 author {
                   github_username
                 }
@@ -434,17 +448,33 @@ const Comments: React.FC<{
     ]
   );
 
-  // The line on which the NewThreadPopover should be on, if any. There's still a sporadic bug where the
-  // NewThreadPopover input doesn't focus when double-clicking on a line...
-  const newThreadLine = focusLine !== null ? focusLine : hoverLine;
+  const { redirectMemo } = useContext(RedirectMemoContext);
+  console.log("redirectMemo");
+  console.log(redirectMemo);
+  // This is the line number that the redirect tells us to go to, null in the
+  // absence of the
+  const redirectFocusLine: null | number =
+    redirectMemo !== null && (redirectMemo as any).kind === "new_thread"
+      ? (redirectMemo as any).line
+      : null;
+
+  // The line on which the NewThreadPopover should be on, if any. This can
+  // differ from hoverLine when a line is focused.
+  // NOTE: Normally this would be unsafe, but since all line numbers are greater
+  // than zero, I think we safely avoid the false-y values.
+  // TODO: There's still a sporadic bug where the NewThreadPopover input doesn't
+  // focus when double-clicking on a line...
+  const newThreadLine = redirectFocusLine || focusLine || hoverLine;
 
   return (
     <Relative>
       {existingThreads}
 
-      {/* TODO: Sometimes `threads.blamelines[newThreadLine - 1]` is undefined when the useLazyLoadQuery gives back
-      empty blamelines results, eg. when there's issues talking to Hasura. */}
+      {/* Sometimes `threads.blamelines[newThreadLine - 1]` is undefined when
+      the useLazyLoadQuery gives back empty blamelines results, eg. when there's
+      issues talking to Hasura. */}
       {newThreadLine !== null &&
+        threads.blamelines[newThreadLine - 1] !== undefined &&
         threads.blamelines[newThreadLine - 1].original_line?.threads.length ===
           0 && (
           <Absolute
@@ -458,8 +488,9 @@ const Comments: React.FC<{
           >
             <NewThreadPopover
               blameline={threads.blamelines[newThreadLine - 1]}
-              inputRef={hoverLine === newThreadLine ? inputRef : null}
-              hoverLine={hoverLine}
+              // Why not just always set inputRef=inputRef?
+              // inputRef={hoverLine === newThreadLine ? inputRef : null}
+              inputRef={inputRef}
               focusLine={focusLine}
               setHoverLine={setHoverLine}
               setFocusLine={setFocusLine}

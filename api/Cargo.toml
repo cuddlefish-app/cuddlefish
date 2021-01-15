@@ -21,6 +21,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tokio = { version = "0.2", features = ["macros"] }
 url = "2.1"
+time = "0.2"
 
 # Published juniper packages don't work. See https://github.com/graphql-rust/juniper/issues/741.
 # See https://github.com/rust-lang/cargo/issues/1462#issuecomment-87002475.

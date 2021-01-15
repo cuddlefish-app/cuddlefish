@@ -1,43 +1,49 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { Avatar, Button } from "@primer/components";
 import React from "react";
+import { loginWithRedirect, logout, useAuthState, UserInfo } from "./auth";
 
-const UserAvatarDropDown: React.FC = () => {
-  const { user } = useAuth0();
-  return <Avatar src={user.picture} marginTop={1} />;
+const UserAvatarDropDown: React.FC<{ user: UserInfo }> = ({ user }) => {
+  return (
+    <Avatar
+      size={32}
+      src={`https://avatars.githubusercontent.com/u/${user.github_id}`}
+      marginTop={1}
+    />
+  );
 };
 
-const Header: React.FC = (props) => {
-  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
+const Header: React.FC = () => {
+  const authstate = useAuthState();
   return (
     <div className="Header">
       <div className="Header-item">
-        <a href="#" className="Header-link f4 d-flex flex-items-center">
+        <a href="/" className="Header-link f4 d-flex flex-items-center">
           <span>Cuddlefish</span>
         </a>
       </div>
 
-      <div className="Header-item">
+      {/* <div className="Header-item">
         <input type="search" className="form-control input-dark" />
-      </div>
-      <div className="Header-item Header-item--full">Menu</div>
-      {isAuthenticated ? (
+      </div> */}
+      <div className="Header-item Header-item--full"></div>
+
+      {authstate.isLoggedIn ? (
         <div className="Header-item mr-0">
-          <UserAvatarDropDown />
+          <UserAvatarDropDown user={authstate.user} />
+          <Button onClick={() => logout()} marginLeft={3}>
+            Log out
+          </Button>
         </div>
-      ) : null}
-      <Button
-        onClick={() =>
-          loginWithRedirect({
-            appState: { returnTo: window.location.pathname },
-          })
-        }
-      >
-        Sign in
-      </Button>
-      <Button onClick={() => logout({ returnTo: window.location.origin })}>
-        Log out
-      </Button>
+      ) : (
+        <Button
+          onClick={() =>
+            // TODO: fix the redirect situation so that this actually does something
+            loginWithRedirect({ returnTo: window.location.pathname })
+          }
+        >
+          Sign in with GitHub
+        </Button>
+      )}
     </div>
   );
 };
