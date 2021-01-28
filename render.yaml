@@ -4,12 +4,13 @@ services:
     env: docker
     dockerfilePath: ./hasura/Dockerfile
     dockerContext: ./hasura
-    healthCheckPath: /
+    # See https://hasura.io/docs/1.0/graphql/core/api-reference/health.html
+    healthCheckPath: /healthz
     envVars:
-      - key: HASURA_GRAPHQL_MIGRATIONS_DIR
-        value: ./migrations
-      - key: HASURA_GRAPHQL_METADATA_DIR
-        value: ./metadata
+      # - key: HASURA_GRAPHQL_MIGRATIONS_DIR
+      #   value: ./migrations
+      # - key: HASURA_GRAPHQL_METADATA_DIR
+      #   value: ./metadata
       - key: HASURA_GRAPHQL_DATABASE_URL
         fromDatabase:
           name: elefante
