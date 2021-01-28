@@ -1,0 +1,6 @@
+services:
+
+databases:
+  # This is the Render name of the database, not the postgres name of the
+  # database.
+  - name: elefante
