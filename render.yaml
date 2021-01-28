@@ -1,6 +1,22 @@
 services:
+  - type: web
+    name: hasura
+    env: docker
+    dockerfilePath: ./hasura/Dockerfile
+    dockerContext: ./hasura
+    healthCheckPath: /
+    envVars:
+      - key: HASURA_GRAPHQL_MIGRATIONS_DIR
+        value: ./migrations
+      - key: HASURA_GRAPHQL_METADATA_DIR
+        value: ./metadata
+      - key: HASURA_GRAPHQL_DATABASE_URL
+        fromDatabase:
+          name: elefante
+          property: connectionString
 
 databases:
   # This is the Render name of the database, not the postgres name of the
-  # database.
+  # database. Render may add a suffix. In our case that doesn't seem to be the
+  # case: both are "elefante".
   - name: elefante
