@@ -30,6 +30,9 @@ services:
       HASURA_GRAPHQL_ADMIN_SECRET: hasurasecret
       HASURA_GRAPHQL_AUTH_HOOK: http://host.docker.internal:3001/hasura_auth_webhook
 
+      # See https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds.
+      API_GRAPHQL_ENDPOINT: http://host.docker.internal:3001/graphql
+
 # See https://docs.docker.com/compose/compose-file/#volumes.
 volumes:
   db_data:
