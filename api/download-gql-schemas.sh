@@ -7,11 +7,14 @@ set -euf -o pipefail
 # injects these env vars on its own. Instead you'll need to export them yourself
 # when running locally.
 
-# Add --silent flag so these secrets don't end up in CI logs.
-yarn --silent apollo schema:download gql/hasura/schema.json \
-    --endpoint=$HASURA_GRAPHQL_ENDPOINT \
-    --header="X-Hasura-Admin-Secret: $HASURA_GRAPHQL_ADMIN_SECRET"
+# See https://github.com/graphql-rust/graphql-client/tree/master/graphql_client_cli
 
-yarn --silent apollo schema:download gql/github/schema.json \
-    --endpoint=https://api.github.com/graphql \
-    --header="Authorization: bearer $GITHUB_API_TOKEN"
+graphql-client introspect-schema \
+    --header="X-Hasura-Admin-Secret: $HASURA_GRAPHQL_ADMIN_SECRET" \
+    $HASURA_GRAPHQL_ENDPOINT \
+    --output gql/hasura/schema.json
+
+graphql-client introspect-schema \
+    --authorization=$GITHUB_API_TOKEN \
+    https://api.github.com/graphql \
+    --output gql/github/schema.json
