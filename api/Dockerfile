@@ -9,4 +9,6 @@ ENV RUST_LIB_BACKTRACE=1
 ENV RUST_BACKTRACE=full
 ENV RUST_LOG=api=trace
 
+ENV PORT=3001
+
 CMD cargo run --release
