@@ -14,11 +14,36 @@ services:
       - key: HASURA_GRAPHQL_ADMIN_SECRET
         generateValue: true
       - key: API_HOSTPORT
-        value: api:3001
-        # fromService:
-        #   name: api
-        #   type: web
-        #   property: hostport
+        fromService:
+          name: api
+          type: web
+          property: hostport
+
+  - type: web
+    name: api
+    env: docker
+    dockerfilePath: ./api/Dockerfile
+    dockerContext: ./api
+    healthCheckPath: /healthz
+    envVars:
+      - key: HASURA_HOSTPORT
+        fromService:
+          name: hasura
+          type: web
+          property: hostport
+      - key: HASURA_GRAPHQL_ADMIN_SECRET
+        fromService:
+          name: hasura
+          type: web
+          envVarKey: HASURA_GRAPHQL_ADMIN_SECRET
+      - key: GITHUB_OAUTH_CLIENT_ID
+        sync: false
+      - key: GITHUB_OAUTH_CLIENT_SECRET
+        sync: false
+      - key: API_PASETO_SECRET_KEY
+        # generateValue is problematic because we need the secret key to be a
+        # specific length.
+        sync: false
 
 databases:
   # This is the Render name of the database, not the postgres name of the

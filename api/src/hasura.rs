@@ -1,7 +1,7 @@
 use crate::BlameLine;
 use crate::CFResult;
 use crate::GitHubUserId;
-use crate::RUNNING_ON_RENDER;
+use crate::HASURA_HOSTPORT;
 use failure::bail;
 use graphql_client::GraphQLQuery;
 use serde_json::json;
@@ -16,13 +16,9 @@ type uuid = String;
 async fn ADMIN_hasura_request<B: serde::ser::Serialize + ?Sized, T: serde::de::DeserializeOwned>(
   json_body: &B,
 ) -> CFResult<T> {
-  let hasura_url = if *RUNNING_ON_RENDER {
-    "https://hasura/v1/graphql"
-  } else {
-    "http://localhost:8080/v1/graphql"
-  };
+  let hasura_url = format!("{}/v1/graphql", *HASURA_HOSTPORT);
   let response = reqwest::Client::new()
-    .post(hasura_url)
+    .post(&hasura_url)
     .header(
       "x-hasura-admin-secret",
       &*crate::HASURA_GRAPHQL_ADMIN_SECRET,

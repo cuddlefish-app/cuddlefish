@@ -241,6 +241,8 @@ lazy_static! {
     .expect("GITHUB_OAUTH_CLIENT_SECRET env var not set");
   static ref API_PASETO_SECRET_KEY: String =
     std::env::var("API_PASETO_SECRET_KEY").expect("API_PASETO_SECRET_KEY env var not set");
+  static ref HASURA_HOSTPORT: String =
+    std::env::var("HASURA_HOSTPORT").expect("HASURA_HOSTPORT env var not set");
 
   // Whether or not we're running on render at all, either in prod or as an
   // ephemeral PR environment. See https://render.com/docs/environment-variables.
@@ -256,7 +258,13 @@ async fn main() {
   lazy_static::initialize(&GITHUB_OAUTH_CLIENT_ID);
   lazy_static::initialize(&GITHUB_OAUTH_CLIENT_SECRET);
   lazy_static::initialize(&API_PASETO_SECRET_KEY);
+  lazy_static::initialize(&HASURA_HOSTPORT);
   lazy_static::initialize(&RUNNING_ON_RENDER);
+
+  info!("Starting with settings:");
+  info!("GITHUB_OAUTH_CLIENT_ID = {}", *GITHUB_OAUTH_CLIENT_ID);
+  info!("HASURA_HOSTPORT = {}", *HASURA_HOSTPORT);
+  info!("RUNNING_ON_RENDER = {}", *RUNNING_ON_RENDER);
 
   let root_node = Arc::new(RootNode::new(
     Query,
@@ -282,6 +290,13 @@ async fn main() {
             (&Method::GET, "/graphql") | (&Method::POST, "/graphql") => {
               juniper_hyper::graphql(root_node, Arc::new(()), req).await
             }
+
+            (&Method::GET, "/healthz") => Ok::<_, hyper::Error>(
+              Response::builder()
+                .status(StatusCode::OK)
+                .body(Body::empty())
+                .expect("failed to construct response"),
+            ),
 
             (&Method::GET, "/login") => auth::login_route(req).await,
             (&Method::GET, "/oauth/callback/github") => auth::github_callback_route(req).await,
