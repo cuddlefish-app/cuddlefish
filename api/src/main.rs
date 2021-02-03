@@ -67,6 +67,7 @@ pub struct BlameLine {
 }
 
 fn mirror_dir(repo_id: &RepoId) -> PathBuf {
+  // TODO should load up MIRRORS_DIR at server startup.
   // repo_id has its `/`s escaped, so it's safe as a file path.
   Path::new(&std::env::var("MIRRORS_DIR").expect("MIRRORS_DIR env var not set"))
     .join(repo_id.to_string())
@@ -326,7 +327,8 @@ async fn main() {
   });
 
   // The frontend uses 3000 by default, and this one is easier to configure.
-  let addr = ([127, 0, 0, 1], 3001).into();
+  // See https://community.render.com/t/502-bad-gateway-errors/616/4?u=samuela.
+  let addr = ([0, 0, 0, 0], 3001).into();
   let server = Server::bind(&addr).serve(make_service);
   println!("Listening on http://{}", addr);
 
