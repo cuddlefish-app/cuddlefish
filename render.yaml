@@ -21,9 +21,9 @@ services:
 
   - type: web
     name: api
-    env: docker
-    dockerfilePath: ./api/Dockerfile
-    dockerContext: ./api
+    env: rust
+    buildCommand: cargo build --release --manifest-path=api/Cargo.toml
+    startCommand: cargo run --release --manifest-path=api/Cargo.toml
     healthCheckPath: /healthz
     envVars:
       - key: HASURA_HOSTPORT
@@ -44,6 +44,15 @@ services:
         # generateValue is problematic because we need the secret key to be a
         # specific length.
         sync: false
+
+      - key: MIRRORS_DIR
+        value: "/tmp/mirrors"
+      - key: RUST_LIB_BACKTRACE
+        value: 1
+      - key: RUST_BACKTRACE
+        value: "full"
+      - key: RUST_LOG
+        value: "api=trace"
 
 databases:
   # This is the Render name of the database, not the postgres name of the
