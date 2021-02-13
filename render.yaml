@@ -13,11 +13,11 @@ services:
           property: connectionString
       - key: HASURA_GRAPHQL_ADMIN_SECRET
         generateValue: true
-      - key: API_HOSTPORT
+      - key: API_HOST
         fromService:
           name: api
           type: web
-          property: hostport
+          property: host
 
       # If we don't set this then render will incorrectly infer it as 9691 since
       # the hasura/graphql-engine:vX.X.X.cli-migrations-v2 image first starts a
