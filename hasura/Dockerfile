@@ -6,7 +6,7 @@ COPY ./migrations /hasura-migrations
 COPY ./metadata /hasura-metadata
 
 # See remote_schemas.yaml.
-ENTRYPOINT API_GRAPHQL_ENDPOINT=$API_HOSTPORT/graphql docker-entrypoint.sh
+ENTRYPOINT API_GRAPHQL_ENDPOINT=http://$API_HOSTPORT/graphql docker-entrypoint.sh
 # The ENTRYPOINT ends up getting run first and then it hands off control to CMD.
 CMD graphql-engine serve \
-  --auth-hook "$API_HOSTPORT/hasura_auth_webhook"
+  --auth-hook "http://$API_HOSTPORT/hasura_auth_webhook"

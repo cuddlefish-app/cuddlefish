@@ -19,6 +19,12 @@ services:
           type: web
           property: hostport
 
+      # If we don't set this then render will incorrectly infer it as 9691 since
+      # the hasura/graphql-engine:vX.X.X.cli-migrations-v2 image first starts a
+      # temporary server to run the appropriate migrations and metadata updates.
+      - key: PORT
+        value: 8080
+
   - type: web
     name: api
     env: rust
