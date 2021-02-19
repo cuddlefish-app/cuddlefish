@@ -10,6 +10,7 @@ in pkgs.mkShell {
     pkgs.docker-compose
     pkgs.hasura-cli
     pkgs.rustc
+    pkgs.rustfmt
     pkgs.yarn
 
     # Necessary for the openssl-sys crate:
@@ -19,4 +20,7 @@ in pkgs.mkShell {
   shellHook = ''
     yarn --cwd web install --frozen-lockfile
   '';
+
+  # See https://discourse.nixos.org/t/rust-src-not-found-and-other-misadventures-of-developing-rust-on-nixos/11570/3?u=samuela.
+  RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
 }
