@@ -283,7 +283,11 @@ async fn main() {
           let method = req.method().clone();
           // .path() drops ?k=v and #asdf stuff.
           let uri = req.uri().path().to_owned();
-          info!("--> {} {}", method, uri);
+
+          // Too many nuisance logs for /healthz...
+          if (&method, uri.as_ref()) != (&Method::GET, "/healthz") {
+            info!("--> {} {}", method, uri);
+          }
 
           (match (&method, uri.as_ref()) {
             // TODO: turn off graphiql in prod.
@@ -312,13 +316,15 @@ async fn main() {
             ),
           })
           .and_then(|resp| {
-            info!(
-              "<-- {} {} {} {}ms",
-              method,
-              uri,
-              resp.status().as_u16(),
-              start_time.elapsed().as_millis()
-            );
+            if (&method, uri.as_ref()) != (&Method::GET, "/healthz") {
+              info!(
+                "<-- {} {} {} {}ms",
+                method,
+                uri,
+                resp.status().as_u16(),
+                start_time.elapsed().as_millis()
+              );
+            }
             Ok(resp)
           })
         }
