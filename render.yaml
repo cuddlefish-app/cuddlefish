@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: hasura
+    name: cf-hasura
     env: docker
     dockerfilePath: ./hasura/Dockerfile
     dockerContext: ./hasura
@@ -29,7 +29,7 @@ services:
         value: 8080
 
   - type: web
-    name: api
+    name: cf-api
     env: rust
     buildCommand: cargo build --release --manifest-path=api/Cargo.toml
     startCommand: cargo run --release --manifest-path=api/Cargo.toml
@@ -62,6 +62,16 @@ services:
         value: "full"
       - key: RUST_LOG
         value: "api=trace"
+
+  - type: web
+    name: cf-web
+    env: static
+    buildCommand: yarn build
+    staticPublishPath: ./build
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: sameorigin
 
 databases:
   # This is the Render name of the database, not the postgres name of the
