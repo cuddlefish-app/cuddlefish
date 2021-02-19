@@ -22,6 +22,7 @@ export function githubRepoId(repo_owner: string, repo_name: string) {
   return `github-${repo_owner}!${repo_name}`;
 }
 
+// TODO: clean up
 // See https://auth0.com/blog/complete-guide-to-react-user-authentication/.
 const CustomAuthProvider: React.FC = ({ children }) => {
   // const history = useHistory();
