@@ -15,7 +15,7 @@ services:
         generateValue: true
       - key: API_HOST
         fromService:
-          name: api
+          name: cf-api
           type: web
           property: host
       # Render is incredibly buggy/broken. Ports are all wrong. See https://community.render.com/t/service-cannot-reach-itself-via-host-port-combo/755/4?u=samuela
@@ -37,12 +37,12 @@ services:
     envVars:
       - key: HASURA_HOSTPORT
         fromService:
-          name: hasura
+          name: cf-hasura
           type: web
           property: hostport
       - key: HASURA_GRAPHQL_ADMIN_SECRET
         fromService:
-          name: hasura
+          name: cf-hasura
           type: web
           envVarKey: HASURA_GRAPHQL_ADMIN_SECRET
       - key: GITHUB_OAUTH_CLIENT_ID
