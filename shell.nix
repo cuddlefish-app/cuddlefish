@@ -23,4 +23,9 @@ in pkgs.mkShell {
 
   # See https://discourse.nixos.org/t/rust-src-not-found-and-other-misadventures-of-developing-rust-on-nixos/11570/3?u=samuela.
   RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
+
+  # Development variables:
+  HASURA_GRAPHQL_ADMIN_SECRET = "hasurasecret";
+  API_GRAPHQL_ENDPOINT = "http://localhost:3001/graphql";
+  HASURA_GRAPHQL_ENDPOINT = "http://localhost:8080/v1/graphql";
 }
