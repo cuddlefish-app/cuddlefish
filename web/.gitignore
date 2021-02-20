@@ -3,9 +3,6 @@
 # Relay dumps type definitions here.
 /src/__generated__/
 
-# GraphQL schemas should be automatically downloaded with download-gql-schemas.sh.
-/schemas/
-
 # dependencies
 /node_modules
 /.pnp
