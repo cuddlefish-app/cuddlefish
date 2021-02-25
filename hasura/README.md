@@ -4,7 +4,7 @@ Public access is available and is given the role `anonymous`.
 
 ## Development
 
-Run `docker-compose up`. It will run hasura and postgres locally with persistence across runs.
+Run `docker-compose up --build`. It will run hasura and postgres locally with persistence across runs.
 
 Run `hasura console` in this directory to get the friendly hasura GUI.
 
