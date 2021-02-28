@@ -55,7 +55,7 @@ services:
         sync: false
 
       - key: MIRRORS_DIR
-        value: "/tmp/mirrors"
+        value: "/tmp/cf-mirrors"
       - key: RUST_LIB_BACKTRACE
         value: 1
       - key: RUST_BACKTRACE

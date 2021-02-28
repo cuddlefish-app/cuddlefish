@@ -2,7 +2,7 @@
 set -a; source /etc/cuddlefish-dev.env; set +a
 
 # See https://doc.rust-lang.org/std/backtrace/index.html#environment-variables.
-MIRRORS_DIR=mirrors \
+MIRRORS_DIR=/tmp/cf-mirrors \
     RUST_LIB_BACKTRACE=1 \
     RUST_BACKTRACE=full \
     RUST_LOG=api=trace \

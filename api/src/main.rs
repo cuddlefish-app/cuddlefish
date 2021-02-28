@@ -67,10 +67,8 @@ pub struct BlameLine {
 }
 
 fn mirror_dir(repo_id: &RepoId) -> PathBuf {
-  // TODO should load up MIRRORS_DIR at server startup.
   // repo_id has its `/`s escaped, so it's safe as a file path.
-  Path::new(&std::env::var("MIRRORS_DIR").expect("MIRRORS_DIR env var not set"))
-    .join(repo_id.to_string())
+  Path::new(&*MIRRORS_DIR).join(repo_id.to_string())
 }
 
 /// Get a Repository object for a given RepoId. If we already have the repo cloned, great. If not, clone it first.
@@ -244,6 +242,8 @@ lazy_static! {
     std::env::var("API_PASETO_SECRET_KEY").expect("API_PASETO_SECRET_KEY env var not set");
   static ref HASURA_HOSTPORT: String =
     std::env::var("HASURA_HOSTPORT").expect("HASURA_HOSTPORT env var not set");
+  static ref MIRRORS_DIR: String =
+    std::env::var("MIRRORS_DIR").expect("MIRRORS_DIR env var not set");
 
   // Whether or not we're running on render at all, either in prod or as an
   // ephemeral PR environment. See https://render.com/docs/environment-variables.
@@ -264,6 +264,7 @@ async fn main() {
 
   info!("Starting with settings:");
   info!("GITHUB_OAUTH_CLIENT_ID = {}", *GITHUB_OAUTH_CLIENT_ID);
+  info!("MIRRORS_DIR = {}", *MIRRORS_DIR);
   info!("HASURA_HOSTPORT = {}", *HASURA_HOSTPORT);
   info!("RUNNING_ON_RENDER = {}", *RUNNING_ON_RENDER);
 
