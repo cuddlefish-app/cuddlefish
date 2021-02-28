@@ -1100,8 +1100,14 @@ input lines_variance_order_by {
   line_number: order_by
 }
 
+type Mutation {
+  CalculateBlameLines(filePath: String!, lastCommit: String!, repoId: String!): Boolean!
+}
+
 """mutation root"""
 type mutation_root {
+  CalculateBlameLines(filePath: String!, lastCommit: String!, repoId: String!): Boolean!
+
   """
   delete data from the table: "blamelines"
   """
@@ -1496,6 +1502,10 @@ enum order_by {
   desc_nulls_last
 }
 
+type Query {
+  noop: Boolean!
+}
+
 """query root"""
 type query_root {
   """
@@ -1626,6 +1636,7 @@ type query_root {
 
   """fetch data from the table: "lines" using primary key columns"""
   lines_by_pk(commit: String!, file_path: String!, line_number: Int!): lines
+  noop: Boolean!
 
   """
   fetch data from the table: "threads"
