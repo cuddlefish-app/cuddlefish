@@ -331,7 +331,7 @@ pub async fn hasura_auth_webhook(req: Request<Body>) -> Result<Response<Body>, h
         // Hasura says all values should be strings. See https://hasura.io/docs/1.0/graphql/core/auth/authentication/webhook.html#success.
         json!({
           "X-Hasura-User-Id": github_user_id.to_string(),
-          "X-Hasura-Role": USER_INFO_COOKIE_NAME
+          "X-Hasura-Role": "user"
         })
         .to_string(),
       ))
