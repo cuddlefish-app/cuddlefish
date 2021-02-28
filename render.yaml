@@ -1,6 +1,6 @@
 services:
-  - type: web
-    name: cf-hasura
+  - name: cf-hasura
+    type: web
     env: docker
     dockerfilePath: ./hasura/Dockerfile
     dockerContext: ./hasura
@@ -28,8 +28,8 @@ services:
       - key: PORT
         value: 8080
 
-  - type: web
-    name: cf-api
+  - name: cf-api
+    type: web
     env: rust
     buildCommand: cargo build --release --manifest-path=api/Cargo.toml
     startCommand: cargo run --release --manifest-path=api/Cargo.toml
@@ -63,8 +63,8 @@ services:
       - key: RUST_LOG
         value: "api=trace"
 
-  - type: web
-    name: cf-web
+  - name: cf-web
+    type: web
     env: static
     buildCommand: yarn --cwd web install --frozen-lockfile && yarn --cwd web relay && yarn --cwd web build
     staticPublishPath: ./web/build
