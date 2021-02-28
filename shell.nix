@@ -1,6 +1,6 @@
 let
-  # Last updated: 2/12/21
-  pkgs = import (fetchTarball("https://github.com/NixOS/nixpkgs/archive/a58a0b5098f0c2a389ee70eb69422a052982d990.tar.gz")) {};
+  # Last updated: 2/26/21
+  pkgs = import (fetchTarball("https://github.com/NixOS/nixpkgs/archive/04ac9dcd311956d1756d77f4baf9258392ee7bdd.tar.gz")) {};
 
   # Rolling updates, not deterministic.
   # pkgs = import (fetchTarball("channel:nixpkgs-unstable")) {};
@@ -12,6 +12,9 @@ in pkgs.mkShell {
     pkgs.rustc
     pkgs.rustfmt
     pkgs.yarn
+
+    # Necessary for `yarn relay --watch`.
+    pkgs.watchman
 
     # Necessary for the openssl-sys crate:
     pkgs.openssl
@@ -27,5 +30,4 @@ in pkgs.mkShell {
   # Development variables:
   HASURA_GRAPHQL_ADMIN_SECRET = "hasurasecret";
   API_GRAPHQL_ENDPOINT = "http://localhost:3001/graphql";
-  HASURA_GRAPHQL_ENDPOINT = "http://localhost:8080/v1/graphql";
 }
