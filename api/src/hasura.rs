@@ -16,7 +16,7 @@ type uuid = String;
 async fn ADMIN_hasura_request<B: serde::ser::Serialize + ?Sized, T: serde::de::DeserializeOwned>(
   json_body: &B,
 ) -> CFResult<T> {
-  let hasura_url = format!("{}/v1/graphql", *HASURA_HOSTPORT);
+  let hasura_url = format!("http://{}/v1/graphql", *HASURA_HOSTPORT);
   let response = reqwest::Client::new()
     .post(&hasura_url)
     .header(
