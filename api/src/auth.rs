@@ -30,9 +30,14 @@ pub async fn login_route(_: Request<Body>) -> Result<Response<Body>, hyper::Erro
 
   // See https://serverfault.com/questions/391181/examples-of-302-vs-303 for a
   // breakdown of all possible HTTP redirects.
-  let callback_url = match std::env::var("RENDER_EXTERNAL_URL") {
-    Ok(url) => format!("{}/oauth/callback/github", url),
-    Err(_) => "http://localhost:3001/oauth/callback/github".to_string(),
+
+  // Can't use RENDER_EXTERNAL_URL because it's https://cf-api.onrender.com, and
+  // we can't do any kind of callback_url wildcard in the GitHub app. This won't
+  // work with PR preview environments, so we'll have to figure that out later.
+  let callback_url = if *RUNNING_ON_RENDER {
+    "https://cuddlefish.app/oauth/callback/github"
+  } else {
+    "http://localhost:3001/oauth/callback/github"
   };
   Ok::<_, hyper::Error>(
     Response::builder()
