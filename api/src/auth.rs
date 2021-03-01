@@ -35,7 +35,7 @@ pub async fn login_route(_: Request<Body>) -> Result<Response<Body>, hyper::Erro
   // we can't do any kind of callback_url wildcard in the GitHub app. This won't
   // work with PR preview environments, so we'll have to figure that out later.
   let callback_url = if *RUNNING_ON_RENDER {
-    "https://cuddlefish.app/oauth/callback/github"
+    "https://api.cuddlefish.app/oauth/callback/github"
   } else {
     "http://localhost:3001/oauth/callback/github"
   };
