@@ -23,12 +23,5 @@ tokio = { version = "0.2", features = ["macros"] }
 url = "2.1"
 time = "0.2"
 
-# Published juniper packages don't work. See https://github.com/graphql-rust/juniper/issues/741.
-# See https://github.com/rust-lang/cargo/issues/1462#issuecomment-87002475.
-# We should be able to upgrade to juniper 0.8.1 and get this fixed up.
-juniper = { git = "https://github.com/graphql-rust/juniper", rev = "45c16ac" }
-juniper_hyper = { git = "https://github.com/graphql-rust/juniper", rev = "45c16ac" }
-
-# For development:
-# juniper = { path = "../../juniper/juniper" }
-# juniper_hyper = { path = "../../juniper/juniper_hyper" }
+juniper = "0.15"
+juniper_hyper = "0.6"
