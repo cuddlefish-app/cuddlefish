@@ -271,6 +271,10 @@ async fn main() {
   info!("HASURA_HOST = {}", *HASURA_HOST);
   info!("HASURA_PORT = {}", *HASURA_PORT);
   info!("RUNNING_ON_RENDER = {}", *RUNNING_ON_RENDER);
+  info!(
+    "RENDER_EXTERNAL_URL = {:?}",
+    std::env::var("RENDER_EXTERNAL_URL")
+  );
 
   let root_node = Arc::new(RootNode::new(
     Query,
