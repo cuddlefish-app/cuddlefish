@@ -35,11 +35,14 @@ services:
     startCommand: cargo run --release --manifest-path=api/Cargo.toml
     healthCheckPath: /healthz
     envVars:
-      - key: HASURA_HOSTPORT
+      - key: HASURA_HOST
         fromService:
           name: cf-hasura
           type: web
-          property: hostport
+          property: host
+      # See See https://community.render.com/t/service-cannot-reach-itself-via-host-port-combo/755/4?u=samuela.
+      - key: HASURA_PORT
+        value: 10000
       - key: HASURA_GRAPHQL_ADMIN_SECRET
         fromService:
           name: cf-hasura

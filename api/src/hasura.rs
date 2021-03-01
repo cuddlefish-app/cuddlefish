@@ -1,7 +1,8 @@
 use crate::BlameLine;
 use crate::CFResult;
 use crate::GitHubUserId;
-use crate::HASURA_HOSTPORT;
+use crate::HASURA_HOST;
+use crate::HASURA_PORT;
 use failure::bail;
 use graphql_client::GraphQLQuery;
 use serde_json::json;
@@ -16,7 +17,7 @@ type uuid = String;
 async fn ADMIN_hasura_request<B: serde::ser::Serialize + ?Sized, T: serde::de::DeserializeOwned>(
   json_body: &B,
 ) -> CFResult<T> {
-  let hasura_url = format!("http://{}/v1/graphql", *HASURA_HOSTPORT);
+  let hasura_url = format!("http://{}:{}/v1/graphql", *HASURA_HOST, *HASURA_PORT);
   let response = reqwest::Client::new()
     .post(&hasura_url)
     .header(

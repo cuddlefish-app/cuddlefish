@@ -6,7 +6,8 @@ MIRRORS_DIR=/tmp/cf-mirrors \
     RUST_LIB_BACKTRACE=1 \
     RUST_BACKTRACE=full \
     RUST_LOG=api=trace \
-    HASURA_HOSTPORT=localhost:8080 \
+    HASURA_HOST=localhost \
+    HASURA_PORT=8080 \
     cargo watch -x run
 
 # This flag causes cargo to recompile everything every single time you save.

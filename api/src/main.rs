@@ -240,8 +240,10 @@ lazy_static! {
     .expect("GITHUB_OAUTH_CLIENT_SECRET env var not set");
   static ref API_PASETO_SECRET_KEY: String =
     std::env::var("API_PASETO_SECRET_KEY").expect("API_PASETO_SECRET_KEY env var not set");
-  static ref HASURA_HOSTPORT: String =
-    std::env::var("HASURA_HOSTPORT").expect("HASURA_HOSTPORT env var not set");
+  static ref HASURA_HOST: String =
+    std::env::var("HASURA_HOST").expect("HASURA_HOST env var not set");
+  static ref HASURA_PORT: String =
+    std::env::var("HASURA_PORT").expect("HASURA_PORT env var not set");
   static ref MIRRORS_DIR: String =
     std::env::var("MIRRORS_DIR").expect("MIRRORS_DIR env var not set");
 
@@ -259,13 +261,15 @@ async fn main() {
   lazy_static::initialize(&GITHUB_OAUTH_CLIENT_ID);
   lazy_static::initialize(&GITHUB_OAUTH_CLIENT_SECRET);
   lazy_static::initialize(&API_PASETO_SECRET_KEY);
-  lazy_static::initialize(&HASURA_HOSTPORT);
+  lazy_static::initialize(&HASURA_HOST);
+  lazy_static::initialize(&HASURA_PORT);
   lazy_static::initialize(&RUNNING_ON_RENDER);
 
   info!("Starting with settings:");
   info!("GITHUB_OAUTH_CLIENT_ID = {}", *GITHUB_OAUTH_CLIENT_ID);
   info!("MIRRORS_DIR = {}", *MIRRORS_DIR);
-  info!("HASURA_HOSTPORT = {}", *HASURA_HOSTPORT);
+  info!("HASURA_HOST = {}", *HASURA_HOST);
+  info!("HASURA_PORT = {}", *HASURA_PORT);
   info!("RUNNING_ON_RENDER = {}", *RUNNING_ON_RENDER);
 
   let root_node = Arc::new(RootNode::new(
