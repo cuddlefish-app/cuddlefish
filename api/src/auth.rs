@@ -22,9 +22,9 @@ pub async fn login_route(_: Request<Body>) -> Result<Response<Body>, hyper::Erro
   // We use a local token since there's really no need for the client to be able
   // to read anything in it.
   let state = paseto::tokens::PasetoBuilder::new()
-    .set_encryption_key(Vec::from(&*crate::API_PASETO_SECRET_KEY.as_bytes()))
-    .set_expiration(Utc::now() + Duration::minutes(15))
-    .set_not_before(Utc::now())
+    .set_encryption_key(&*crate::API_PASETO_SECRET_KEY.as_bytes())
+    .set_expiration(&(Utc::now() + Duration::minutes(15)))
+    .set_not_before(&Utc::now())
     .build()
     .expect("failed to construct paseto token");
 
@@ -91,7 +91,8 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
   paseto::tokens::validate_local_token(
     &state,
     None,
-    Vec::from(&*crate::API_PASETO_SECRET_KEY.as_bytes()),
+    &*crate::API_PASETO_SECRET_KEY.as_bytes(),
+    &paseto::tokens::TimeBackend::Chrono,
   )
   .map_err(|_| ())?;
 

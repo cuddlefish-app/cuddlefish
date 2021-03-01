@@ -94,12 +94,6 @@ checksum = "a4521f3e3d031370679b3b140beb36dfe4801b09ac77e30c61941f97df3ef28b"
 
 [[package]]
 name = "base64"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b41b7ea54a0c9d92199de89e20e58d49f02f8e699814ef3fdf266f6f748d15c7"
-
-[[package]]
-name = "base64"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3441f0f7b02788e948e47f457ca01f1d7e6d92c693bc132c22b087d3141c03ff"
@@ -212,9 +206,9 @@ checksum = "cd51eab21ab4fd6a3bf889e2d0958c0a6e3a61ad04260325e919e652a2a62826"
 
 [[package]]
 name = "cookie"
-version = "0.14.3"
+version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "784ad0fbab4f3e9cef09f20e0aea6000ae08d2cb98ac4c0abc53df18803d702f"
+checksum = "ffdf8865bac3d9a3bde5bde9088ca431b11f5d37c7a578b8086af77248b76627"
 dependencies = [
  "time 0.2.23",
  "version_check",
@@ -1132,11 +1126,11 @@ dependencies = [
 
 [[package]]
 name = "paseto"
-version = "1.0.7"
+version = "2.0.0+1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c494d81e41d5a5c8168756a1b2ace83d4af61563dd54eb394f1cf8a8775d5ca"
+checksum = "3bf44e557a5d7b45687ef0dbe365f8ceb0ade6c93d6a0f2d8967a57587602a0b"
 dependencies = [
- "base64 0.11.0",
+ "base64 0.13.0",
  "chrono",
  "failure",
  "failure_derive",
