@@ -9,6 +9,7 @@ use hyper::Response;
 use hyper::StatusCode;
 use hyper::{self, Request};
 use log::error;
+use log::trace;
 use serde::Deserialize;
 use serde_json::json;
 use std::collections::HashMap;
@@ -70,6 +71,8 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
 
   let code = query_params.get("code").ok_or(())?;
   let state = query_params.get("state").ok_or(())?;
+  trace!("code = {}", code);
+  trace!("state = {}", state);
 
   // TODO: test calling this endpoint with an invalid/expired paseto token.
 
@@ -100,6 +103,7 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
     &paseto::tokens::TimeBackend::Chrono,
   )
   .map_err(|_| ())?;
+  trace!("paseto::tokens::validate_local_token was successful");
 
   // Trade in code for an access token from GitHub.
   let access_token_response = reqwest::Client::new()
@@ -119,6 +123,7 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
       error!("error getting the github access token");
       ()
     })?;
+  trace!("access_token_response = {:?}", access_token_response);
 
   #[derive(Deserialize)]
   struct AccessTokenResp {
@@ -133,6 +138,7 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
       ()
     })?
     .access_token;
+  trace!("access_token = {}", access_token);
 
   // TODO: maybe use the gql way?
   let user_info_response = reqwest::Client::new()
@@ -148,6 +154,7 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
       error!("error calling api.github.com/user");
       ()
     })?;
+  trace!("user_info_response = {:?}", user_info_response);
 
   #[derive(Deserialize, Debug)]
   struct UserInfoResp {
@@ -170,6 +177,7 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
     error!("failed to parse the response body from github.com/login/oauth/access_token");
     ()
   })?;
+  trace!("user_info = {:?}", user_info);
 
   // upsert user info
   hasura::upsert_user(
@@ -184,6 +192,7 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
     error!("failed to upsert user info");
     ()
   })?;
+  trace!("upsert_user was successful");
 
   // create new user session
   let session_token = hasura::start_user_session(user_info.id)
@@ -192,6 +201,7 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
       error!("failed to create new user session");
       ()
     })?;
+  trace!("session_token = {}", session_token);
 
   // set cookie in response with session token
   // TODO: set domain to allow subdowmain access. also update the logout route
