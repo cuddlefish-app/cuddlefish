@@ -12,6 +12,7 @@ failure = "0.1"
 futures = "0.3"
 git2 = "0.13"
 graphql_client = "0.9"
+# We can't upgrade hyper or tokio until https://github.com/graphql-rust/juniper/pull/888 lands.
 hyper = "0.13"
 lazy_static = "1.4"
 log = "0.4"
