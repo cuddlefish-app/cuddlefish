@@ -1,13 +1,16 @@
 use crate::hasura;
 use crate::GitHubUserId;
 use crate::RUNNING_ON_RENDER;
-use chrono::{prelude::Utc, Duration};
-use cookie::{Cookie, SameSite};
+use chrono::prelude::Utc;
+use chrono::Duration;
+use cookie::Cookie;
+use cookie::SameSite;
+use hyper;
 use hyper::header;
 use hyper::Body;
+use hyper::Request;
 use hyper::Response;
 use hyper::StatusCode;
-use hyper::{self, Request};
 use log::error;
 use log::trace;
 use serde::Deserialize;
@@ -23,9 +26,9 @@ pub async fn login_route(_: Request<Body>) -> Result<Response<Body>, hyper::Erro
   // We use a local token since there's really no need for the client to be able
   // to read anything in it.
   let state = paseto::tokens::PasetoBuilder::new()
-    .set_encryption_key(&*crate::API_PASETO_SECRET_KEY.as_bytes())
-    .set_expiration(&(Utc::now() + Duration::minutes(15)))
-    .set_not_before(&Utc::now())
+    .set_encryption_key(Vec::from(&*crate::API_PASETO_SECRET_KEY.as_bytes()))
+    .set_expiration(Utc::now() + Duration::minutes(15))
+    .set_not_before(Utc::now())
     .build()
     .expect("failed to construct paseto token");
 
@@ -99,8 +102,7 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
   paseto::tokens::validate_local_token(
     &state,
     None,
-    &*crate::API_PASETO_SECRET_KEY.as_bytes(),
-    &paseto::tokens::TimeBackend::Chrono,
+    Vec::from(&*crate::API_PASETO_SECRET_KEY.as_bytes()),
   )
   .map_err(|_| ())?;
   trace!("paseto::tokens::validate_local_token was successful");
@@ -359,4 +361,26 @@ pub async fn hasura_auth_webhook(req: Request<Body>) -> Result<Response<Body>, h
       ))
       .expect("building response failed"),
   })
+}
+
+#[cfg(test)]
+mod tests {
+  use chrono::prelude::Utc;
+  use chrono::Duration;
+
+  // See https://github.com/instructure/paseto/issues/37.
+  #[test]
+  fn paseto_build_validate() {
+    let key = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    let state = paseto::tokens::PasetoBuilder::new()
+      .set_encryption_key(Vec::from(key.as_bytes()))
+      .set_expiration(Utc::now() + Duration::minutes(1))
+      .set_not_before(Utc::now())
+      .build()
+      .expect("failed to construct paseto token");
+    // println!("{}", state);
+    let validation = paseto::tokens::validate_local_token(&state, None, Vec::from(key.as_bytes()));
+    // println!("{:?}", validation);
+    assert!(validation.is_ok());
+  }
 }
