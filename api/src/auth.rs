@@ -104,7 +104,7 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
     None,
     Vec::from(&*crate::API_PASETO_SECRET_KEY.as_bytes()),
   )
-  .map_err(|_| ())?;
+  .map_err(|_| error!("error validating paseto state token"))?;
   trace!("paseto::tokens::validate_local_token was successful");
 
   // Trade in code for an access token from GitHub.
@@ -121,10 +121,7 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
     .await
     // Turn error status codes into rust errors.
     .and_then(|resp| resp.error_for_status())
-    .map_err(|_| {
-      error!("error getting the github access token");
-      ()
-    })?;
+    .map_err(|_| error!("error getting the github access token"))?;
   trace!("access_token_response = {:?}", access_token_response);
 
   #[derive(Deserialize)]
@@ -136,8 +133,7 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
     .json::<AccessTokenResp>()
     .await
     .map_err(|_| {
-      error!("failed to parse the response body from github.com/login/oauth/access_token");
-      ()
+      error!("failed to parse the response body from github.com/login/oauth/access_token")
     })?
     .access_token;
   trace!("access_token = {}", access_token);
@@ -152,10 +148,7 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
     .await
     // Turn error status codes into rust errors.
     .and_then(|resp| resp.error_for_status())
-    .map_err(|_| {
-      error!("error calling api.github.com/user");
-      ()
-    })?;
+    .map_err(|_| error!("error calling api.github.com/user"))?;
   trace!("user_info_response = {:?}", user_info_response);
 
   #[derive(Deserialize, Debug)]
@@ -176,8 +169,7 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
   }
   // Deserialize the user info response.
   let user_info: UserInfoResp = user_info_response.json().await.map_err(|_| {
-    error!("failed to parse the response body from github.com/login/oauth/access_token");
-    ()
+    error!("failed to parse the response body from github.com/login/oauth/access_token")
   })?;
   trace!("user_info = {:?}", user_info);
 
@@ -190,19 +182,13 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
     user_info.email,
   )
   .await
-  .map_err(|_| {
-    error!("failed to upsert user info");
-    ()
-  })?;
+  .map_err(|_| error!("failed to upsert user info"))?;
   trace!("upsert_user was successful");
 
   // create new user session
   let session_token = hasura::start_user_session(user_info.id)
     .await
-    .map_err(|_| {
-      error!("failed to create new user session");
-      ()
-    })?;
+    .map_err(|_| error!("failed to create new user session"))?;
   trace!("session_token = {}", session_token);
 
   // set cookie in response with session token
@@ -234,6 +220,9 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
   // Must set this otherwise the path is /oauth/callback.
   .path("/")
   .finish();
+
+  trace!("session_token_cookie = {}", session_token_cookie);
+  trace!("user_cookie = {}", user_cookie);
 
   // Return a response setting the cookie and redirecting to the homepage.
   let homepage_url = if *RUNNING_ON_RENDER {
