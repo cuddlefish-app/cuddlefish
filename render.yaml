@@ -31,8 +31,9 @@ services:
   - name: cf-api
     type: web
     env: rust
-    buildCommand: cargo build --release --manifest-path=api/Cargo.toml
-    startCommand: cargo run --release --manifest-path=api/Cargo.toml
+    # See https://community.render.com/t/rust-environment-build-caching-doesnt-work-with-monorepos/910/5?u=samuela.
+    buildCommand: cargo build --release --manifest-path=./api/Cargo.toml --target-dir=./target
+    startCommand: cargo run --release --manifest-path=./api/Cargo.toml --target-dir=./target
     healthCheckPath: /healthz
     envVars:
       - key: HASURA_HOST
