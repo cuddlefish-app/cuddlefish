@@ -383,4 +383,15 @@ mod tests {
     // println!("{:?}", validation);
     assert!(validation.is_ok());
   }
+
+  // reqwest will panic at runtime if it's not happy with the version of tokio
+  // that it's provided. That's not cool.
+  #[tokio::test]
+  async fn basic_reqwest() {
+    let resp = reqwest::Client::new()
+      .get("https://google.com")
+      .send()
+      .await;
+    assert!(resp.is_ok())
+  }
 }
