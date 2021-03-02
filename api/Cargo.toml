@@ -14,6 +14,8 @@ git2 = "0.13"
 graphql_client = "0.9"
 # We can't upgrade hyper or tokio until https://github.com/graphql-rust/juniper/pull/888 lands.
 hyper = "0.13"
+juniper = "0.15"
+juniper_hyper = "0.6"
 lazy_static = "1.4"
 log = "0.4"
 # See https://github.com/instructure/paseto/issues/37
@@ -24,6 +26,3 @@ serde_json = "1.0"
 tokio = { version = "0.2", features = ["macros"] }
 url = "2.1"
 time = "0.2"
-
-juniper = "0.15"
-juniper_hyper = "0.6"
