@@ -245,8 +245,8 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
   Ok(
     Response::builder()
       .status(StatusCode::TEMPORARY_REDIRECT)
-      .header(header::SET_COOKIE, format!("{}", session_token_cookie))
-      .header(header::SET_COOKIE, format!("{}", user_cookie))
+      .header(header::SET_COOKIE, session_token_cookie.to_string())
+      .header(header::SET_COOKIE, user_cookie.to_string())
       .header(header::LOCATION, homepage_url)
       .body(Body::empty())
       .expect("building response failed"),
@@ -297,8 +297,8 @@ pub async fn logout_route(req: Request<Body>) -> Result<Response<Body>, hyper::E
   Ok(
     Response::builder()
       .status(StatusCode::TEMPORARY_REDIRECT)
-      .header(header::SET_COOKIE, format!("{}", session_token_cookie))
-      .header(header::SET_COOKIE, format!("{}", user_cookie))
+      .header(header::SET_COOKIE, session_token_cookie.to_string())
+      .header(header::SET_COOKIE, user_cookie.to_string())
       // TODO: shouldn't hard code this...
       .header(header::LOCATION, "http://localhost:3000/")
       .body(Body::empty())
