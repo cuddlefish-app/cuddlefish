@@ -212,10 +212,12 @@ pub async fn lookup_user_session(session_token: &str) -> CFResult<Option<GitHubU
 struct EndUserSession;
 
 pub async fn end_user_session(session_token: &str) -> CFResult<()> {
-  ADMIN_hasura_request(&EndUserSession::build_query(end_user_session::Variables {
-    session_token: session_token.to_owned(),
-  }))
-  .await?;
-
+  // The success of response.json() depends on the correct type being inferred
+  // for the output, so we must be explicit in requesting `end_user_session::ResponseData`.
+  let _: end_user_session::ResponseData =
+    ADMIN_hasura_request(&EndUserSession::build_query(end_user_session::Variables {
+      session_token: session_token.to_owned(),
+    }))
+    .await?;
   Ok(())
 }
