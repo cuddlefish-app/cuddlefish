@@ -267,11 +267,14 @@ pub async fn github_callback_route(req: Request<Body>) -> Result<Response<Body>,
 }
 pub async fn logout_route(req: Request<Body>) -> Result<Response<Body>, hyper::Error> {
   if let Ok(cookies) = parse_cookies(&req) {
+    trace!("got cookies: {:#?}", cookies);
     if let Some(session_token) = cookies.get(SESSION_TOKEN_COOKIE_NAME) {
+      trace!("got session_token: {}", session_token);
       // Try ending the user session...
       if let Err(_) = hasura::end_user_session(session_token).await {
         // If we get an Err from end_user_session it means we got some kind of
         // error talking to hasura.
+        trace!("hasura::end_user_session failed");
         return Ok(
           Response::builder()
             .status(StatusCode::INTERNAL_SERVER_ERROR)
@@ -284,23 +287,19 @@ pub async fn logout_route(req: Request<Body>) -> Result<Response<Body>, hyper::E
 
   // The path and domain on the cookie must match in order for the delete to
   // work! See https://stackoverflow.com/a/53573622/3880977.
-  let session_token_cookie = Cookie::build(SESSION_TOKEN_COOKIE_NAME, "")
-    .path("/")
-    .expires(time::OffsetDateTime::unix_epoch())
-    .finish();
-
-  let user_cookie = Cookie::build(USER_INFO_COOKIE_NAME, "")
-    .path("/")
-    .expires(time::OffsetDateTime::unix_epoch())
-    .finish();
-
+  let session_token_cookie = cookie(SESSION_TOKEN_COOKIE_NAME, "", true);
+  let user_cookie = cookie(USER_INFO_COOKIE_NAME, "", false);
+  let redirect_location = if *RUNNING_ON_RENDER {
+    "https://cuddlefish.app/"
+  } else {
+    "http://localhost:3000/"
+  };
   Ok(
     Response::builder()
       .status(StatusCode::TEMPORARY_REDIRECT)
       .header(header::SET_COOKIE, session_token_cookie.to_string())
       .header(header::SET_COOKIE, user_cookie.to_string())
-      // TODO: shouldn't hard code this...
-      .header(header::LOCATION, "http://localhost:3000/")
+      .header(header::LOCATION, redirect_location)
       .body(Body::empty())
       .expect("building response failed"),
   )
