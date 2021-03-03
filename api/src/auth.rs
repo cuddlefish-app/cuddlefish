@@ -15,6 +15,7 @@ use log::error;
 use log::trace;
 use serde::Deserialize;
 use serde_json::json;
+use std::borrow::Cow;
 use std::collections::HashMap;
 
 const APPLICATION_JSON: &str = "application/json";
@@ -59,6 +60,29 @@ pub async fn login_route(_: Request<Body>) -> Result<Response<Body>, hyper::Erro
       .expect("building response failed"),
   )
 }
+
+fn cookie<'c, V>(name: &'c str, value: V, http_only: bool) -> Cookie<'c>
+where
+  V: Into<Cow<'c, str>>,
+{
+  let mut builder = Cookie::build(name, value)
+    // Only send this cookie over HTTPS when running in prod.
+    .secure(*RUNNING_ON_RENDER)
+    // Cookie is not accessible via JavaScript when http_only is true.
+    .http_only(http_only)
+    // Only send this cookie for requests originating from our domain.
+    .same_site(SameSite::Strict)
+    // Must set this otherwise the path is /oauth/callback.
+    .path("/");
+  if *RUNNING_ON_RENDER {
+    // See https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#define_where_cookies_are_sent.
+    // If we didn't set this then the cookie would only be sent to
+    // api.cuddlefish.app, and not to other *.cuddlefish.app subdomains.
+    builder = builder.domain("cuddlefish.app");
+  }
+  builder.finish()
+}
+
 async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body>, ()> {
   // See https://users.rust-lang.org/t/using-hyper-how-to-get-url-query-string-params/23768/3?u=samuela.
 
@@ -192,21 +216,12 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
   trace!("session_token = {}", session_token);
 
   // set cookie in response with session token
-  // TODO: set domain to allow subdowmain access. also update the logout route
+  // TODO: update the logout route to make sure that it's deleting the right stuff.
   // TODO: should use __Host- prefix here?
-  let session_token_cookie = Cookie::build(SESSION_TOKEN_COOKIE_NAME, session_token)
-    // Only send this cookie over HTTPS. TODO before prod!!!
-    // .secure(true)
-    // Cookie is not accessible via JavaScript.
-    .http_only(true)
-    // Only send this cookie for requests originating from our domain.
-    .same_site(SameSite::Strict)
-    // Must set this otherwise the path is /oauth/callback.
-    .path("/")
-    .finish();
+  let session_token_cookie = cookie(SESSION_TOKEN_COOKIE_NAME, session_token, true);
 
   // TODO base64 or JWT encode this value... otherwise all kinds of naughty things can happen.
-  let user_cookie = Cookie::build(
+  let user_cookie = cookie(
     USER_INFO_COOKIE_NAME,
     json!({
       "github_login": user_info.login,
@@ -214,12 +229,8 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
       "name": user_info.name
     })
     .to_string(),
-  )
-  // Only send this cookie over HTTPS. TODO before prod!!!
-  // .secure(true)
-  // Must set this otherwise the path is /oauth/callback.
-  .path("/")
-  .finish();
+    false,
+  );
 
   trace!("session_token_cookie = {}", session_token_cookie);
   trace!("user_cookie = {}", user_cookie);
