@@ -12,11 +12,12 @@ type AuthState = Anonymous | LoggedIn;
 const USER_INFO_COOKIE_NAME = "cf_user_info";
 
 export function useAuthState(): AuthState {
-  // undefined when the cookie is not set.
+  // undefined when the cookie is not set, empty string when the user has been logged out.
   const userCookie = Cookies.getJSON(USER_INFO_COOKIE_NAME) as
     | undefined
+    | ""
     | UserInfo;
-  if (userCookie === undefined) {
+  if (userCookie === undefined || userCookie === "") {
     return { isLoggedIn: false };
   } else {
     return { isLoggedIn: true, user: userCookie };
