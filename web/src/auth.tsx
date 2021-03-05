@@ -9,6 +9,26 @@ export type UserInfo = {
 type LoggedIn = { isLoggedIn: true; user: UserInfo };
 type AuthState = Anonymous | LoggedIn;
 
+// TODO: we should probably store message drafts in localstorage, and then
+// NewThreadRedirect and NewCommentRedirect can be combined.
+type NewThreadRedirect = {
+  kind: "new_thread";
+  line: number;
+  message: string;
+};
+type NewCommentRedirect = {
+  kind: "new_comment";
+  line: number;
+  message: string;
+};
+type NoopRedirect = {
+  kind: "noop";
+};
+export type RedirectMemo =
+  | NewThreadRedirect
+  | NewCommentRedirect
+  | NoopRedirect;
+
 const USER_INFO_COOKIE_NAME = "cf_user_info";
 
 export function useAuthState(): AuthState {
@@ -26,21 +46,25 @@ export function useAuthState(): AuthState {
 
 /// Redirect to login flow and remember `appState`. When returning to the app,
 /// we check `appState` to see what path to return to.
-export function loginWithRedirect(appState: {}) {
-  // TODO put appState into local storage.
+export function loginWithRedirect(
+  returnTo: string,
+  redirectMemo: RedirectMemo
+) {
+  localStorage.setItem("returnTo", returnTo);
+  localStorage.setItem("redirectMemo", JSON.stringify(redirectMemo));
   if (process.env.NODE_ENV === "production") {
     // TODO this won't work with render's PR previews.
-    window.location.replace("https://api.cuddlefish.app/login");
+    window.location.href = "https://api.cuddlefish.app/login";
   } else {
-    window.location.replace("//localhost:3001/login");
+    window.location.href = "//localhost:3001/login";
   }
 }
 
 export function logout() {
   if (process.env.NODE_ENV === "production") {
     // TODO this won't work with render's PR previews.
-    window.location.replace("https://api.cuddlefish.app/logout");
+    window.location.href = "https://api.cuddlefish.app/logout";
   } else {
-    window.location.replace("//localhost:3001/logout");
+    window.location.href = "//localhost:3001/logout";
   }
 }

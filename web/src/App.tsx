@@ -1,6 +1,12 @@
 import { Octokit } from "@octokit/core";
 import React, { useEffect, useState } from "react";
-import { BrowserRouter, Route, Switch, useParams } from "react-router-dom";
+import {
+  BrowserRouter,
+  Route,
+  Switch,
+  useHistory,
+  useParams,
+} from "react-router-dom";
 import "./App.css";
 import CodeAndComments from "./CodeAndComments";
 import CustomRelayEnvProvider from "./CustomRelayEnvProvider";
@@ -22,35 +28,29 @@ export function githubRepoId(repo_owner: string, repo_name: string) {
   return `github-${repo_owner}!${repo_name}`;
 }
 
-// TODO: clean up
-// See https://auth0.com/blog/complete-guide-to-react-user-authentication/.
-const CustomAuthProvider: React.FC = ({ children }) => {
-  // const history = useHistory();
-  // const [redirectMemo, setRedirectMemo] = useState(null);
-  // return (
-  //   <Auth0Provider
-  //     domain="cuddlefish.auth0.com"
-  //     clientId="PuC9rXk3lxuojdAq5reaa5CB3ibgDH2a"
-  //     audience="https://cuddlefish/hasura"
-  //     redirectUri={window.location.origin}
-  //     onRedirectCallback={(appState) => {
-  //       history.push(appState.returnTo || window.location.pathname);
-  //       setRedirectMemo(appState.redirectMemo);
-  //     }}
-  //   >
-  //     <RedirectMemoContext.Provider value={{ redirectMemo, setRedirectMemo }}>
-  //       {children}
-  //     </RedirectMemoContext.Provider>
-  //   </Auth0Provider>
-  // );{
+// TODO: this doesn't really need to be a component
+const CustomRedirectProvider: React.FC = ({ children }) => {
+  const history = useHistory();
+  // This comes out as null for keys that don't exist, and a string otherwise.
+  const returnTo = localStorage.getItem("returnTo");
+  if (typeof returnTo === "string") {
+    const redirectState_raw = localStorage.getItem("redirectMemo");
+    if (redirectState_raw === null)
+      throw internalError(Error("no redirectMemo in localStorage"));
+    history.push(returnTo, JSON.parse(redirectState_raw));
+    localStorage.removeItem("returnTo");
+    localStorage.removeItem("redirectMemo");
+  }
   return <>{children}</>;
 };
 
 function App() {
+  // TODO:
+  //   * /:owner/:repo
+  //   * /:owner/:repo/blob/:branch/path_to_dir_not_file doesn't work, gives weird 404 and calcblamelines errors out
   return (
     <BrowserRouter>
-      {/* Note that CustomAuthProvider must be a child of BrowserRouter. See https://auth0.com/blog/complete-guide-to-react-user-authentication/. */}
-      <CustomAuthProvider>
+      <CustomRedirectProvider>
         <CustomRelayEnvProvider>
           <Header />
           <Switch>
@@ -61,7 +61,7 @@ function App() {
             <Route component={NotFound} />
           </Switch>
         </CustomRelayEnvProvider>
-      </CustomAuthProvider>
+      </CustomRedirectProvider>
     </BrowserRouter>
   );
 }

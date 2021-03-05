@@ -1,10 +1,10 @@
 import { Box, Popover } from "@primer/components";
-import React, { useContext, useEffect, useState } from "react";
+import React, { MutableRefObject, useEffect, useState } from "react";
 import { graphql, useMutation } from "react-relay/hooks";
+import { useHistory, useLocation } from "react-router-dom";
 import { internalError } from "./App";
-import { loginWithRedirect, useAuthState } from "./auth";
+import { loginWithRedirect, RedirectMemo, useAuthState } from "./auth";
 import CommentForm from "./CommentForm";
-import RedirectMemoContext from "./RedirectMemoContext";
 import useClickOutside from "./useClickOutside";
 
 const NewThreadPopover: React.FC<{
@@ -16,30 +16,37 @@ const NewThreadPopover: React.FC<{
     x_file_path: string;
     x_line_number: number;
   };
-  inputRef: any;
+  inputRef: MutableRefObject<HTMLInputElement | null> | null;
   // hoverLine: number | null;
   focusLine: number | null;
   setHoverLine: (_: number | null) => void;
   setFocusLine: (_: number | null) => void;
 }> = ({ blameline, inputRef, focusLine, setHoverLine, setFocusLine }) => {
   const [message, setMessage] = useState("" as string);
-  const { redirectMemo, setRedirectMemo } = useContext(RedirectMemoContext);
+  const redirectMemo = useLocation().state as null | undefined | RedirectMemo;
+  const history = useHistory();
 
   // Check for a redirectMemo marking that the user was just here drafting a new
   // thread. In that case we need to set focusLine, and load up their message.
   useEffect(() => {
-    if (redirectMemo !== null && (redirectMemo as any).kind === "new_thread") {
-      setFocusLine((redirectMemo as any).line);
-      setMessage((redirectMemo as any).message);
-      inputRef.current?.focus();
-      inputRef.current?.scrollIntoView();
-      // TODO: should we submit here as well?
+    if (
+      redirectMemo !== null &&
+      redirectMemo !== undefined &&
+      redirectMemo.kind === "new_thread" &&
+      inputRef !== null &&
+      inputRef.current !== null
+    ) {
+      setFocusLine(redirectMemo.line);
+      setMessage(redirectMemo.message);
+      inputRef.current.focus();
+      inputRef.current.scrollIntoView();
+      // Don't submit in case the user wants to change their mind.
 
       // Clear redirectMemo so we don't bother with this crap again. That causes
       // weird stuff in the UI...
-      setRedirectMemo(null);
+      history.replace({ ...history.location, state: null });
     }
-  }, [redirectMemo, setFocusLine, setRedirectMemo, inputRef]);
+  }, [redirectMemo, setFocusLine, inputRef, history]);
 
   const popoverRef = useClickOutside(() => {
     // Don't wipe hoverLine because that messes up the TextInput focusing.
@@ -128,13 +135,10 @@ const NewThreadPopover: React.FC<{
                   // done on completion.
                 });
               } else {
-                loginWithRedirect({
-                  returnTo: window.location.pathname,
-                  redirectMemo: {
-                    kind: "new_thread",
-                    line: focusLine,
-                    message,
-                  },
+                loginWithRedirect(window.location.pathname, {
+                  kind: "new_thread",
+                  line: blameline.x_line_number,
+                  message,
                 });
               }
             }}

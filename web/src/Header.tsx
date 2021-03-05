@@ -37,8 +37,7 @@ const Header: React.FC = () => {
       ) : (
         <Button
           onClick={() =>
-            // TODO: fix the redirect situation so that this actually does something
-            loginWithRedirect({ returnTo: window.location.pathname })
+            loginWithRedirect(window.location.pathname, { kind: "noop" })
           }
         >
           Sign in with GitHub

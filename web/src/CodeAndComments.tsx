@@ -6,26 +6,20 @@ import {
   Grid,
   Relative,
 } from "@primer/components";
-import React, {
-  Suspense,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import {
   graphql,
   useLazyLoadQuery,
   useMutation,
   useSubscription,
 } from "react-relay/hooks";
+import { useLocation } from "react-router-dom";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import createElement from "react-syntax-highlighter/dist/esm/create-element";
 import { githubGist } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { githubRepoId, internalError } from "./App";
+import { RedirectMemo } from "./auth";
 import NewThreadPopover from "./NewThreadPopover";
-import RedirectMemoContext from "./RedirectMemoContext";
 import ThreadPopover from "./ThreadPopover";
 import { CodeAndComments_threads_Query } from "./__generated__/CodeAndComments_threads_Query.graphql";
 
@@ -430,7 +424,11 @@ const Comments: React.FC<{
         >
           <ThreadPopover
             blameline={bl}
-            inputRef={hoverLine === bl.x_line_number ? inputRef : null}
+            inputRef={
+              hoverLine === bl.x_line_number || focusLine === bl.x_line_number
+                ? inputRef
+                : null
+            }
             hoverLine={hoverLine}
             focusLine={focusLine}
             setHoverLine={setHoverLine}
@@ -448,15 +446,22 @@ const Comments: React.FC<{
     ]
   );
 
-  const { redirectMemo } = useContext(RedirectMemoContext);
-  console.log("redirectMemo");
-  console.log(redirectMemo);
+  // Unfortunately react-router types `location.state` as `null | undefined | {}`.
+  // See https://github.com/DefinitelyTyped/DefinitelyTyped/blob/29e0e56875a17b1439d94e1a6131c96746889929/types/history/index.d.ts#L50
+  const redirectMemo = useLocation().state as null | undefined | RedirectMemo;
+
   // This is the line number that the redirect tells us to go to, null in the
-  // absence of the
+  // absence of the redirectMemo
   const redirectFocusLine: null | number =
-    redirectMemo !== null && (redirectMemo as any).kind === "new_thread"
-      ? (redirectMemo as any).line
+    redirectMemo !== null &&
+    redirectMemo !== undefined &&
+    (redirectMemo.kind === "new_thread" || redirectMemo.kind === "new_comment")
+      ? redirectMemo.line
       : null;
+
+  useEffect(() => {
+    if (redirectFocusLine !== null) setFocusLine(redirectFocusLine);
+  }, [redirectFocusLine, setFocusLine]);
 
   // The line on which the NewThreadPopover should be on, if any. This can
   // differ from hoverLine when a line is focused.

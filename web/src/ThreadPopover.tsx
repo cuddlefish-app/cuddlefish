@@ -7,10 +7,11 @@ import {
   Text,
   Tooltip,
 } from "@primer/components";
-import React, { useState } from "react";
+import React, { MutableRefObject, useEffect, useState } from "react";
 import { graphql, useMutation } from "react-relay/hooks";
+import { useHistory, useLocation } from "react-router-dom";
 import { internalError } from "./App";
-import { useAuthState } from "./auth";
+import { loginWithRedirect, RedirectMemo, useAuthState } from "./auth";
 import CommentForm from "./CommentForm";
 import useClickOutside from "./useClickOutside";
 
@@ -97,7 +98,7 @@ const CommentChunk: React.FC<{
 // TODO: add (code author), (thread author) tags in the tooltips.
 
 const ThreadPopover: React.FC<{
-  inputRef: any;
+  inputRef: MutableRefObject<HTMLInputElement | null> | null;
   blameline: {
     original_commit: string;
     original_file_path: string;
@@ -123,26 +124,49 @@ const ThreadPopover: React.FC<{
   setHoverLine: (_: number | null) => void;
   setFocusLine: (_: number | null) => void;
 }> = ({ inputRef, blameline, focusLine, setHoverLine, setFocusLine }) => {
+  const [message, setMessage] = useState("" as string);
+  const redirectMemo = useLocation().state as null | undefined | RedirectMemo;
+  const history = useHistory();
+
+  // Check for a redirectMemo marking that the user was just here drafting a
+  // comment. In that case we need to set focusLine, and load up their message.
+  useEffect(() => {
+    if (
+      redirectMemo !== null &&
+      redirectMemo !== undefined &&
+      redirectMemo.kind === "new_comment" &&
+      redirectMemo.line === blameline.x_line_number &&
+      inputRef !== null &&
+      inputRef.current !== null
+    ) {
+      setFocusLine(redirectMemo.line);
+      setMessage(redirectMemo.message);
+      inputRef.current.focus();
+      inputRef.current.scrollIntoView();
+      // Don't submit in case the user wants to change their mind.
+
+      // Clear redirectMemo so we don't bother with this crap again. That causes
+      // weird stuff in the UI...
+      history.replace({ ...history.location, state: null });
+    }
+  }, [redirectMemo, setFocusLine, inputRef, blameline.x_line_number, history]);
+
   // We should always be able to find the corresponding original line.
-  if (blameline.original_line === null) {
+  if (blameline.original_line === null)
     throw internalError(Error("blameline has null original_line"));
-  }
   // There should always be a thread to render.
-  if (blameline.original_line.threads.length !== 1) {
+  if (blameline.original_line.threads.length !== 1)
     throw internalError(Error("threads.length !== 1"));
-  }
 
   // Comments come in ordered by `created_at` thanks to our query.
   let thread = blameline.original_line.threads[0];
   let comments = thread.comments;
 
   // Thread should always have at least one comment.
-  if (comments.length === 0) {
+  if (comments.length === 0)
     throw internalError(Error(`Thread ${thread.id} has no comments!`));
-  }
 
   let chunkedComments = chunkBy(comments, (c) => c.author_github_id);
-  const [message, setMessage] = useState("" as string);
   const popoverRef = useClickOutside(() => {
     if (focusLine === blameline.x_line_number) {
       setHoverLine(null);
@@ -156,8 +180,15 @@ const ThreadPopover: React.FC<{
     mutation ThreadPopover_NewComment_Mutation(
       $body: String!
       $thread_id: uuid!
+      $author_github_id: Int!
     ) {
-      insert_comments_one(object: { body: $body, thread_id: $thread_id }) {
+      insert_comments_one(
+        object: {
+          body: $body
+          thread_id: $thread_id
+          author_github_id: $author_github_id
+        }
+      ) {
         # Even though they aren't directly used, these fields are important because they control what goes into the
         # Relay Store.
         id
@@ -171,6 +202,7 @@ const ThreadPopover: React.FC<{
     }
   `);
 
+  const authstate = useAuthState();
   return (
     <Popover
       open={true}
@@ -181,9 +213,11 @@ const ThreadPopover: React.FC<{
       <Popover.Content
         width={248}
         padding={2}
-        onDoubleClick={() => {
-          inputRef.current?.focus();
-          setFocusLine(blameline.x_line_number);
+        onClick={() => {
+          if (focusLine !== blameline.x_line_number) {
+            inputRef?.current?.focus();
+            setFocusLine(blameline.x_line_number);
+          }
         }}
         onMouseMove={() => setHoverLine(blameline.x_line_number)}
         ref={popoverRef}
@@ -199,37 +233,49 @@ const ThreadPopover: React.FC<{
             setMessage={setMessage}
             inputRef={inputRef}
             onSubmit={() => {
-              submit({
-                variables: { body: message, thread_id: thread.id },
-                updater(store) {
-                  const linkName = 'comments(order_by:{"created_at":"asc"})';
-                  const threadRec = store.get(thread.id as string);
-                  const newCommentRec = store.getRootField(
-                    "insert_comments_one"
-                  );
-                  const existingComments = threadRec?.getLinkedRecords(
-                    linkName
-                  );
-                  if (
-                    existingComments === null ||
-                    existingComments === undefined
-                  )
-                    throw internalError(
-                      Error("no existing comments in relay store")
+              if (authstate.isLoggedIn) {
+                submit({
+                  variables: {
+                    body: message,
+                    thread_id: thread.id,
+                    author_github_id: authstate.user.github_id,
+                  },
+                  updater(store) {
+                    const linkName = 'comments(order_by:{"created_at":"asc"})';
+                    const threadRec = store.get(thread.id as string);
+                    const newCommentRec = store.getRootField(
+                      "insert_comments_one"
                     );
-                  threadRec?.setLinkedRecords(
-                    [...existingComments, newCommentRec],
-                    linkName
-                  );
-                },
-                onCompleted(data) {
-                  setMessage("");
-                },
-                onError(error) {
-                  setMessage("");
-                  throw internalError(error);
-                },
-              });
+                    const existingComments = threadRec?.getLinkedRecords(
+                      linkName
+                    );
+                    if (
+                      existingComments === null ||
+                      existingComments === undefined
+                    )
+                      throw internalError(
+                        Error("no existing comments in relay store")
+                      );
+                    threadRec?.setLinkedRecords(
+                      [...existingComments, newCommentRec],
+                      linkName
+                    );
+                  },
+                  onCompleted(data) {
+                    setMessage("");
+                  },
+                  onError(error) {
+                    setMessage("");
+                    throw internalError(error);
+                  },
+                });
+              } else {
+                loginWithRedirect(window.location.pathname, {
+                  kind: "new_comment",
+                  line: blameline.x_line_number,
+                  message,
+                });
+              }
             }}
             disabled={isInFlight}
           ></CommentForm>
