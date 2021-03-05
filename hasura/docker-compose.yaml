@@ -3,12 +3,13 @@
 # TODO: set up metadata stuff...
 
 # See https://docs.docker.com/compose/compose-file/#compose-and-docker-compatibility-matrix for the latest version info.
-version: "3.8"
+version: "3.9"
 services:
   postgres:
     # As of Nov 2020, Render runs postgres 11: https://render.com/docs/databases#database-versions--upgrades. Although
     # there is a feature request to add support for other versions: https://feedback.render.com/features/p/postgres-12.
     image: postgres:11
+    network_mode: host
     restart: always
     volumes:
       - db_data:/var/lib/postgresql/data
@@ -16,22 +17,35 @@ services:
       POSTGRES_PASSWORD: postgrespassword
   graphql-engine:
     image: hasura/graphql-engine:v1.3.3
-    ports:
-      - "8080:8080"
+    network_mode: host
     depends_on:
       - "postgres"
     restart: always
     environment:
-      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
-      # Use the `hasura console` command instead.
-      # HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
-      ## enable debugging mode. It is recommended to disable this in production
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@localhost:5432/postgres
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+
+      # Default logging minus websocket-log:
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: "startup, http-log, webhook-log"
+
+      # Don't enable DEV_MODE in prod!
       HASURA_GRAPHQL_DEV_MODE: "true"
       HASURA_GRAPHQL_ADMIN_SECRET: hasurasecret
-      HASURA_GRAPHQL_AUTH_HOOK: http://host.docker.internal:3001/hasura_auth_webhook
 
-      # See https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds.
-      API_GRAPHQL_ENDPOINT: http://host.docker.internal:3001/graphql
+      # On macOS, there's this thing where you need to do `host.docker.internal`
+      # to escape Docker networking. It doesn't work on Linux however. Much
+      # easier to use `network_mode: host` on Linux. Unfortunately I am not
+      # aware of a cross-platform solution.
+      # See eg https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds.
+
+      # In prod, we use the cli-migrations-v2 version of the Docker image and
+      # these values are set in the Dockerfile.
+      HASURA_GRAPHQL_AUTH_HOOK: http://localhost:3001/hasura_auth_webhook
+      API_GRAPHQL_ENDPOINT: http://localhost:3001/graphql
+
+      # When running on macOS:
+      # HASURA_GRAPHQL_AUTH_HOOK: http://host.docker.internal:3001/hasura_auth_webhook
+      # API_GRAPHQL_ENDPOINT: http://host.docker.internal:3001/graphql
 
 # See https://docs.docker.com/compose/compose-file/#volumes.
 volumes:
