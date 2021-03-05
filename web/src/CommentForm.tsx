@@ -13,8 +13,8 @@ const CommentForm: React.FC<{
   return (
     <form
       onSubmit={(event) => {
-        // Note that when the button is disabled, hitting and enter and clicking on the button do not hit this
-        // callback. That's safe for us. If we get here, then we really should be hitting the callback.
+        // Note that when the button is disabled, hitting enter and clicking on the button do not hit this callback.
+        // That's safe for us. If we get here, then we really should be hitting the callback.
         if (message.trim().length > 0) {
           onSubmit();
         }
