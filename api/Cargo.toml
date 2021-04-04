@@ -15,7 +15,7 @@ graphql_client = "0.9"
 # We can't upgrade hyper or tokio until https://github.com/graphql-rust/juniper/pull/888 lands.
 hyper = "0.13"
 juniper = "0.15"
-juniper_hyper = "0.6"
+juniper_hyper = "0.7"
 lazy_static = "1.4"
 log = "0.4"
 # See https://github.com/instructure/paseto/issues/37

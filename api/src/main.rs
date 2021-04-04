@@ -300,12 +300,12 @@ async fn main() {
 
           (match (&method, uri.as_ref()) {
             // TODO: turn off graphiql in prod.
-            (&Method::GET, "/") => juniper_hyper::graphiql("/graphql", None).await,
+            (&Method::GET, "/") => Ok(juniper_hyper::graphiql("/graphql", None).await),
             (&Method::GET, "/graphql") | (&Method::POST, "/graphql") => {
-              juniper_hyper::graphql(root_node, Arc::new(()), req).await
+              Ok(juniper_hyper::graphql(root_node, Arc::new(()), req).await)
             }
 
-            (&Method::GET, "/healthz") => Ok::<_, hyper::Error>(
+            (&Method::GET, "/healthz") => Ok(
               Response::builder()
                 .status(StatusCode::OK)
                 .body(Body::empty())
@@ -317,7 +317,7 @@ async fn main() {
             (&Method::GET, "/logout") => auth::logout_route(req).await,
             (&Method::GET, "/hasura_auth_webhook") => auth::hasura_auth_webhook(req).await,
 
-            _ => Ok::<_, hyper::Error>(
+            _ => Ok(
               Response::builder()
                 .status(StatusCode::NOT_FOUND)
                 .body(Body::empty())
