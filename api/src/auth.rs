@@ -27,9 +27,9 @@ pub async fn login_route(_: Request<Body>) -> Result<Response<Body>, hyper::Erro
   // We use a local token since there's really no need for the client to be able
   // to read anything in it.
   let state = paseto::tokens::PasetoBuilder::new()
-    .set_encryption_key(Vec::from(&*crate::API_PASETO_SECRET_KEY.as_bytes()))
-    .set_expiration(Utc::now() + Duration::minutes(15))
-    .set_not_before(Utc::now())
+    .set_encryption_key(&*crate::API_PASETO_SECRET_KEY.as_bytes())
+    .set_expiration(&(Utc::now() + Duration::minutes(15)))
+    .set_not_before(&Utc::now())
     .build()
     .expect("failed to construct paseto token");
 
@@ -126,7 +126,8 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
   paseto::tokens::validate_local_token(
     &state,
     None,
-    Vec::from(&*crate::API_PASETO_SECRET_KEY.as_bytes()),
+    &*crate::API_PASETO_SECRET_KEY.as_bytes(),
+    &paseto::TimeBackend::Chrono,
   )
   .map_err(|_| error!("error validating paseto state token"))?;
   trace!("paseto::tokens::validate_local_token was successful");
@@ -372,13 +373,18 @@ mod tests {
   fn paseto_build_validate() {
     let key = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     let state = paseto::tokens::PasetoBuilder::new()
-      .set_encryption_key(Vec::from(key.as_bytes()))
-      .set_expiration(Utc::now() + Duration::minutes(1))
-      .set_not_before(Utc::now())
+      .set_encryption_key(key.as_bytes())
+      .set_expiration(&(Utc::now() + Duration::minutes(1)))
+      .set_not_before(&Utc::now())
       .build()
       .expect("failed to construct paseto token");
     // println!("{}", state);
-    let validation = paseto::tokens::validate_local_token(&state, None, Vec::from(key.as_bytes()));
+    let validation = paseto::tokens::validate_local_token(
+      &state,
+      None,
+      key.as_bytes(),
+      &paseto::TimeBackend::Chrono,
+    );
     // println!("{:?}", validation);
     assert!(validation.is_ok());
   }
