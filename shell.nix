@@ -1,24 +1,24 @@
 let
-  # Last updated: 3/4/21
-  pkgs = import (fetchTarball("https://github.com/NixOS/nixpkgs/archive/5df05c902cde398e056eb6271d5fe13e418db4c6.tar.gz")) {};
+  # Last updated: 8/22/21. Check for new commits at status.nixos.org.
+  pkgs = import (fetchTarball("https://github.com/NixOS/nixpkgs/archive/14b0f20fa1f56438b74100513c9b1f7c072cf789.tar.gz")) {};
 
   # Rolling updates, not deterministic.
   # pkgs = import (fetchTarball("channel:nixpkgs-unstable")) {};
 in pkgs.mkShell {
-  buildInputs = [
-    pkgs.cargo
-    pkgs.docker-compose
-    pkgs.hasura-cli
-    pkgs.rustc
-    pkgs.rustfmt
-    pkgs.yarn
+  buildInputs = with pkgs; [
+    cargo
+    docker-compose
+    hasura-cli
+    rustc
+    rustfmt
+    yarn
 
     # Necessary for `yarn relay --watch`.
-    pkgs.watchman
+    watchman
 
     # Necessary for the openssl-sys crate:
-    pkgs.openssl
-    pkgs.pkg-config
+    openssl
+    pkg-config
   ];
 
   # See https://discourse.nixos.org/t/rust-src-not-found-and-other-misadventures-of-developing-rust-on-nixos/11570/3?u=samuela.
