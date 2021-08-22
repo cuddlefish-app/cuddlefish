@@ -12,18 +12,15 @@ failure = "0.1"
 futures = "0.3"
 git2 = "0.13"
 graphql_client = "0.9"
-# We can't upgrade hyper or tokio until https://github.com/graphql-rust/juniper/pull/888 lands.
-hyper = "0.13"
-juniper = "0.15"
-juniper_hyper = "0.7"
+hyper = "0.14"
+juniper = "0.15.7"
+juniper_hyper = "0.8"
 lazy_static = "1.4"
 log = "0.4"
-# See https://github.com/instructure/paseto/issues/37
 paseto = "2.0"
-# Can't upgrade reqwest to 0.11 until tokio >= 1.0
-reqwest = { version = "0.10", features = ["json"] }
+reqwest = { version = "0.11", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tokio = { version = "0.2", features = ["macros"] }
+tokio = { version = "1.10", features = ["macros", "rt", "rt-multi-thread"] }
 url = "2.1"
 time = "0.2"
