@@ -1,10 +1,11 @@
 let
-  # Last updated: 8/22/21. Check for new commits at status.nixos.org.
-  pkgs = import (fetchTarball("https://github.com/NixOS/nixpkgs/archive/14b0f20fa1f56438b74100513c9b1f7c072cf789.tar.gz")) {};
+  # Last updated: 10/11/21. Check for new commits at status.nixos.org.
+  pkgs = import (fetchTarball ("https://github.com/NixOS/nixpkgs/archive/ee084c02040e864eeeb4cf4f8538d92f7c675671.tar.gz")) { };
 
   # Rolling updates, not deterministic.
   # pkgs = import (fetchTarball("channel:nixpkgs-unstable")) {};
-in pkgs.mkShell {
+in
+pkgs.mkShell {
   buildInputs = with pkgs; [
     cargo
     docker-compose
