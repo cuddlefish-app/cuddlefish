@@ -4,7 +4,7 @@ mod hasura;
 use anyhow::bail;
 use anyhow::ensure;
 use anyhow::format_err;
-use anyhow::Error;
+use anyhow::Result;
 use git2::BlameOptions;
 use git2::Oid;
 use git2::Repository;
@@ -27,7 +27,6 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-type CFResult<T> = Result<T, Error>;
 type GitHubUserId = u64;
 
 /// RepoId identifies a repository. See the README for more info.
@@ -44,7 +43,7 @@ impl ToString for RepoId {
 }
 
 /// Parse a string like "github-cuddlefish-app!cuddlefish" into a `RepoId`.
-fn parse_repo_id(repo_id: &str) -> CFResult<RepoId> {
+fn parse_repo_id(repo_id: &str) -> Result<RepoId> {
   let rest = repo_id
     .strip_prefix("github-")
     .ok_or(format_err!("bad repo_id"))?;
@@ -72,7 +71,7 @@ fn mirror_dir(repo_id: &RepoId) -> PathBuf {
 }
 
 /// Get a Repository object for a given RepoId. If we already have the repo cloned, great. If not, clone it first.
-async fn git_repo(repo_id: &RepoId) -> CFResult<Repository> {
+async fn git_repo(repo_id: &RepoId) -> Result<Repository> {
   let expected_path = mirror_dir(&repo_id);
 
   // If the repo already exists, then we open and return it.
@@ -118,7 +117,7 @@ fn commit_exists(repo: &Repository, commit: &str) -> bool {
   }
 }
 
-async fn git_blame(repo_id: &RepoId, commit: &str, file_path: &str) -> CFResult<Vec<BlameLine>> {
+async fn git_blame(repo_id: &RepoId, commit: &str, file_path: &str) -> Result<Vec<BlameLine>> {
   trace!(
     "git_blame repo_id = \"{}\", commit = \"{}\", file_path = \"{}\"",
     repo_id.to_string(),

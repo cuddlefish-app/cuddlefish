@@ -1,9 +1,9 @@
 use crate::BlameLine;
-use crate::CFResult;
 use crate::GitHubUserId;
 use crate::HASURA_HOST;
 use crate::HASURA_PORT;
 use anyhow::bail;
+use anyhow::Result;
 use graphql_client::GraphQLQuery;
 use serde_json::json;
 use std::convert::TryFrom;
@@ -16,7 +16,7 @@ type uuid = String;
 #[allow(non_snake_case)]
 async fn ADMIN_hasura_request<B: serde::ser::Serialize + ?Sized, T: serde::de::DeserializeOwned>(
   json_body: &B,
-) -> CFResult<T> {
+) -> Result<T> {
   let hasura_url = format!("http://{}:{}/v1/graphql", *HASURA_HOST, *HASURA_PORT);
   let response = reqwest::Client::new()
     .post(&hasura_url)
@@ -44,7 +44,7 @@ pub async fn insert_blamelines(
   commit: &str,
   file_path: &str,
   blamelines: Vec<BlameLine>,
-) -> CFResult<()> {
+) -> Result<()> {
   // Having a non-empty update_columns is necessary unfortunately.
   // See https://github.com/hasura/graphql-engine/issues/1911.
   // Also be careful! Line numbers are always 1-indexed.
@@ -103,7 +103,7 @@ pub async fn insert_blamelines(
 )]
 struct LookupExistingBlamelines;
 
-pub async fn lookup_existing_blamelines(commit: &str, file_path: &str) -> CFResult<bool> {
+pub async fn lookup_existing_blamelines(commit: &str, file_path: &str) -> Result<bool> {
   let res: lookup_existing_blamelines::ResponseData = ADMIN_hasura_request(
     &LookupExistingBlamelines::build_query(lookup_existing_blamelines::Variables {
       commit: commit.into(),
@@ -136,7 +136,7 @@ pub async fn upsert_user(
   github_node_id: &str,
   github_username: &str,
   github_email: Option<String>,
-) -> CFResult<()> {
+) -> Result<()> {
   let res: upsert_user::ResponseData =
     ADMIN_hasura_request(&UpsertUser::build_query(upsert_user::Variables {
       github_id: cast_user_github_id(github_id),
@@ -162,7 +162,7 @@ pub async fn upsert_user(
 )]
 struct StartUserSession;
 
-pub async fn start_user_session(user_github_id: GitHubUserId) -> CFResult<String> {
+pub async fn start_user_session(user_github_id: GitHubUserId) -> Result<String> {
   let res: start_user_session::ResponseData = ADMIN_hasura_request(&StartUserSession::build_query(
     start_user_session::Variables {
       user_github_id: cast_user_github_id(user_github_id),
@@ -185,7 +185,7 @@ pub async fn start_user_session(user_github_id: GitHubUserId) -> CFResult<String
 )]
 struct LookupSession;
 
-pub async fn lookup_user_session(session_token: &str) -> CFResult<Option<GitHubUserId>> {
+pub async fn lookup_user_session(session_token: &str) -> Result<Option<GitHubUserId>> {
   let res: lookup_session::ResponseData =
     ADMIN_hasura_request(&LookupSession::build_query(lookup_session::Variables {
       session_token: session_token.to_owned(),
@@ -211,7 +211,7 @@ pub async fn lookup_user_session(session_token: &str) -> CFResult<Option<GitHubU
 )]
 struct EndUserSession;
 
-pub async fn end_user_session(session_token: &str) -> CFResult<()> {
+pub async fn end_user_session(session_token: &str) -> Result<()> {
   // The success of response.json() depends on the correct type being inferred
   // for the output, so we must be explicit in requesting `end_user_session::ResponseData`.
   let _: end_user_session::ResponseData =
