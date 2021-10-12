@@ -8,6 +8,7 @@ in
 pkgs.mkShell {
   buildInputs = with pkgs; [
     cargo
+    cargo-watch
     docker-compose
     hasura-cli
     rustc
