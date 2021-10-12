@@ -6,21 +6,29 @@
 version: "3.9"
 services:
   postgres:
-    # As of Nov 2020, Render runs postgres 11: https://render.com/docs/databases#database-versions--upgrades. Although
-    # there is a feature request to add support for other versions: https://feedback.render.com/features/p/postgres-12.
+    # TODO: upgrade to 14
     image: postgres:11
     network_mode: host
-    restart: always
     volumes:
       - db_data:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: postgrespassword
   graphql-engine:
-    image: hasura/graphql-engine:v1.3.3
+    # TODO use https://hasura.io/docs/latest/graphql/core/migrations/advanced/auto-apply-migrations.html
+    # image: hasura/graphql-engine:v2.0.9
+
+    # TODO how to mount /hasura-migrations and /hasura-metadata?
+    image: hasura/graphql-engine:v1.3.3.cli-migrations-v2
     network_mode: host
     depends_on:
       - "postgres"
-    restart: always
+    volumes:
+      - type: bind
+        source: ./migrations
+        target: /hasura-migrations
+      - type: bind
+        source: ./metadata
+        target: /hasura-metadata
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@localhost:5432/postgres
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
