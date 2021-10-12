@@ -1,0 +1,16 @@
+table:
+  name: users
+  schema: public
+select_permissions:
+- permission:
+    columns:
+    - github_id
+    - github_name
+    - github_username
+    filter: {}
+  role: anonymous
+- permission:
+    columns:
+    - github_username
+    filter: {}
+  role: user

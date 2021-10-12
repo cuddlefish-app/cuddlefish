@@ -12,10 +12,8 @@ services:
     environment:
       POSTGRES_PASSWORD: postgrespassword
   graphql-engine:
-    # TODO use https://hasura.io/docs/latest/graphql/core/migrations/advanced/auto-apply-migrations.html
-    # image: hasura/graphql-engine:v2.0.9
-
-    image: hasura/graphql-engine:v2.0.9.cli-migrations-v2
+    # See https://hasura.io/docs/latest/graphql/core/migrations/advanced/auto-apply-migrations.html
+    image: hasura/graphql-engine:v2.0.9.cli-migrations-v3
     depends_on:
       - "postgres"
     network_mode: host

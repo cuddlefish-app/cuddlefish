@@ -1,6 +1,4 @@
 - name: api
   definition:
-    # See https://github.com/hasura/graphql-engine/issues/5691.
     url_from_env: API_GRAPHQL_ENDPOINT
-    # Use a relatively long timeout for lengthy git checkouts.
     timeout_seconds: 600

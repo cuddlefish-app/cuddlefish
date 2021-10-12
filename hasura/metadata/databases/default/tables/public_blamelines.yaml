@@ -1,0 +1,36 @@
+table:
+  name: blamelines
+  schema: public
+object_relationships:
+- name: original_line
+  using:
+    manual_configuration:
+      column_mapping:
+        original_commit: commit
+        original_file_path: file_path
+        original_line_number: line_number
+      insertion_order: null
+      remote_table:
+        name: lines
+        schema: public
+select_permissions:
+- permission:
+    columns:
+    - original_commit
+    - original_file_path
+    - original_line_number
+    - x_commit
+    - x_file_path
+    - x_line_number
+    filter: {}
+  role: anonymous
+- permission:
+    columns:
+    - original_commit
+    - original_file_path
+    - original_line_number
+    - x_commit
+    - x_file_path
+    - x_line_number
+    filter: {}
+  role: user

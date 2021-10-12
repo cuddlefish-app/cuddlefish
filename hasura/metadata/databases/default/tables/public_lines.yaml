@@ -1,0 +1,30 @@
+table:
+  name: lines
+  schema: public
+array_relationships:
+- name: threads
+  using:
+    manual_configuration:
+      column_mapping:
+        commit: original_commit
+        file_path: original_file_path
+        line_number: original_line_number
+      insertion_order: null
+      remote_table:
+        name: threads
+        schema: public
+select_permissions:
+- permission:
+    columns:
+    - commit
+    - file_path
+    - line_number
+    filter: {}
+  role: anonymous
+- permission:
+    columns:
+    - commit
+    - file_path
+    - line_number
+    filter: {}
+  role: user
