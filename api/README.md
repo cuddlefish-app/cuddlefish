@@ -2,11 +2,7 @@
 
 The "frontend" to the backend is Hasura. Most queries go through it.
 
-TODO:
-
-- failure has been deprecated. We should use something else.
-  - https://blog.yoshuawuyts.com/error-handling-survey/
-  - https://nick.groenen.me/posts/rust-error-handling/
+Run with `./dev.sh`.
 
 ## Update GraphQL schemas in development
 
