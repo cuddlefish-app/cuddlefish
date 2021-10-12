@@ -1,10 +1,10 @@
 mod auth;
 mod github;
 mod hasura;
-use failure::bail;
-use failure::ensure;
-use failure::format_err;
-use failure::Error;
+use anyhow::bail;
+use anyhow::ensure;
+use anyhow::format_err;
+use anyhow::Error;
 use git2::BlameOptions;
 use git2::Oid;
 use git2::Repository;

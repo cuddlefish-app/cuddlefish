@@ -3,7 +3,7 @@ use crate::CFResult;
 use crate::GitHubUserId;
 use crate::HASURA_HOST;
 use crate::HASURA_PORT;
-use failure::bail;
+use anyhow::bail;
 use graphql_client::GraphQLQuery;
 use serde_json::json;
 use std::convert::TryFrom;
