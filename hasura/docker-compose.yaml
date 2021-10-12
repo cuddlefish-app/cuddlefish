@@ -18,7 +18,7 @@ services:
     # image: hasura/graphql-engine:v2.0.9
 
     # TODO how to mount /hasura-migrations and /hasura-metadata?
-    image: hasura/graphql-engine:v1.3.3.cli-migrations-v2
+    image: hasura/graphql-engine:v2.0.9.cli-migrations-v2
     network_mode: host
     depends_on:
       - "postgres"
