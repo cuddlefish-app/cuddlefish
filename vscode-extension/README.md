@@ -5,6 +5,7 @@ This is the README for your extension "cuddlefish-comments". After writing up a 
 TODO:
 
 - `startThread` enablement is currently `!commentIsEmpty && !activeEditorIsDirty`. It's not clear if activeEditorIsDirty will be correct when the user has two editors open: one has the comment and the other is dirty. See https://code.visualstudio.com/api/references/when-clause-contexts for more info. Can't find a better context.
+- Upgrade nodegit dependency once 0.28.0 is released. See https://github.com/nodegit/nodegit/issues/1840 and https://github.com/nodegit/nodegit/issues/1864.
 
 ## Features
 
