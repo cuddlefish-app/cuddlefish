@@ -2,6 +2,10 @@
 
 Public access is available and is given the role `anonymous`.
 
+TODO:
+
+- update schema to support people responding via email. What does this imply for the `users` and `user_sessions` tables?
+
 ## Development
 
 Run `docker compose up` or `docker compose --file docker-compose.macos.yaml up`. It will run hasura and postgres locally with persistence across runs. Note that the api server must be up and running before you can run the `docker compose up` command.
