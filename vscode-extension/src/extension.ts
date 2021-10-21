@@ -111,10 +111,12 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(statusBar);
   statusBar.show();
 
-  // comment controller
+  // Comment controller. The description shows up when there are multiple
+  // comment providers for the same line and you have to choose between them.
+  // See https://postimg.cc/WhntTs50.
   let commentController = vscode.comments.createCommentController(
     "cuddlefish-comments",
-    "Where does this even go?"
+    "Cuddlefish Comments"
   );
   commentController.commentingRangeProvider = {
     provideCommentingRanges: logErrors2(
@@ -126,15 +128,10 @@ export async function activate(context: vscode.ExtensionContext) {
         // comment threads on the file are cached by VSCode.
 
         // TODO when files are opened:
-        // - [x] find if it's a git repo with a github remote
-        // - [ ] if so, calculate blamelines
         // - [ ] subscribe to hasura for updates
 
-        // TODO: figure out how to do subscriptions when a file is opened and update
-        // the comment threads accordingly.
-
-        // If it's not a local file, we can't comment on it. This also covers the
-        // untitled file case which has scheme `untitled`.
+        // If it's not a local file, we can't comment on it. This also covers
+        // the untitled file case which has scheme `untitled`.
         if (document.uri.scheme !== "file") {
           return [];
         }
@@ -153,7 +150,11 @@ export async function activate(context: vscode.ExtensionContext) {
           ).filter((remote) => remote !== undefined);
 
           if (githubRemotes.length > 0) {
-            // TODO: should only allow commenting on lines that have valid blame info
+            // Check if the file is tracked by git. If not, we should not allow
+            // commenting.
+            if (!(await git.isFileTracked(repo, document.uri.path))) {
+              return [];
+            }
 
             const blameinfo = await git.blame(
               repo,
@@ -162,9 +163,25 @@ export async function activate(context: vscode.ExtensionContext) {
               undefined
             );
             console.log(blameinfo);
-            // TODO glue this together
-            return [new vscode.Range(0, 0, document.lineCount - 1, 0)];
+
+            // Should we also cache this blame info somewhere?
+
+            // Subtract one to account for the fact that VSCode is 0-indexed.
+            // Subtract another one to account for the fact that hunksize 1
+            // implies the range [17, 17], not [17, 18].
+            const ranges = blameinfo.blamehunks
+              .filter((hunk) => hunk.origCommitHash !== git.ZERO_HASH)
+              .map(({ currStartLine, hunksize }) => [
+                currStartLine - 1,
+                currStartLine + hunksize - 2,
+              ]);
+
+            // TODO unclear from the docs if Range is inclusive or exclusive.
+            // Either way this seems to do the right thing for now.
+            return ranges.map(([a, b]) => new vscode.Range(a, 0, b, 0));
           } else {
+            // None of the remotes are GitHub remotes. Don't show any commenting
+            // ranges for now.
             return [];
           }
         }

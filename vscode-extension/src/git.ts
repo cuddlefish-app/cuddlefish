@@ -1,31 +1,35 @@
 import * as child_process from "child_process";
 import * as util from "util";
 import * as vscode from "vscode";
-import { assert, directoryExists } from "./utils";
+import { assert, DefaultMap, directoryExists } from "./utils";
 
 const exec = util.promisify(child_process.exec);
 
+export const ZERO_HASH = "0000000000000000000000000000000000000000";
+
 // paths -> git repo root paths
-// TODO use Map here instead of an object
-let knownGitRepoRoots: { [key: string]: string } = {};
+const knownGitRepoRoots = new Map<string, string>();
 
 // Find the root directory containing a .git directory if one exists. Otherwise,
 // return undefined.
 export async function repoRoot(path: vscode.Uri): Promise<string | undefined> {
   assert(path.scheme === "file", "path must be a file:// URI");
 
-  if (path.path in knownGitRepoRoots) {
-    return knownGitRepoRoots[path.path];
+  // If we've already found the repo root for this path, return it.
+  const cached = knownGitRepoRoots.get(path.path);
+  if (cached !== undefined) {
+    return cached;
   }
 
   if (path.path === "/") {
+    // We've reached the root of the filesystem.
     return undefined;
   } else {
     const res = (await directoryExists(vscode.Uri.joinPath(path, ".git")))
       ? path.path
       : await repoRoot(vscode.Uri.joinPath(path, ".."));
     if (res !== undefined) {
-      knownGitRepoRoots[path.path] = res;
+      knownGitRepoRoots.set(path.path, res);
     }
     return res;
   }
@@ -59,17 +63,32 @@ export function parseGitHubRemote(url: string) {
   return undefined;
 }
 
+export async function isFileTracked(repo: string, filename: string) {
+  try {
+    await exec(`git ls-files --error-unmatch ${filename}`, {
+      cwd: repo,
+    });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 export async function blame(
   repo: string,
   file: string,
   contents: string | undefined,
   line: number | undefined
 ) {
+  // See https://git-scm.com/docs/git-blame#_incremental_output
+  // Note that git 1-indexes lines but VSCode 0-indexes lines.
+
   // TODO
-  // - [ ] should use --porcelain or --line-porcelain?
   // - [ ] write contents to tempfile
 
-  let args = ["git", "blame", "--porcelain"];
+  console.log(`git blame ${file}`);
+
+  let args = ["git", "blame", "--incremental"];
   if (line !== undefined) {
     args.push(`-L ${line},${line}`);
   }
@@ -82,10 +101,93 @@ export async function blame(
 
   const { stdout } = await exec(args.join(" "), { cwd: repo });
 
-  console.log(stdout);
-  // const blame = stdout.split("\n");
-  // const commit = blame[0].split(" ")[1];
-  // const author = blame[1].split(" ")[2];
-  // const date = blame[1].split(" ")[3];
-  // return { commit, author, date };
+  type BlameCommit = {
+    author?: string;
+    authorMail?: string;
+    authorTime?: number;
+    authorTz?: string;
+    committer?: string;
+    committerMail?: string;
+    committerTime?: number;
+    committerTz?: string;
+    summary?: string;
+    previous?: string;
+  };
+  type BlameHunk = {
+    origCommitHash: string;
+    filename: string;
+    origStartLine: number;
+    currStartLine: number;
+    hunksize: number;
+  };
+
+  const lines = stdout.split("\n").filter((line) => line.length > 0);
+  assert(lines.length > 0, "git blame should return at least one line");
+
+  const commits = new DefaultMap<string, BlameCommit>(() => ({}));
+  let blamehunks: BlameHunk[] = [];
+  let ix = 0;
+  while (ix < lines.length) {
+    const header = lines[ix];
+    const [origCommitHash, origStartLine, currStartLine, hunksize] =
+      header.split(" ");
+    assert(origCommitHash.length === 40, "expected a 40-character hash");
+    const commit = commits.get(origCommitHash);
+
+    ix++;
+    while (!lines[ix].startsWith("filename ")) {
+      const [key, value] = lines[ix].split(" ", 2);
+      switch (key) {
+        case "author":
+          commit.author = value;
+          break;
+        case "author-mail":
+          commit.authorMail = value;
+          break;
+        case "author-time":
+          commit.authorTime = parseInt(value);
+          break;
+        case "author-tz":
+          commit.authorTz = value;
+          break;
+        case "committer":
+          commit.committer = value;
+          break;
+        case "committer-mail":
+          commit.committerMail = value;
+          break;
+        case "committer-time":
+          commit.committerTime = parseInt(value);
+          break;
+        case "committer-tz":
+          commit.committerTz = value;
+          break;
+        case "summary":
+          commit.summary = value;
+          break;
+        case "previous":
+          commit.previous = value;
+          break;
+        case "boundary":
+          // Note: wtf is this?
+          break;
+        default:
+          throw new Error(`unexpected key ${key}`);
+      }
+      ix++;
+    }
+
+    const filename = lines[ix].split(" ", 2)[1];
+    blamehunks.push({
+      origCommitHash,
+      filename,
+      origStartLine: parseInt(origStartLine),
+      currStartLine: parseInt(currStartLine),
+      hunksize: parseInt(hunksize),
+    });
+
+    ix++;
+  }
+
+  return { commits, blamehunks };
 }

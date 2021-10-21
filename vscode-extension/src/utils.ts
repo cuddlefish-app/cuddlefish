@@ -27,3 +27,24 @@ export async function directoryExists(path: vscode.Uri): Promise<boolean> {
     }
   }
 }
+
+export class DefaultMap<K, V> {
+  defaultFn: () => V;
+  inner: Map<K, V> = new Map();
+
+  constructor(defaultFn: () => V) {
+    this.defaultFn = defaultFn;
+    this.inner = new Map();
+  }
+
+  get(key: K): V {
+    const existing = this.inner.get(key);
+    if (existing) {
+      return existing;
+    } else {
+      const value = this.defaultFn();
+      this.inner.set(key, value);
+      return value;
+    }
+  }
+}
