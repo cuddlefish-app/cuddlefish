@@ -1,6 +1,6 @@
 # cuddlefish-comments README
 
-This is the README for your extension "cuddlefish-comments". After writing up a brief description, we recommend including the following sections.
+- VSCode extensions do not really support native/gyp dependencies. See https://github.com/microsoft/vscode/issues/658. There are pure-JS git implementations but they will certainly be much slower with `git blame`s and may be buggy. Using nodegit would be ideal since it supports some caching between `git blame` calls but using nodegit is blocked on https://github.com/nodegit/nodegit/issues/1840. Currently we just invoke the `git` command directly and parse results in JS. This is easy and portable.
 
 TODO:
 
