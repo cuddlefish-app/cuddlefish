@@ -5,9 +5,10 @@ import * as child_process from "child_process";
 import * as util from "util";
 import * as vscode from "vscode";
 import { Credentials, getOctokitModal } from "./credentials";
+import * as git from "./git";
 
 const exec = util.promisify(child_process.exec);
-const fs = vscode.workspace.fs;
+// const fs = vscode.workspace.fs;
 
 function logErrors0<T>(f: () => Promise<T>): () => Promise<T> {
   return async () => {
@@ -55,136 +56,7 @@ function logErrors2<A1, A2, T>(
   };
 }
 
-function assert(condition: boolean, message: string): void {
-  if (!condition) {
-    throw new Error(message);
-  }
-}
-
-async function directoryExists(path: vscode.Uri): Promise<boolean> {
-  try {
-    const stat = await fs.stat(path);
-    return stat.type === vscode.FileType.Directory;
-  } catch (e) {
-    if (e instanceof vscode.FileSystemError) {
-      if (e.code === "FileNotFound" || e.code === "FileNotADirectory") {
-        return false;
-      } else {
-        console.log(
-          `fs.stat returned a FileSystemError with an unexpected code: ${e.code}`
-        );
-        throw e;
-      }
-    } else {
-      console.error(e);
-      throw e;
-    }
-  }
-}
-
 // TODO move git stuff into a separate file
-
-// paths -> git repo root paths
-// TODO use Map here instead of an object
-let knownGitRepoRoots: { [key: string]: string } = {};
-// repo root paths -> nodegit `Repository`s
-// let knownGitRepos: { [key: string]: ng.Repository } = {};
-
-// Find the root directory containing a .git directory if one exists. Otherwise,
-// return undefined.
-async function gitRepoPath(path: vscode.Uri): Promise<string | undefined> {
-  assert(path.scheme === "file", "path must be a file:// URI");
-
-  if (path.path in knownGitRepoRoots) {
-    return knownGitRepoRoots[path.path];
-  }
-
-  if (path.path === "/") {
-    return undefined;
-  } else {
-    const res = (await directoryExists(vscode.Uri.joinPath(path, ".git")))
-      ? path.path
-      : await gitRepoPath(vscode.Uri.joinPath(path, ".."));
-    if (res !== undefined) {
-      knownGitRepoRoots[path.path] = res;
-    }
-    return res;
-  }
-}
-
-// async function gitRepo(path: vscode.Uri): Promise<ng.Repository | undefined> {
-//   const repoRoot = await gitRepoPath(path);
-//   if (repoRoot === undefined) {
-//     return undefined;
-//   } else {
-//     if (repoRoot in knownGitRepos) {
-//       return knownGitRepos[repoRoot];
-//     } else {
-//       const repo = await ng.Repository.open(repoRoot);
-//       knownGitRepos[repoRoot] = repo;
-//       return repo;
-//     }
-//   }
-// }
-
-async function getRemotes(repo: string) {
-  const { stdout } = await exec(`git remote --verbose`, { cwd: repo });
-  const remotes = stdout.split("\n").filter((line) => line.length > 0);
-  const result = new Map<string, string>();
-  for (const remote of remotes) {
-    const [name, urlish] = remote.split("\t");
-    // AFAIK type can be either "(fetch)" or "(push)". We don't bother caring
-    // for now.
-    const [url, _type] = urlish.split(" ");
-    result.set(name, url);
-  }
-  return result;
-}
-
-function parseGitHubRemote(url: string) {
-  const sshMatch = url.match(/git@github.com:(.*)\/(.*).git/);
-  if (sshMatch) {
-    return { owner: sshMatch[1], repo: sshMatch[2] };
-  }
-
-  const httpsMatch = url.match(/https:\/\/github.com\/(.*)\/(.*).git/);
-  if (httpsMatch) {
-    return { owner: httpsMatch[1], repo: httpsMatch[2] };
-  }
-
-  return undefined;
-}
-
-async function blame(
-  repo: string,
-  file: string,
-  contents: string | undefined,
-  line: number | undefined
-) {
-  // TODO
-  // - [ ] should use --porcelain or --line-porcelain?
-  // - [ ] write contents to tempfile
-
-  let args = ["git", "blame", "--porcelain"];
-  if (line !== undefined) {
-    args.push(`-L ${line},${line}`);
-  }
-  if (contents !== undefined) {
-    // TODO write contents to temp file
-    const tempfile = "TODO";
-    args.push(`--contents ${tempfile}`);
-  }
-  args.push(file);
-
-  const { stdout } = await exec(args.join(" "), { cwd: repo });
-
-  console.log(stdout);
-  // const blame = stdout.split("\n");
-  // const commit = blame[0].split(" ")[1];
-  // const author = blame[1].split(" ")[2];
-  // const date = blame[1].split(" ")[3];
-  // return { commit, author, date };
-}
 
 // function sleep(ms: number): Promise<void> {
 //   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -267,7 +139,7 @@ export async function activate(context: vscode.ExtensionContext) {
           return [];
         }
 
-        const repo = await gitRepoPath(document.uri);
+        const repo = await git.repoRoot(document.uri);
         if (repo === undefined) {
           console.log(`Could not find a parent git repo for ${document.uri}`);
           return [];
@@ -276,14 +148,14 @@ export async function activate(context: vscode.ExtensionContext) {
           // That's handled when someone goes to start a new thread.
 
           const githubRemotes = Array.from(
-            (await getRemotes(repo)).values(),
-            parseGitHubRemote
+            (await git.getRemotes(repo)).values(),
+            git.parseGitHubRemote
           ).filter((remote) => remote !== undefined);
 
           if (githubRemotes.length > 0) {
             // TODO: should only allow commenting on lines that have valid blame info
 
-            const blameinfo = await blame(
+            const blameinfo = await git.blame(
               repo,
               document.fileName,
               document.isDirty ? document.getText() : undefined,
@@ -312,7 +184,7 @@ export async function activate(context: vscode.ExtensionContext) {
         console.log("Starting a new thread");
         console.log(reply);
 
-        const gitRepoRoot = await gitRepoPath(reply.thread.uri);
+        const gitRepoRoot = await git.repoRoot(reply.thread.uri);
         // We should only be showing the comment gutters if we're in a file
         // that's in a git repo.
         if (gitRepoRoot === undefined) {
