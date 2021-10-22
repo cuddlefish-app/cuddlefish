@@ -65,10 +65,12 @@ export function parseGitHubRemote(url: string) {
 
 export async function isFileTracked(repo: string, filename: string) {
   try {
-    await exec(`git ls-files --error-unmatch ${filename}`, {
-      cwd: repo,
-    });
-    return true;
+    const { status } = child_process.spawnSync(
+      "git",
+      ["ls-files", "--error-unmatch", filename],
+      { cwd: repo }
+    );
+    return status === 0;
   } catch (e) {
     return false;
   }
@@ -77,29 +79,32 @@ export async function isFileTracked(repo: string, filename: string) {
 export async function blame(
   repo: string,
   file: string,
-  contents: string | undefined,
+  contents: string,
   line: number | undefined
 ) {
   // See https://git-scm.com/docs/git-blame#_incremental_output
   // Note that git 1-indexes lines but VSCode 0-indexes lines.
 
-  // TODO
-  // - [ ] write contents to tempfile
-
   console.log(`git blame ${file}`);
+  console.log(`git blame: contents size ${Buffer.byteLength(contents)} bytes`);
 
-  let args = ["git", "blame", "--incremental"];
+  let args = ["blame", "--incremental", "--contents=-"];
   if (line !== undefined) {
     args.push(`-L ${line},${line}`);
   }
-  if (contents !== undefined) {
-    // TODO write contents to temp file
-    const tempfile = "TODO";
-    args.push(`--contents ${tempfile}`);
-  }
   args.push(file);
 
-  const { stdout } = await exec(args.join(" "), { cwd: repo });
+  let t0: bigint;
+  let elapsedMs: bigint;
+
+  t0 = process.hrtime.bigint();
+  const { status, stdout } = child_process.spawnSync("git", args, {
+    cwd: repo,
+    input: contents,
+  });
+  elapsedMs = (process.hrtime.bigint() - t0) / 1000000n;
+  console.log(`git blame: spawn took ${elapsedMs} ms`);
+  assert(status === 0, "git blame returned non-zero exit code");
 
   type BlameCommit = {
     author?: string;
@@ -121,7 +126,11 @@ export async function blame(
     hunksize: number;
   };
 
-  const lines = stdout.split("\n").filter((line) => line.length > 0);
+  t0 = process.hrtime.bigint();
+  const lines = stdout
+    .toString("utf-8")
+    .split("\n")
+    .filter((line) => line.length > 0);
   assert(lines.length > 0, "git blame should return at least one line");
 
   const commits = new DefaultMap<string, BlameCommit>(() => ({}));
@@ -136,7 +145,9 @@ export async function blame(
 
     ix++;
     while (!lines[ix].startsWith("filename ")) {
-      const [key, value] = lines[ix].split(" ", 2);
+      // See https://stackoverflow.com/questions/39184819/javascript-split-a-string-in-4-pieces-and-leave-the-rest-as-one-big-piece
+      const [key, ...valuebits] = lines[ix].split(" ");
+      const value = valuebits.join(" ");
       switch (key) {
         case "author":
           commit.author = value;
@@ -188,6 +199,8 @@ export async function blame(
 
     ix++;
   }
+  elapsedMs = (process.hrtime.bigint() - t0) / 1000000n;
+  console.log(`git blame: parsing output took ${elapsedMs} ms`);
 
   return { commits, blamehunks };
 }

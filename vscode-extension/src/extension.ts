@@ -126,6 +126,10 @@ export async function activate(context: vscode.ExtensionContext) {
       ) => {
         // This gets called every single time a file is opened, even though the
         // comment threads on the file are cached by VSCode.
+        console.log("provideCommentingRanges");
+
+        // TODO: support adding comments on library code that is not necessarily
+        // in a git repo, but is in node_modules, python site-packages, etc.
 
         // TODO when files are opened:
         // - [ ] subscribe to hasura for updates
@@ -140,54 +144,48 @@ export async function activate(context: vscode.ExtensionContext) {
         if (repo === undefined) {
           console.log(`Could not find a parent git repo for ${document.uri}`);
           return [];
-        } else {
-          // Note we don't check whether repos are public or private here.
-          // That's handled when someone goes to start a new thread.
-
-          const githubRemotes = Array.from(
-            (await git.getRemotes(repo)).values(),
-            git.parseGitHubRemote
-          ).filter((remote) => remote !== undefined);
-
-          if (githubRemotes.length > 0) {
-            // Check if the file is tracked by git. If not, we should not allow
-            // commenting.
-            if (!(await git.isFileTracked(repo, document.uri.path))) {
-              return [];
-            }
-
-            const blameinfo = await git.blame(
-              repo,
-              document.fileName,
-              document.isDirty ? document.getText() : undefined,
-              undefined
-            );
-            console.log(blameinfo);
-
-            // Should we also cache this blame info somewhere?
-
-            // Subtract one to account for the fact that VSCode is 0-indexed.
-            // Subtract another one to account for the fact that hunksize 1
-            // implies the range [17, 17], not [17, 18].
-            const ranges = blameinfo.blamehunks
-              .filter((hunk) => hunk.origCommitHash !== git.ZERO_HASH)
-              .map(({ currStartLine, hunksize }) => [
-                currStartLine - 1,
-                currStartLine + hunksize - 2,
-              ]);
-
-            // TODO unclear from the docs if Range is inclusive or exclusive.
-            // Either way this seems to do the right thing for now.
-            return ranges.map(([a, b]) => new vscode.Range(a, 0, b, 0));
-          } else {
-            // None of the remotes are GitHub remotes. Don't show any commenting
-            // ranges for now.
-            return [];
-          }
         }
 
-        // TODO: support adding comments on library code that is not necessarily
-        // in a git repo, but is in node_modules, python site-packages, etc.
+        // Note we don't check whether repos are public or private here. That's
+        // handled when someone goes to start a new thread.
+
+        const githubRemotes = Array.from(
+          (await git.getRemotes(repo)).values(),
+          git.parseGitHubRemote
+        ).filter((remote) => remote !== undefined);
+
+        if (githubRemotes.length === 0) {
+          // None of the remotes are GitHub remotes. Don't show any commenting
+          // ranges for now.
+          return [];
+        }
+
+        // Check if the file is tracked by git. If not, we should not allow
+        // commenting.
+        if (!(await git.isFileTracked(repo, document.uri.path))) {
+          return [];
+        }
+
+        const blameinfo = await git.blame(
+          repo,
+          document.fileName,
+          document.getText(),
+          undefined
+        );
+
+        // Subtract one to account for the fact that VSCode is 0-indexed.
+        // Subtract another one to account for the fact that hunksize 1
+        // implies the range [17, 17], not [17, 18].
+        const ranges = blameinfo.blamehunks
+          .filter((hunk) => hunk.origCommitHash !== git.ZERO_HASH)
+          .map(({ currStartLine, hunksize }) => [
+            currStartLine - 1,
+            currStartLine + hunksize - 2,
+          ]);
+
+        // TODO unclear from the docs if Range is inclusive or exclusive.
+        // Either way this seems to do the right thing for now.
+        return ranges.map(([a, b]) => new vscode.Range(a, 0, b, 0));
       }
     ),
   };
