@@ -17,45 +17,51 @@ query LookupExistingBlamelines($commit: String!, $file_path: String!) {
 }
 
 mutation UpsertUser(
-  $github_id: Int!
-  $github_name: String!
   $github_node_id: String!
+  $github_database_id: Int!
+  $github_name: String!
   $github_username: String!
-  $github_email: String
+  $email: String
+  $access_token: String!
 ) {
-  insert_users_one(
+  insert_github_users_one(
     object: {
-      github_id: $github_id
-      github_name: $github_name
       github_node_id: $github_node_id
+      github_database_id: $github_database_id
+      github_name: $github_name
       github_username: $github_username
-      github_email: $github_email
+      email: $email
+      access_token: $access_token
     }
     on_conflict: {
       constraint: users_github_id_key
       update_columns: [
-        github_id
-        github_name
         github_node_id
+        github_database_id
+        github_name
         github_username
-        github_email
+        email
+        access_token
       ]
     }
   ) {
-    github_id
+    github_node_id
   }
 }
 
-mutation StartUserSession($user_github_id: Int!) {
-  insert_user_sessions_one(object: { user_github_id: $user_github_id }) {
+mutation StartUserSession($user_github_node_id: String!) {
+  insert_user_sessions_one(
+    object: { user_github_node_id: $user_github_node_id }
+  ) {
     id
   }
 }
 
 query LookupSession($session_token: uuid!) {
   user_sessions_by_pk(id: $session_token) {
-    user {
-      github_id
+    github_user {
+      github_node_id
+      access_token
     }
   }
 }
@@ -63,5 +69,54 @@ query LookupSession($session_token: uuid!) {
 mutation EndUserSession($session_token: uuid!) {
   delete_user_sessions_by_pk(id: $session_token) {
     id
+  }
+}
+
+# See https://github.com/graphql-rust/graphql-client/issues/394 as to why we have to select these fields.
+# TODO put this back into StartThread...
+mutation UpsertLine(
+  $commit_hash: String!
+  $file_path: String!
+  $line_number: Int!
+) {
+  insert_lines_one(
+    object: {
+      commit: $commit_hash
+      file_path: $file_path
+      line_number: $line_number
+    }
+    on_conflict: {
+      constraint: lines_pkey
+      # TODO: This is a hack. This is the only way to do an upsert in hasura; we must update at least one field.
+      update_columns: [commit, file_path, line_number]
+    }
+  ) {
+    commit
+    file_path
+    line_number
+  }
+}
+
+mutation StartThread(
+  $commit_hash: String!
+  $file_path: String!
+  $line_number: Int!
+  $body: String!
+  $author_github_node_id: String!
+) {
+  insert_threads_one(
+    object: {
+      original_commit: $commit_hash
+      original_file_path: $file_path
+      original_line_number: $line_number
+      comments: {
+        data: [{ author_github_node_id: $author_github_node_id, body: $body }]
+      }
+    }
+  ) {
+    id
+    comments {
+      id
+    }
   }
 }

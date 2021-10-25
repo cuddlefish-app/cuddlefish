@@ -3,9 +3,8 @@
 		"module": "commonjs",
 		"target": "ES2020",
 		"outDir": "out",
-		"lib": [
-			"ES2020"
-		],
+		// We need DOM because of https://github.com/apollographql/apollo-client/issues/6376.
+		"lib": [ "ES2020", "DOM" ],
 		"sourceMap": true,
 		"rootDir": "src",
 		"strict": true,   /* enable all strict type-checking options */

@@ -1,64 +1,84 @@
 // Calling GitHub API endpoints.
-// use crate::CFResult;
-// use failure::bail;
-// use failure::err_msg;
-// use failure::ResultExt;
-// use graphql_client::GraphQLQuery;
+use anyhow::anyhow;
+use graphql_client::GraphQLQuery;
 
-// static USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
+use crate::GitHubAuth;
+
+static USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
 
 // type URI = String;
+type GitObjectID = String;
 
-// async fn github_request<B: serde::ser::Serialize + ?Sized, T: serde::de::DeserializeOwned>(
-//   json_body: &B,
-// ) -> CFResult<T> {
-//   // TODO: don't hardcode URL, header.
-//   // TODO: use the user's token here. Note that in cases where the user is not logged in we'd still like to be able to
-//   // show the comments, so we may need to still have a fallback token.
+// The GitHub API has two notions of id: a node id, and databaseId. Node ids are the "new" solutions and are
+// base64-encoded id's that are globally unique. DatabaseIds are the "old" solutions and are numeric.
+#[derive(Debug)]
+pub struct GitHubNodeId(pub String);
 
-//   // The GitHub API requires User-Agent to be set on every request
-//   // (https://developer.github.com/v3/#user-agent-required).
-//   let response = reqwest::Client::builder()
-//     .user_agent(USER_AGENT)
-//     .build()?
-//     .post("https://api.github.com/graphql")
-//     .bearer_auth(std::env::var("GITHUB_API_TOKEN").expect("GITHUB_API_TOKEN env var not specified"))
-//     .json(&json_body)
-//     .send()
-//     .await?;
+async fn github_request<B: serde::ser::Serialize + ?Sized, T: serde::de::DeserializeOwned>(
+  auth: Option<&GitHubAuth>,
+  json_body: &B,
+) -> anyhow::Result<T> {
+  // TODO: don't hardcode URL, header.
 
-//   let response_parsed: graphql_client::Response<T> = response
-//     .json()
-//     .await
-//     .context("Parsing GraphQL response as JSON")?;
+  // The GitHub API requires User-Agent to be set on every request
+  // (https://developer.github.com/v3/#user-agent-required).
+  let response = reqwest::Client::builder()
+    .user_agent(USER_AGENT)
+    .build()?
+    .post("https://api.github.com/graphql")
+    .bearer_auth(
+      auth
+        .map(|x| &x.access_token)
+        .unwrap_or(&*crate::GITHUB_API_TOKEN),
+    )
+    .json(&json_body)
+    .send()
+    .await?;
 
-//   // The order of these branches is significant.
-//   match (response_parsed.data, response_parsed.errors) {
-//     (_, Some(errs)) => bail!("GraphQL response includes errors: {:?}", errs),
-//     (Some(x), _) => Ok(x),
-//     _ => bail!("expected either `data` or `response` fields to be present",),
-//   }
-// }
+  let response_parsed: graphql_client::Response<T> = response.json().await?;
 
-// #[derive(graphql_client::GraphQLQuery)]
-// #[graphql(
-//   schema_path = "gql/github/schema.json",
-//   query_path = "gql/github/queries.graphql",
-//   response_derives = "Debug"
-// )]
-// pub struct RepoUrl;
+  // The order of these branches is significant.
+  match (response_parsed.data, response_parsed.errors) {
+    (_, Some(errs)) => Err(anyhow!("GraphQL response includes errors: {:?}", errs)),
+    (Some(x), _) => Ok(x),
+    _ => Err(anyhow!(
+      "expected either `data` or `response` fields to be present",
+    )),
+  }
+}
 
-// pub async fn repo_url(node_id: &str) -> CFResult<Option<String>> {
-//   let res: repo_url::ResponseData = github_request(&RepoUrl::build_query(repo_url::Variables {
-//     id: node_id.into(),
-//   }))
-//   .await?;
+#[derive(graphql_client::GraphQLQuery)]
+#[graphql(
+  schema_path = "gql/github/schema.json",
+  query_path = "gql/github/queries.graphql",
+  response_derives = "Debug"
+)]
+pub struct LookupCommit;
 
-//   match res.node {
-//     None => Ok(None),
-//     Some(node) => match node.on {
-//       repo_url::RepoUrlNodeOn::Repository(repo) => Ok(Some(repo.url)),
-//       _ => Err(err_msg("Response node should have been a Repository")),
-//     },
-//   }
-// }
+/// Returns Some((repo_node_id, isPrivate, commit_in_repo)) if we are able to find the repo, and None if we were not
+/// able to find the repo.
+pub async fn lookup_commit(
+  auth: Option<&GitHubAuth>,
+  repo_owner: &str,
+  repo_name: &str,
+  commit_oid: &str,
+) -> anyhow::Result<Option<(GitHubNodeId, bool, bool)>> {
+  let res: lookup_commit::ResponseData = github_request(
+    auth,
+    &LookupCommit::build_query(lookup_commit::Variables {
+      repo_owner: repo_owner.to_string(),
+      repo_name: repo_name.to_string(),
+      commit_oid: commit_oid.to_string(),
+    }),
+  )
+  .await?;
+
+  // `res.repository == None` when the repo can't be found.
+  Ok(res.repository.map(|repo| {
+    (
+      GitHubNodeId(repo.id),
+      repo.is_private,
+      repo.object.is_some(),
+    )
+  }))
+}

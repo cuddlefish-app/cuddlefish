@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 const fs = vscode.workspace.fs;
 
-export function assert(condition: boolean, message: string): void {
+export function assert(condition: boolean, message: string): asserts condition {
   if (!condition) {
     throw new Error(message);
   }
@@ -48,3 +48,63 @@ export class DefaultMap<K, V> {
     }
   }
 }
+
+export function mapFromEntries<K, V>(entries: [K, V][]): Map<K, V> {
+  const map = new Map();
+  for (const [key, value] of entries) {
+    map.set(key, value);
+  }
+  return map;
+}
+
+export function logErrors0<T>(f: () => Promise<T>): () => Promise<T> {
+  return async () => {
+    try {
+      return await f();
+    } catch (e) {
+      console.error(e);
+      vscode.window.showErrorMessage(
+        "Cuddlefish Comments experienced an error. Check the extension logs for more info!"
+      );
+
+      // This bit is kind of an ugly hack to make this wrapper easy to use.
+      // Often we need to pass things wrapped with this to other code than
+      // expects callbacks returning just Promise<T>.
+      return undefined as any;
+    }
+  };
+}
+export function logErrors1<A1, T>(
+  f: (x1: A1) => Promise<T>
+): (x1: A1) => Promise<T> {
+  return async (x1: A1) => {
+    try {
+      return await f(x1);
+    } catch (e) {
+      console.error(e);
+      vscode.window.showErrorMessage(
+        "Cuddlefish Comments experienced an error. Check the extension logs for more info!"
+      );
+      return undefined as any;
+    }
+  };
+}
+export function logErrors2<A1, A2, T>(
+  f: (x1: A1, x2: A2) => Promise<T>
+): (x1: A1, x2: A2) => Promise<T> {
+  return async (x1: A1, x2: A2) => {
+    try {
+      return await f(x1, x2);
+    } catch (e) {
+      console.error(e);
+      vscode.window.showErrorMessage(
+        "Cuddlefish Comments experienced an error. Check the extension logs for more info!"
+      );
+      return undefined as any;
+    }
+  };
+}
+
+// See https://stackoverflow.com/questions/4059147/check-if-a-variable-is-a-string-in-javascript
+export const isString = (x: any) =>
+  typeof x === "string" || x instanceof String;

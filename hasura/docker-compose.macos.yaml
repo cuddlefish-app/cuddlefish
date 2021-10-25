@@ -31,7 +31,9 @@ services:
         target: /hasura-metadata
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
-      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+
+      # See https://hasura.io/docs/latest/graphql/core/migrations/migrations-setup.html#step-0-disable-the-console-on-the-server
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "false"
 
       # Default logging minus websocket-log:
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: "startup, http-log, webhook-log"

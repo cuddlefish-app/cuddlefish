@@ -1,9 +1,20 @@
-# This query costs 1 point. Can do 5000/hr.
-# query RepoUrl($id: ID!) {
-#   node(id: $id) {
-#     __typename
-#     ... on Repository {
-#       url
-#     }
-#   }
-# }
+query LookupCommit(
+  $repo_owner: String!
+  $repo_name: String!
+  $commit_oid: GitObjectID!
+) {
+  repository(owner: $repo_owner, name: $repo_name) {
+    id
+    databaseId
+    # We need to make sure that the repo is public (for now...)
+    isPrivate
+    object(oid: $commit_oid) {
+      # __typename is necessary to make graphql_client happy.
+      __typename
+      ... on Commit {
+        id
+        oid
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import * as child_process from "child_process";
 import * as util from "util";
 import * as vscode from "vscode";
-import { assert, DefaultMap, directoryExists } from "./utils";
+import { assert, DefaultMap, directoryExists, mapFromEntries } from "./utils";
 
 const exec = util.promisify(child_process.exec);
 
@@ -49,7 +49,30 @@ export async function getRemotes(repo: string) {
   return result;
 }
 
-export function parseGitHubRemote(url: string) {
+type GitHubRepo = {
+  owner: string;
+  repo: string;
+};
+
+// This must match the spec also used on the backend. Currently we only support
+// GitHub.
+export function repoId(repo: GitHubRepo): string {
+  return `github-${repo.owner}!${repo.repo}`;
+}
+
+export async function getGitHubRemotes(
+  repo: string
+): Promise<Map<string, GitHubRepo>> {
+  const remotes = await getRemotes(repo);
+  return mapFromEntries(
+    Array.from(remotes.entries()).flatMap(([name, url]) => {
+      const urlParsed = parseGitHubRemote(url);
+      return urlParsed !== undefined ? [[name, urlParsed]] : [];
+    })
+  );
+}
+
+export function parseGitHubRemote(url: string): GitHubRepo | undefined {
   const sshMatch = url.match(/git@github.com:(.*)\/(.*).git/);
   if (sshMatch) {
     return { owner: sshMatch[1], repo: sshMatch[2] };
@@ -63,7 +86,10 @@ export function parseGitHubRemote(url: string) {
   return undefined;
 }
 
-export async function isFileTracked(repo: string, filename: string) {
+export async function isFileTracked(
+  repo: string,
+  filename: string
+): Promise<boolean> {
   try {
     const { status } = child_process.spawnSync(
       "git",
@@ -103,7 +129,7 @@ export async function blame(
     input: contents,
   });
   elapsedMs = (process.hrtime.bigint() - t0) / 1000000n;
-  console.log(`git blame: spawn took ${elapsedMs} ms`);
+  console.log(`git blame: blaming took ${elapsedMs} ms`);
   assert(status === 0, "git blame returned non-zero exit code");
 
   type BlameCommit = {
@@ -120,7 +146,7 @@ export async function blame(
   };
   type BlameHunk = {
     origCommitHash: string;
-    filename: string;
+    filepath: string;
     origStartLine: number;
     currStartLine: number;
     hunksize: number;
@@ -188,10 +214,11 @@ export async function blame(
       ix++;
     }
 
-    const filename = lines[ix].split(" ", 2)[1];
+    // We must be on the "filename ..." line since we broke out of the while loop.
+    const filepath = lines[ix].split(" ", 2)[1];
     blamehunks.push({
       origCommitHash,
-      filename,
+      filepath,
       origStartLine: parseInt(origStartLine),
       currStartLine: parseInt(currStartLine),
       hunksize: parseInt(hunksize),

@@ -2,7 +2,7 @@
 	"name": "cuddlefish-comments",
 	"displayName": "Cuddlefish Comments",
 	"description": "Google Docs-style comments for code.",
-	"version": "0.0.1",
+	"version": "0.0.0",
 	"engines": {
 		"vscode": "^1.61.0"
 	},
@@ -11,16 +11,16 @@
 	],
 	"activationEvents": [
 		"onStartupFinished",
-		"onCommand:cuddlefish-comments.helloWorld"
+		"onCommand:cuddlefish-comments.login"
 	],
 	"main": "./out/extension.js",
 	"enableProposedApi": true,
 	"contributes": {
 		"commands": [
 			{
-				"command": "cuddlefish-comments.helloWorld",
+				"command": "cuddlefish-comments.login",
 				"category": "CF Comments",
-				"title": "Hello World"
+				"title": "Login"
 			},
 			{
 				"command": "cuddlefish-comments.startThread",
@@ -68,6 +68,7 @@
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.4",
+		"@types/graphql": "^14.5.0",
 		"@types/mocha": "^9.0.0",
 		"@types/node": "14.x",
 		"@types/vscode": "^1.61.0",
@@ -80,6 +81,9 @@
 		"typescript": "^4.4.3"
 	},
 	"dependencies": {
-		"@octokit/rest": "^18.12.0"
+		"@apollo/client": "^3.4.16",
+		"@octokit/rest": "^18.12.0",
+		"cross-fetch": "^3.1.4",
+		"graphql": "^15.6.1"
 	}
 }

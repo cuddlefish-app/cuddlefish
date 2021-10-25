@@ -1,8 +1,19 @@
 # API
 
-The "frontend" to the backend is Hasura. Most queries go through it.
+The "frontend" to the backend is Hasura. Most queries go through it. However some things like the GitHub OAuth do not go through Hasura and hit the backend directly.
 
 Run with `./dev.sh`.
+
+You can play with GitHub's graphql API here: https://developer.github.com/v4/explorer/.
+
+TODO:
+
+- implement email notifications when new comments are posted
+  - add a `commits` table that stores which repos contain a commit
+  - add a hasura event trigger to hit an endpoint when a new comment is posted. when a new comment is added, lookup the the thread it corresponds to, lookup which repos that commit belongs to. then hit up the github api to lookup associated PRs, author information, etc. send emails to all the relevant participants.
+  - there are multiple types of participants: auther, co-author, PR participant, committer, thread commenter, and possibly others.
+- allow users to respond to email communications with new comments
+- implement email unsubscribe
 
 ## Update GraphQL schemas in development
 
@@ -11,6 +22,16 @@ HASURA_GRAPHQL_ENDPOINT=http://localhost:8080/v1/graphql HASURA_GRAPHQL_ADMIN_SE
 ```
 
 Pro tip: You don't actually need `GITHUB_API_TOKEN` if you only care about updating the hasura schema.
+
+## Hasura/graphql_client correctness guarantees
+
+The juniper graphql_client library does a good job stubbing out types for calling Hasura. It will generate correct output types, but it will not necessarily guarantee that your input types match what Hasura is expecting. So it's sort-of-good but not a guarantee of API compatibility. See https://github.com/graphql-rust/graphql-client/issues/357.
+
+Other issues with the graphql_client library:
+
+- https://github.com/graphql-rust/graphql-client/issues/393
+- Error messages are non-existent/extremely frustrating to use
+- https://github.com/graphql-rust/graphql-client/issues/394
 
 ## Blame server
 

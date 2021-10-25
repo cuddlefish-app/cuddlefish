@@ -1,66 +1,31 @@
-// TODO:
-// - [ ] git blame, and only show comment ranges where it's relevant
+// TODO
+// - rendering existing threads
+// - subscribing to thread updates
 
+import { gql } from "@apollo/client/core";
 import * as child_process from "child_process";
 import * as util from "util";
 import * as vscode from "vscode";
-import { Credentials, getOctokitModal } from "./credentials";
+import {
+  eraseCuddlefishSessionToken,
+  getApolloClientWithAuth,
+  getCuddlefishSessionTokenModal,
+  getOctokitModal,
+  GitHubCredentials,
+} from "./credentials";
 import * as git from "./git";
+import { assert, logErrors0, logErrors1, logErrors2 } from "./utils";
 
 const exec = util.promisify(child_process.exec);
 // const fs = vscode.workspace.fs;
 
-function logErrors0<T>(f: () => Promise<T>): () => Promise<T> {
-  return async () => {
-    try {
-      return await f();
-    } catch (e) {
-      console.error(e);
-      vscode.window.showErrorMessage(
-        "Cuddlefish Comments experienced an error. Check the extension logs for more info!"
-      );
-
-      // This bit is kind of an ugly hack to make this wrapper easy to use.
-      // Often we need to pass things wrapped with this to other code than
-      // expects callbacks returning just Promise<T>.
-      return undefined as any;
-    }
-  };
-}
-function logErrors1<A1, T>(f: (x1: A1) => Promise<T>): (x1: A1) => Promise<T> {
-  return async (x1: A1) => {
-    try {
-      return await f(x1);
-    } catch (e) {
-      console.error(e);
-      vscode.window.showErrorMessage(
-        "Cuddlefish Comments experienced an error. Check the extension logs for more info!"
-      );
-      return undefined as any;
-    }
-  };
-}
-function logErrors2<A1, A2, T>(
-  f: (x1: A1, x2: A2) => Promise<T>
-): (x1: A1, x2: A2) => Promise<T> {
-  return async (x1: A1, x2: A2) => {
-    try {
-      return await f(x1, x2);
-    } catch (e) {
-      console.error(e);
-      vscode.window.showErrorMessage(
-        "Cuddlefish Comments experienced an error. Check the extension logs for more info!"
-      );
-      return undefined as any;
-    }
-  };
-}
-
-// TODO move git stuff into a separate file
-
 // function sleep(ms: number): Promise<void> {
 //   return new Promise((resolve) => setTimeout(resolve, ms));
 // }
+
+// An ugly hack to work around https://github.com/microsoft/vscode/issues/135712
+// Using vscode.Uri's as keys doesn't work, so we use `uri.toString()` instead.
+const uriToDocument = new Map<string, vscode.TextDocument>();
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log("Activating Cuddlefish Comments...");
@@ -76,27 +41,20 @@ export async function activate(context: vscode.ExtensionContext) {
     console.error(e);
   }
 
-  const credentials = new Credentials(context);
-
-  // context.subscriptions.push(
-  //   vscode.workspace.onDidOpenTextDocument((editor) => {
-  //     console.log("document opened");
-  //     console.log(editor);
-  //   })
-  // );
+  const credentials = new GitHubCredentials(context);
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "cuddlefish-comments.helloWorld",
+      "cuddlefish-comments.login",
       logErrors0(async () => {
-        // console.log(vscode.workspace.textDocuments.map((doc) => doc.fileName));
-        // let foo = vscode.workspace.textDocuments[0];
+        // Scrap our current cuddlefish session token and get a new one.
+        eraseCuddlefishSessionToken(context);
+        await getCuddlefishSessionTokenModal(context, credentials);
 
         const octokit = await getOctokitModal(credentials);
         const userInfo = await octokit.users.getAuthenticated();
-
         vscode.window.showInformationMessage(
-          `Logged into GitHub as ${userInfo.data.login}`
+          `Logged in to Cuddlefish Comments via GitHub as @${userInfo.data.login}!`
         );
       })
     )
@@ -106,7 +64,7 @@ export async function activate(context: vscode.ExtensionContext) {
   let statusBar = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right
   );
-  statusBar.command = "cuddlefish-comments.helloWorld";
+  statusBar.command = "cuddlefish-comments.login";
   statusBar.text = "$(comment-discussion) CF Comments";
   context.subscriptions.push(statusBar);
   statusBar.show();
@@ -114,7 +72,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // Comment controller. The description shows up when there are multiple
   // comment providers for the same line and you have to choose between them.
   // See https://postimg.cc/WhntTs50.
-  let commentController = vscode.comments.createCommentController(
+  const commentController = vscode.comments.createCommentController(
     "cuddlefish-comments",
     "Cuddlefish Comments"
   );
@@ -149,12 +107,11 @@ export async function activate(context: vscode.ExtensionContext) {
         // Note we don't check whether repos are public or private here. That's
         // handled when someone goes to start a new thread.
 
-        const githubRemotes = Array.from(
-          (await git.getRemotes(repo)).values(),
-          git.parseGitHubRemote
-        ).filter((remote) => remote !== undefined);
-
-        if (githubRemotes.length === 0) {
+        // Note at some point we might as well remove this... it adds latency
+        // and complicates the flow for getting people to use cuddlefish on
+        // non-GitHub repos (eventually...).
+        const githubRemotes = await git.getGitHubRemotes(repo);
+        if (githubRemotes.size === 0) {
           // None of the remotes are GitHub remotes. Don't show any commenting
           // ranges for now.
           return [];
@@ -183,6 +140,8 @@ export async function activate(context: vscode.ExtensionContext) {
             currStartLine + hunksize - 2,
           ]);
 
+        uriToDocument.set(document.uri.toString(), document);
+
         // TODO unclear from the docs if Range is inclusive or exclusive.
         // Either way this seems to do the right thing for now.
         return ranges.map(([a, b]) => new vscode.Range(a, 0, b, 0));
@@ -201,19 +160,73 @@ export async function activate(context: vscode.ExtensionContext) {
 
         const gitRepoRoot = await git.repoRoot(reply.thread.uri);
         // We should only be showing the comment gutters if we're in a file
-        // that's in a git repo.
-        if (gitRepoRoot === undefined) {
-          throw new Error(
-            "tried to startThread in a file that does not seems to be in a git repo"
-          );
-        }
+        // that's in a git repo. Can't use assert here because it doesn't work
+        // with type inference.
+        assert(gitRepoRoot !== undefined, "expected file to live in git repo");
+
+        const githubRemotes = Array.from(
+          (await git.getGitHubRemotes(gitRepoRoot)).values(),
+          git.repoId
+        );
+
+        const document = uriToDocument.get(reply.thread.uri.toString());
+        assert(
+          document !== undefined,
+          "expected document to be in uriToDocument"
+        );
+
+        const lineNumber = reply.thread.range.start.line + 1;
+        const { blamehunks } = await git.blame(
+          gitRepoRoot,
+          reply.thread.uri.path,
+          document.getText(),
+          lineNumber
+        );
+        assert(blamehunks.length === 1, "expected exactly on blamehunk");
+        const blamehunk = blamehunks[0];
+        assert(
+          blamehunk.origCommitHash !== git.ZERO_HASH,
+          "expected non-zero commit hash"
+        );
+        assert(blamehunk.currStartLine === lineNumber, "wrong line");
+
+        // TODO maybe present the original commit author name in some user-friendly way?
+
+        // TODO use graphql codegen to get type safe queries
+        const client = await getApolloClientWithAuth(context, credentials);
+        const res = await client.mutate({
+          mutation: gql`
+            mutation StartThread(
+              $repoIds: [String!]!
+              $commitHash: String!
+              $filePath: String!
+              $lineNumber: Int!
+              $body: String!
+            ) {
+              StartThread(
+                repoIds: $repoIds
+                commitHash: $commitHash
+                filePath: $filePath
+                lineNumber: $lineNumber
+                body: $body
+              )
+            }
+          `,
+          variables: {
+            repoIds: githubRemotes,
+            commitHash: blamehunk.origCommitHash,
+            filePath: blamehunk.filepath,
+            lineNumber,
+            body: reply.text,
+          },
+        });
+        const new_thread_id = res.data.StartThread;
 
         // TODO:
-        //  - [ ] check if there is a git remote that is github and is public.
-        //    - [ ] calculate blame info for the file on that line with -L option
-        //  - [ ] get name from session/user info
-        //  - [ ] add profile photo
-        //  - [ ] actually hit backend...
+        // - [ ] parse the response and render the thread
+        // - [ ] if this is the first thread the user has started show a nice info/welcome message
+        // - [ ] add profile photo
+
         reply.thread.comments = [
           {
             author: { name: "Samuel Ainsworth" },
@@ -233,6 +246,8 @@ export async function activate(context: vscode.ExtensionContext) {
         // TODO
         console.group("commentOnThread");
         console.log(reply);
+
+        throw new Error("not implemented");
       })
     )
   );

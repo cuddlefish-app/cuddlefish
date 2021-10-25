@@ -1,6 +1,8 @@
+use crate::github::GitHubNodeId;
 use crate::hasura;
 use crate::GitHubUserId;
 use crate::RUNNING_ON_RENDER;
+use anyhow::anyhow;
 use chrono::prelude::Utc;
 use chrono::Duration;
 use cookie::Cookie;
@@ -11,7 +13,6 @@ use hyper::Body;
 use hyper::Request;
 use hyper::Response;
 use hyper::StatusCode;
-use log::error;
 use log::trace;
 use serde::Deserialize;
 use serde_json::json;
@@ -83,7 +84,81 @@ where
   builder.finish()
 }
 
-async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body>, ()> {
+#[derive(Deserialize, Debug)]
+pub struct GitHubUserInfoResp {
+  /// The user's GitHub username, eg. "samuela".
+  pub login: String,
+  /// The "databaseId" in GitHub API speak.
+  pub id: u32,
+  /// The "node id" in GitHub API speak.
+  pub node_id: String,
+  // TODO what happens with users that don't have a name set?
+  pub name: String,
+  // This comes in as null sometimes. Serde seems to handle correctly.
+  pub company: Option<String>,
+  pub blog: Option<String>,
+  pub location: Option<String>,
+  pub email: Option<String>,
+  pub hireable: bool,
+  pub bio: String,
+  pub twitter_username: Option<String>,
+}
+
+pub async fn get_github_user_info(github_access_token: &str) -> anyhow::Result<GitHubUserInfoResp> {
+  // TODO: maybe use the gql way?
+  let user_info_response = reqwest::Client::new()
+    .get("https://api.github.com/user")
+    .header(
+      header::AUTHORIZATION,
+      format!("token {}", github_access_token),
+    )
+    // Setting a user agent is mandatory when calling api.github.com.
+    .header(header::USER_AGENT, "cuddlefish")
+    .send()
+    .await
+    // Turn error status codes into rust errors.
+    .and_then(|resp| resp.error_for_status())?;
+  trace!("user_info_response = {:?}", user_info_response);
+
+  // Deserialize the user info response.
+  let user_info: GitHubUserInfoResp = user_info_response.json().await?;
+  trace!("user_info = {:?}", user_info);
+
+  Ok(user_info)
+}
+
+// We generally pass these around once we have verified this user is legit.
+#[derive(Deserialize, Debug)]
+pub struct CuddlefishSessionToken {
+  pub session_token: String,
+}
+
+pub async fn start_session_from_github(
+  user_info: &GitHubUserInfoResp,
+  github_access_token: &str,
+) -> anyhow::Result<CuddlefishSessionToken> {
+  let gh_user_id = GitHubUserId(GitHubNodeId(user_info.node_id.to_string()));
+  // upsert user info
+  hasura::upsert_user(
+    &gh_user_id,
+    user_info.id,
+    &user_info.name,
+    &user_info.login,
+    user_info.email.as_ref().map(|s| s.to_string()),
+    &github_access_token,
+  )
+  .await?;
+  trace!("upsert_user was successful");
+
+  // create new user session in hasura
+  let cf_session_token = hasura::start_user_session(&gh_user_id).await?;
+
+  Ok(CuddlefishSessionToken {
+    session_token: cf_session_token,
+  })
+}
+
+async fn github_callback_route_inner(req: Request<Body>) -> anyhow::Result<Response<Body>> {
   // See https://users.rust-lang.org/t/using-hyper-how-to-get-url-query-string-params/23768/3?u=samuela.
 
   let query_params = req
@@ -96,8 +171,12 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
     })
     .unwrap_or_else(HashMap::new);
 
-  let code = query_params.get("code").ok_or(())?;
-  let state = query_params.get("state").ok_or(())?;
+  let code = query_params
+    .get("code")
+    .ok_or_else(|| anyhow!("no `code` query param"))?;
+  let state = query_params
+    .get("state")
+    .ok_or_else(|| anyhow!("no `state` query param"))?;
   trace!("code = {}", code);
   trace!("state = {}", state);
 
@@ -123,13 +202,18 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
 
   // TODO maybe do something more user-friendly when their login link has
   // expired
+
+  // The current latest paseto (2.0.1+1.0.3) uses the failure crate which has
+  // been deprecated and doesn't play nicely with anyhow. Looks like they have
+  // already migrated to thiserror which should come out in the next release.
+  // Fingers crossed...
   paseto::tokens::validate_local_token(
     &state,
     None,
     &*crate::API_PASETO_SECRET_KEY.as_bytes(),
     &paseto::TimeBackend::Chrono,
   )
-  .map_err(|_| error!("error validating paseto state token"))?;
+  .or_else(|_| Err(anyhow!("paseto validation failed")))?;
   trace!("paseto::tokens::validate_local_token was successful");
 
   // Trade in code for an access token from GitHub.
@@ -145,8 +229,7 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
     .send()
     .await
     // Turn error status codes into rust errors.
-    .and_then(|resp| resp.error_for_status())
-    .map_err(|_| error!("error getting the github access token"))?;
+    .and_then(|resp| resp.error_for_status())?;
   trace!("access_token_response = {:?}", access_token_response);
 
   #[derive(Deserialize)]
@@ -156,70 +239,21 @@ async fn github_callback_route_inner(req: Request<Body>) -> Result<Response<Body
   // Deserialize the access token response into an access token.
   let access_token = access_token_response
     .json::<AccessTokenResp>()
-    .await
-    .map_err(|_| {
-      error!("failed to parse the response body from github.com/login/oauth/access_token")
-    })?
+    .await?
     .access_token;
   trace!("access_token = {}", access_token);
 
-  // TODO: maybe use the gql way?
-  let user_info_response = reqwest::Client::new()
-    .get("https://api.github.com/user")
-    .header(header::AUTHORIZATION, format!("token {}", access_token))
-    // Setting a user agent is mandatory when calling api.github.com.
-    .header(header::USER_AGENT, "cuddlefish")
-    .send()
-    .await
-    // Turn error status codes into rust errors.
-    .and_then(|resp| resp.error_for_status())
-    .map_err(|_| error!("error calling api.github.com/user"))?;
-  trace!("user_info_response = {:?}", user_info_response);
-
-  #[derive(Deserialize, Debug)]
-  struct UserInfoResp {
-    login: String,
-    id: u64,
-    node_id: String,
-    // TODO what happens with users that don't have a name set?
-    name: String,
-    // This comes in as null sometimes. Serde seems to handle correctly.
-    company: Option<String>,
-    blog: Option<String>,
-    location: Option<String>,
-    email: Option<String>,
-    hireable: bool,
-    bio: String,
-    twitter_username: Option<String>,
-  }
-  // Deserialize the user info response.
-  let user_info: UserInfoResp = user_info_response.json().await.map_err(|_| {
-    error!("failed to parse the response body from github.com/login/oauth/access_token")
-  })?;
-  trace!("user_info = {:?}", user_info);
-
-  // upsert user info
-  hasura::upsert_user(
-    user_info.id,
-    &user_info.name,
-    &user_info.node_id,
-    &user_info.login,
-    user_info.email,
-  )
-  .await
-  .map_err(|_| error!("failed to upsert user info"))?;
-  trace!("upsert_user was successful");
-
-  // create new user session
-  let session_token = hasura::start_user_session(user_info.id)
-    .await
-    .map_err(|_| error!("failed to create new user session"))?;
-  trace!("session_token = {}", session_token);
+  let user_info = get_github_user_info(&access_token).await?;
+  let cf_session_token = start_session_from_github(&user_info, &access_token).await?;
 
   // set cookie in response with session token
   // TODO: update the logout route to make sure that it's deleting the right stuff.
   // TODO: should use __Host- prefix here?
-  let session_token_cookie = cookie(SESSION_TOKEN_COOKIE_NAME, session_token, true);
+  let session_token_cookie = cookie(
+    SESSION_TOKEN_COOKIE_NAME,
+    cf_session_token.session_token,
+    true,
+  );
 
   // TODO base64 or JWT encode this value... otherwise all kinds of naughty things can happen.
   let user_cookie = cookie(
@@ -306,15 +340,12 @@ pub async fn logout_route(req: Request<Body>) -> Result<Response<Body>, hyper::E
   )
 }
 
-fn parse_cookies(req: &Request<Body>) -> Result<HashMap<&str, &str>, ()> {
+fn parse_cookies(req: &Request<Body>) -> anyhow::Result<HashMap<&str, &str>> {
   let cookies_raw = req
     .headers()
     .get("cookie")
-    // No cookie header.
-    .ok_or(())?
-    .to_str()
-    // to_str returns a Result.
-    .map_err(|_| ())?;
+    .ok_or_else(|| anyhow!("no cookie header"))?
+    .to_str()?;
   Ok(
     cookies_raw
       .split("; ")
@@ -329,26 +360,31 @@ fn parse_cookies(req: &Request<Body>) -> Result<HashMap<&str, &str>, ()> {
   )
 }
 
+// We use Hasura webhook authentication. See https://hasura.io/docs/latest/graphql/core/auth/authentication/webhook.html
+// for more info. For every incoming request to Hasura, Hasura sends a request to our webhook with the request headers.
+// We respond with { "X-Hasura-User-Id": "<github_node_id>", "X-Hasura-Role": "user" } for authenticated users and
+// { "X-Hasura-Role": "anonymous" } for anonymous requests.
+
 // TODO prevent DDoS attacks on this? Maybe obscure the endpoint location?
-async fn hasura_auth_webhook_inner(req: Request<Body>) -> Result<GitHubUserId, ()> {
+async fn hasura_auth_webhook_inner(req: Request<Body>) -> anyhow::Result<GitHubUserId> {
+  // Note atm we only support cookies, no headers.
   let cookies = parse_cookies(&req)?;
-  let session_token = cookies.get(SESSION_TOKEN_COOKIE_NAME).ok_or(())?;
-  let github_user_id = hasura::lookup_user_session(session_token)
-    .await
-    // Error with user session lookup query.
-    .map_err(|_| ())?
-    // User session just doesn't exist.
-    .ok_or(())?;
-  Ok(github_user_id)
+  let session_token = cookies
+    .get(SESSION_TOKEN_COOKIE_NAME)
+    .ok_or_else(|| anyhow!("couldn't get session token cookie"))?;
+  let auth = hasura::lookup_user_session(session_token)
+    .await?
+    .ok_or_else(|| anyhow!("couldn't find that session token in hasura"))?;
+  Ok(auth.github_node_id)
 }
 pub async fn hasura_auth_webhook(req: Request<Body>) -> Result<Response<Body>, hyper::Error> {
   Ok(match hasura_auth_webhook_inner(req).await {
-    Ok(github_user_id) => Response::builder()
+    Ok(GitHubUserId(GitHubNodeId(node_id))) => Response::builder()
       .status(StatusCode::OK)
       .body(Body::from(
         // Hasura says all values should be strings. See https://hasura.io/docs/1.0/graphql/core/auth/authentication/webhook.html#success.
         json!({
-          "X-Hasura-User-Id": github_user_id.to_string(),
+          "X-Hasura-User-Id": node_id.to_string(),
           "X-Hasura-Role": "user"
         })
         .to_string(),
@@ -378,14 +414,12 @@ mod tests {
       .set_not_before(&Utc::now())
       .build()
       .expect("failed to construct paseto token");
-    // println!("{}", state);
     let validation = paseto::tokens::validate_local_token(
       &state,
       None,
       key.as_bytes(),
       &paseto::TimeBackend::Chrono,
     );
-    // println!("{:?}", validation);
     assert!(validation.is_ok());
   }
 
