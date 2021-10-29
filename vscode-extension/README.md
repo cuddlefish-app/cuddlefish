@@ -2,11 +2,24 @@
 
 - VSCode extensions do not really support native/gyp dependencies. See https://github.com/microsoft/vscode/issues/658. There are pure-JS git implementations but they will certainly be much slower with `git blame`s and may be buggy. Using nodegit would be ideal since it supports some caching between `git blame` calls but using nodegit is blocked on https://github.com/nodegit/nodegit/issues/1840. Currently we just invoke the `git` command directly and parse results in JS. This is easy and portable.
 
+Notes:
+
+- ApolloClient subscription from node.js: https://github.com/hasura/nodejs-graphql-subscriptions-boilerplate. Unsubscribing: https://stackoverflow.com/questions/51477002/unsubscribe-subscription-in-apollo-client
+
 TODO:
 
+- Get TS types for gql operations
 - `startThread` enablement is currently `!commentIsEmpty && !activeEditorIsDirty`. It's not clear if activeEditorIsDirty will be correct when the user has two editors open: one has the comment and the other is dirty. See https://code.visualstudio.com/api/references/when-clause-contexts for more info. Can't find a better context.
 - Upgrade nodegit dependency once 0.28.0 is released. See https://github.com/nodegit/nodegit/issues/1840 and https://github.com/nodegit/nodegit/issues/1864.
 - add a feedback option!
+
+Download the hasura schema definition with apollo:
+
+```
+"gql:download": "npx rover graph introspect http://localhost:8080/v1/graphql --header x-hasura-admin-secret:hasurasecret --header x-hasura-role:user > hasura-schema.gql",
+```
+
+Run `npm run gql:codegen` to download the schema and generate TS types in development.
 
 ## Features
 

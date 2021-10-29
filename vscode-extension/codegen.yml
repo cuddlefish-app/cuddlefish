@@ -1,0 +1,8 @@
+overwrite: true
+schema: "http://localhost:8080/v1/graphql"
+documents: "src/**/*.ts"
+generates:
+  src/generated/hasura-types.d.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"

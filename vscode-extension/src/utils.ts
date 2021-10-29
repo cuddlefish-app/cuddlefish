@@ -7,6 +7,20 @@ export function assert(condition: boolean, message: string): asserts condition {
   }
 }
 
+export function assertNotNull<T>(v: T | null | undefined): asserts v is T {
+  if (v === null || v === undefined) {
+    throw new Error(`Expected non-null, non-undefined, but found ${v}`);
+  }
+}
+
+// Note that currently it is not possible to combine this with `assertNotNull` due to https://github.com/microsoft/TypeScript/issues/40562.
+export function notNull<T>(v: T | null | undefined): T {
+  if (v === null || v === undefined) {
+    throw new Error(`Expected non-null, non-undefined, but found ${v}`);
+  }
+  return v;
+}
+
 export async function directoryExists(path: vscode.Uri): Promise<boolean> {
   try {
     const stat = await fs.stat(path);

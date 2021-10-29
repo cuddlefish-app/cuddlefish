@@ -13,8 +13,19 @@ import {
   getOctokitModal,
   GitHubCredentials,
 } from "./credentials";
+import {
+  StartThreadMutation,
+  StartThreadMutationVariables,
+} from "./generated/hasura-types";
 import * as git from "./git";
-import { assert, logErrors0, logErrors1, logErrors2 } from "./utils";
+import {
+  assert,
+  assertNotNull,
+  logErrors0,
+  logErrors1,
+  logErrors2,
+  notNull,
+} from "./utils";
 
 const exec = util.promisify(child_process.exec);
 // const fs = vscode.workspace.fs;
@@ -27,11 +38,54 @@ const exec = util.promisify(child_process.exec);
 // Using vscode.Uri's as keys doesn't work, so we use `uri.toString()` instead.
 const uriToDocument = new Map<string, vscode.TextDocument>();
 
+// Check whether or not to allow commenting on a given document. Returns the
+// repo root if commenting is allowed, and undefined if not.
+async function isCommentingAllowed(
+  document: vscode.TextDocument
+): Promise<string | undefined> {
+  // TODO: support adding comments on library code that is not necessarily in a
+  // git repo, but is in node_modules, python site-packages, etc.
+
+  // If it's not a local file, we can't comment on it. This also covers
+  // the untitled file case which has scheme `untitled`.
+  if (document.uri.scheme !== "file") {
+    return undefined;
+  }
+
+  const repo = await git.repoRoot(document.uri);
+  if (repo === undefined) {
+    console.log(`Could not find a parent git repo for ${document.uri}`);
+    return undefined;
+  }
+
+  // Note we don't check whether repos are public or private here. That's
+  // handled when someone goes to start a new thread.
+
+  // Note at some point we might as well remove this... it adds latency
+  // and complicates the flow for getting people to use cuddlefish on
+  // non-GitHub repos (eventually...).
+  const githubRemotes = await git.getGitHubRemotes(repo);
+  if (githubRemotes.size === 0) {
+    // None of the remotes are GitHub remotes. Don't show any commenting
+    // ranges for now.
+    return undefined;
+  }
+
+  // Check if the file is tracked by git. If not, we should not allow
+  // commenting.
+  if (!(await git.isFileTracked(repo, document.uri.path))) {
+    return undefined;
+  }
+
+  return repo;
+}
+
 export async function activate(context: vscode.ExtensionContext) {
   console.log("Activating Cuddlefish Comments...");
 
   // Check that we have a working git installation.
   try {
+    // TODO don't use exec here, prefer spawn.
     const { stdout } = await exec("git --version");
     console.log(`git version: ${stdout}`);
   } catch (e) {
@@ -86,42 +140,13 @@ export async function activate(context: vscode.ExtensionContext) {
         // comment threads on the file are cached by VSCode.
         console.log("provideCommentingRanges");
 
-        // TODO: support adding comments on library code that is not necessarily
-        // in a git repo, but is in node_modules, python site-packages, etc.
+        const repo = await isCommentingAllowed(document);
+        if (repo === undefined) {
+          return [];
+        }
 
         // TODO when files are opened:
         // - [ ] subscribe to hasura for updates
-
-        // If it's not a local file, we can't comment on it. This also covers
-        // the untitled file case which has scheme `untitled`.
-        if (document.uri.scheme !== "file") {
-          return [];
-        }
-
-        const repo = await git.repoRoot(document.uri);
-        if (repo === undefined) {
-          console.log(`Could not find a parent git repo for ${document.uri}`);
-          return [];
-        }
-
-        // Note we don't check whether repos are public or private here. That's
-        // handled when someone goes to start a new thread.
-
-        // Note at some point we might as well remove this... it adds latency
-        // and complicates the flow for getting people to use cuddlefish on
-        // non-GitHub repos (eventually...).
-        const githubRemotes = await git.getGitHubRemotes(repo);
-        if (githubRemotes.size === 0) {
-          // None of the remotes are GitHub remotes. Don't show any commenting
-          // ranges for now.
-          return [];
-        }
-
-        // Check if the file is tracked by git. If not, we should not allow
-        // commenting.
-        if (!(await git.isFileTracked(repo, document.uri.path))) {
-          return [];
-        }
 
         const blameinfo = await git.blame(
           repo,
@@ -142,6 +167,22 @@ export async function activate(context: vscode.ExtensionContext) {
 
         uriToDocument.set(document.uri.toString(), document);
 
+        ////////////////////////////////////////////////////////////////////////
+        const client = await getApolloClientWithAuth(context, credentials);
+        // TODO
+        // const res = await client.query({
+        //   query: gql`
+        //     query AllThreads($foo: Int!) {
+        //       allThreads(foo: $foo) {
+        //         id
+        //       }
+        //     }
+        //   `,
+        //   variables: {},
+        // });
+        // console.log(res.data);
+        ////////////////////////////////////////////////////////////////////////
+
         // TODO unclear from the docs if Range is inclusive or exclusive.
         // Either way this seems to do the right thing for now.
         return ranges.map(([a, b]) => new vscode.Range(a, 0, b, 0));
@@ -158,21 +199,15 @@ export async function activate(context: vscode.ExtensionContext) {
         console.log("Starting a new thread");
         console.log(reply);
 
-        const gitRepoRoot = await git.repoRoot(reply.thread.uri);
         // We should only be showing the comment gutters if we're in a file
-        // that's in a git repo. Can't use assert here because it doesn't work
-        // with type inference.
-        assert(gitRepoRoot !== undefined, "expected file to live in git repo");
-
+        // that's in a git repo.
+        const gitRepoRoot = notNull(await git.repoRoot(reply.thread.uri));
         const githubRemotes = Array.from(
           (await git.getGitHubRemotes(gitRepoRoot)).values(),
           git.repoId
         );
-
-        const document = uriToDocument.get(reply.thread.uri.toString());
-        assert(
-          document !== undefined,
-          "expected document to be in uriToDocument"
+        const document = notNull(
+          uriToDocument.get(reply.thread.uri.toString())
         );
 
         const lineNumber = reply.thread.range.start.line + 1;
@@ -194,7 +229,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
         // TODO use graphql codegen to get type safe queries
         const client = await getApolloClientWithAuth(context, credentials);
-        const res = await client.mutate({
+        const res = await client.mutate<
+          StartThreadMutation,
+          StartThreadMutationVariables
+        >({
           mutation: gql`
             mutation StartThread(
               $repoIds: [String!]!
@@ -220,6 +258,8 @@ export async function activate(context: vscode.ExtensionContext) {
             body: reply.text,
           },
         });
+        assert(res.errors === undefined, "graphql errors");
+        assertNotNull(res.data);
         const new_thread_id = res.data.StartThread;
 
         // TODO:

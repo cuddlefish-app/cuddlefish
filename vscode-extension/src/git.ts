@@ -36,6 +36,7 @@ export async function repoRoot(path: vscode.Uri): Promise<string | undefined> {
 }
 
 export async function getRemotes(repo: string) {
+  // TODO switch to spawn
   const { stdout } = await exec(`git remote --verbose`, { cwd: repo });
   const remotes = stdout.split("\n").filter((line) => line.length > 0);
   const result = new Map<string, string>();
