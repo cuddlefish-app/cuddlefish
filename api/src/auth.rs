@@ -3,6 +3,7 @@ use crate::hasura;
 use crate::GitHubUserId;
 use crate::RUNNING_ON_RENDER;
 use anyhow::anyhow;
+use anyhow::ensure;
 use chrono::prelude::Utc;
 use chrono::Duration;
 use cookie::Cookie;
@@ -365,38 +366,51 @@ fn parse_cookies(req: &Request<Body>) -> anyhow::Result<HashMap<&str, &str>> {
 // We respond with { "X-Hasura-User-Id": "<github_node_id>", "X-Hasura-Role": "user" } for authenticated users and
 // { "X-Hasura-Role": "anonymous" } for anonymous requests.
 
-// TODO prevent DDoS attacks on this? Maybe obscure the endpoint location?
 async fn hasura_auth_webhook_inner(req: Request<Body>) -> anyhow::Result<GitHubUserId> {
-  // Note atm we only support cookies, no headers.
-  let cookies = parse_cookies(&req)?;
-  let session_token = cookies
-    .get(SESSION_TOKEN_COOKIE_NAME)
-    .ok_or_else(|| anyhow!("couldn't get session token cookie"))?;
+  // Note: there's some redundancy here with `main::lookup_github_auth_from_header`.
+  let session_token = if let Some(header_value) = req.headers().get(header::AUTHORIZATION) {
+    let value = header_value.to_str()?;
+    ensure!(value.starts_with("Bearer "));
+    &value[7..]
+  } else {
+    parse_cookies(&req)?
+      .get(SESSION_TOKEN_COOKIE_NAME)
+      .ok_or_else(|| anyhow!("couldn't get session token cookie"))?
+      .to_owned()
+  };
+
   let auth = hasura::lookup_user_session(session_token)
     .await?
     .ok_or_else(|| anyhow!("couldn't find that session token in hasura"))?;
   Ok(auth.github_node_id)
 }
 pub async fn hasura_auth_webhook(req: Request<Body>) -> Result<Response<Body>, hyper::Error> {
-  Ok(match hasura_auth_webhook_inner(req).await {
-    Ok(GitHubUserId(GitHubNodeId(node_id))) => Response::builder()
-      .status(StatusCode::OK)
-      .body(Body::from(
-        // Hasura says all values should be strings. See https://hasura.io/docs/1.0/graphql/core/auth/authentication/webhook.html#success.
-        json!({
-          "X-Hasura-User-Id": node_id.to_string(),
-          "X-Hasura-Role": "user"
-        })
-        .to_string(),
-      ))
-      .expect("building response failed"),
-    Err(_) => Response::builder()
-      .status(StatusCode::OK)
-      .body(Body::from(
-        json!({ "X-Hasura-Role": "anonymous" }).to_string(),
-      ))
-      .expect("building response failed"),
-  })
+  let response = match hasura_auth_webhook_inner(req).await {
+    Ok(GitHubUserId(GitHubNodeId(node_id))) => {
+      log::trace!("auth accepted for user: {}", node_id);
+      Response::builder()
+        .status(StatusCode::OK)
+        .body(Body::from(
+          // Hasura says all values should be strings. See https://hasura.io/docs/1.0/graphql/core/auth/authentication/webhook.html#success.
+          json!({
+            "X-Hasura-User-Id": node_id.to_string(),
+            "X-Hasura-Role": "user"
+          })
+          .to_string(),
+        ))
+        .expect("building response failed")
+    }
+    Err(e) => {
+      log::trace!("auth rejected: {}", e);
+      Response::builder()
+        .status(StatusCode::OK)
+        .body(Body::from(
+          json!({ "X-Hasura-Role": "anonymous" }).to_string(),
+        ))
+        .expect("building response failed")
+    }
+  };
+  Ok(response)
 }
 
 #[cfg(test)]
