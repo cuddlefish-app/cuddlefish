@@ -304,7 +304,7 @@ fn juniperify<T>(res: anyhow::Result<T>) -> juniper::FieldResult<T> {
   match res {
     Ok(x) => Ok(x),
     Err(err) => {
-      log::error!("{:?}", err);
+      log::error!("{}", err);
       Err(juniper::FieldError::new(
         format!("{:?}", err),
         juniper::Value::null(),
