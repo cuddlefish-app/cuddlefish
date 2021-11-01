@@ -1,5 +1,9 @@
 overwrite: true
-schema: "http://localhost:8080/v1/graphql"
+schema:
+  - "http://localhost:8080/v1/graphql":
+      headers:
+        x-hasura-role: user
+        x-hasura-admin-secret: "hasurasecret"
 documents: "src/**/*.ts"
 generates:
   src/generated/hasura-types.d.ts:

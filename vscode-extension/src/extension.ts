@@ -14,10 +14,13 @@ import {
   GitHubCredentials,
 } from "./credentials";
 import {
+  AllThreadsQuery,
+  AllThreadsQueryVariables,
   StartThreadMutation,
   StartThreadMutationVariables,
 } from "./generated/hasura-types";
 import * as git from "./git";
+import { BlameLine, blamelineToString } from "./git";
 import {
   assert,
   assertNotNull,
@@ -119,7 +122,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.StatusBarAlignment.Right
   );
   statusBar.command = "cuddlefish-comments.login";
-  statusBar.text = "$(comment-discussion) CF Comments";
+  statusBar.text = "$(comment-discussion) Cuddlefish";
   context.subscriptions.push(statusBar);
   statusBar.show();
 
@@ -169,18 +172,105 @@ export async function activate(context: vscode.ExtensionContext) {
 
         ////////////////////////////////////////////////////////////////////////
         const client = await getApolloClientWithAuth(context, credentials);
-        // TODO
-        // const res = await client.query({
-        //   query: gql`
-        //     query AllThreads($foo: Int!) {
-        //       allThreads(foo: $foo) {
-        //         id
-        //       }
-        //     }
-        //   `,
-        //   variables: {},
-        // });
-        // console.log(res.data);
+        const show = (x: any) => {
+          console.log(x);
+          return x;
+        };
+        const { blamelineToCurrLine, currLineToBlameline } =
+          git.blamehunksToBlamelines(blameinfo.blamehunks);
+
+        for (const [currLine, blamehunk] of currLineToBlameline.entries()) {
+          console.log(`${currLine} ${JSON.stringify(blamehunk)}`);
+        }
+
+        const res = await client.query<
+          AllThreadsQuery,
+          AllThreadsQueryVariables
+        >({
+          query: gql`
+            query AllThreads($cond: lines_bool_exp!) {
+              lines(where: $cond) {
+                commit
+                file_path
+                line_number
+                threads {
+                  id
+                  comments(order_by: { created_at: desc }) {
+                    id
+                    body
+                    author_github_node_id
+                    github_user {
+                      github_username
+                      github_name
+                    }
+                  }
+                }
+              }
+            }
+          `,
+          variables: {
+            cond: {
+              _or: show(
+                Array.from(currLineToBlameline.values(), (blameline) => ({
+                  commit: { _eq: blameline.origCommitHash },
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  file_path: { _eq: blameline.filepath },
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  line_number: { _eq: blameline.origLine },
+                }))
+              ),
+            },
+          },
+        });
+        console.log("querying threads");
+        console.log(res.data.lines);
+        for (const line of res.data.lines) {
+          console.log(line);
+          const orig: BlameLine = {
+            origCommitHash: line.commit,
+            filepath: line.file_path,
+            origLine: line.line_number,
+          };
+          const currLine = blamelineToCurrLine.get(blamelineToString(orig));
+          assertNotNull(currLine);
+
+          // It may occasionally be the case that there is an entry in the `lines` table that has no corresponding threads. This is somewhat future-proofing ourselves against the case where we are doing blamelines via the web interface.
+          if (line.threads.length === 0) {
+            continue;
+          }
+
+          assert(
+            line.threads.length === 1,
+            "there should be no more than one thread per line"
+          );
+          const thread = line.threads[0];
+          assert(
+            thread.comments.length >= 1,
+            "there should be at least one comment in a thread"
+          );
+
+          // TODO: dedup these by thread id. right now every time we provideCommentingRanges we get extra copies of the same thread.
+          commentController.createCommentThread(
+            document.uri,
+            new vscode.Range(currLine - 1, 0, currLine - 1, 1),
+            thread.comments.map((comment) => {
+              const username = comment.github_user.github_username;
+              const name = comment.github_user.github_name;
+              const avatarUrl = `https://avatars.githubusercontent.com/${username}?s=40`;
+              return {
+                author: {
+                  iconPath: vscode.Uri.parse(avatarUrl),
+                  name:
+                    typeof name === "string" && name.length > 0
+                      ? `${name} (@${username})`
+                      : `@${username}`,
+                },
+                body: `id:${thread.id} ${comment.body}`,
+                mode: vscode.CommentMode.Preview,
+              };
+            })
+          );
+        }
         ////////////////////////////////////////////////////////////////////////
 
         // TODO unclear from the docs if Range is inclusive or exclusive.
@@ -224,6 +314,9 @@ export async function activate(context: vscode.ExtensionContext) {
           "expected non-zero commit hash"
         );
         assert(blamehunk.currStartLine === lineNumber, "wrong line");
+        console.log(
+          `staring a thread on original line ${JSON.stringify(blamehunk)}`
+        );
 
         // TODO maybe present the original commit author name in some user-friendly way?
 
@@ -254,7 +347,7 @@ export async function activate(context: vscode.ExtensionContext) {
             repoIds: githubRemotes,
             commitHash: blamehunk.origCommitHash,
             filePath: blamehunk.filepath,
-            lineNumber,
+            lineNumber: blamehunk.origStartLine,
             body: reply.text,
           },
         });

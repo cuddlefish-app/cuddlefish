@@ -103,6 +103,26 @@ export async function isFileTracked(
   }
 }
 
+type BlameCommit = {
+  author?: string;
+  authorMail?: string;
+  authorTime?: number;
+  authorTz?: string;
+  committer?: string;
+  committerMail?: string;
+  committerTime?: number;
+  committerTz?: string;
+  summary?: string;
+  previous?: string;
+};
+type BlameHunk = {
+  origCommitHash: string;
+  filepath: string;
+  origStartLine: number;
+  currStartLine: number;
+  hunksize: number;
+};
+
 export async function blame(
   repo: string,
   file: string,
@@ -132,26 +152,6 @@ export async function blame(
   elapsedMs = (process.hrtime.bigint() - t0) / 1000000n;
   console.log(`git blame: blaming took ${elapsedMs} ms`);
   assert(status === 0, "git blame returned non-zero exit code");
-
-  type BlameCommit = {
-    author?: string;
-    authorMail?: string;
-    authorTime?: number;
-    authorTz?: string;
-    committer?: string;
-    committerMail?: string;
-    committerTime?: number;
-    committerTz?: string;
-    summary?: string;
-    previous?: string;
-  };
-  type BlameHunk = {
-    origCommitHash: string;
-    filepath: string;
-    origStartLine: number;
-    currStartLine: number;
-    hunksize: number;
-  };
 
   t0 = process.hrtime.bigint();
   const lines = stdout
@@ -231,4 +231,41 @@ export async function blame(
   console.log(`git blame: parsing output took ${elapsedMs} ms`);
 
   return { commits, blamehunks };
+}
+
+export type BlameLine = {
+  origCommitHash: string;
+  filepath: string;
+  origLine: number;
+};
+
+export function blamelineToString(blameline: BlameLine): string {
+  return `${blameline.origCommitHash} ${blameline.origLine} ${blameline.filepath}`;
+}
+export function blamelineFromString(str: string): BlameLine {
+  const [origCommitHash, origLine, ...filepathBits] = str.split(" ");
+  return {
+    origCommitHash,
+    filepath: filepathBits.join(" "),
+    origLine: parseInt(origLine),
+  };
+}
+
+export function blamehunksToBlamelines(blamehunks: BlameHunk[]) {
+  const currLineToBlameline = new Map<number, BlameLine>();
+  const blamelineToCurrLine = new Map<string, number>();
+  for (const blamehunk of blamehunks) {
+    const { origCommitHash, filepath, origStartLine, currStartLine, hunksize } =
+      blamehunk;
+    for (let i = 0; i < hunksize; i++) {
+      const blameline = {
+        origCommitHash,
+        filepath,
+        origLine: origStartLine + i,
+      };
+      currLineToBlameline.set(currStartLine + i, blameline);
+      blamelineToCurrLine.set(blamelineToString(blameline), currStartLine + i);
+    }
+  }
+  return { currLineToBlameline, blamelineToCurrLine };
 }
