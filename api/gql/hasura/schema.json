@@ -2563,22 +2563,6 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": "An object relationship",
-              "isDeprecated": false,
-              "name": "author",
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "github_users",
-                  "ofType": null
-                }
-              }
-            },
-            {
-              "args": [],
-              "deprecationReason": null,
               "description": "The GitHub node id of the user who authored this comment.",
               "isDeprecated": false,
               "name": "author_github_node_id",
@@ -2627,6 +2611,22 @@
             {
               "args": [],
               "deprecationReason": null,
+              "description": "An object relationship",
+              "isDeprecated": false,
+              "name": "github_user",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "github_users",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
               "name": "id",
@@ -2636,22 +2636,6 @@
                 "ofType": {
                   "kind": "SCALAR",
                   "name": "uuid",
-                  "ofType": null
-                }
-              }
-            },
-            {
-              "args": [],
-              "deprecationReason": null,
-              "description": "An object relationship",
-              "isDeprecated": false,
-              "name": "thread",
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "threads",
                   "ofType": null
                 }
               }
@@ -2944,16 +2928,6 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "author",
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "github_users_bool_exp",
-                "ofType": null
-              }
-            },
-            {
-              "defaultValue": null,
-              "description": null,
               "name": "author_github_node_id",
               "type": {
                 "kind": "INPUT_OBJECT",
@@ -2984,20 +2958,20 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "id",
+              "name": "github_user",
               "type": {
                 "kind": "INPUT_OBJECT",
-                "name": "uuid_comparison_exp",
+                "name": "github_users_bool_exp",
                 "ofType": null
               }
             },
             {
               "defaultValue": null,
               "description": null,
-              "name": "thread",
+              "name": "id",
               "type": {
                 "kind": "INPUT_OBJECT",
-                "name": "threads_bool_exp",
+                "name": "uuid_comparison_exp",
                 "ofType": null
               }
             },
@@ -3041,16 +3015,6 @@
           "inputFields": [
             {
               "defaultValue": null,
-              "description": null,
-              "name": "author",
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "github_users_obj_rel_insert_input",
-                "ofType": null
-              }
-            },
-            {
-              "defaultValue": null,
               "description": "The GitHub node id of the user who authored this comment.",
               "name": "author_github_node_id",
               "type": {
@@ -3082,20 +3046,20 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "id",
+              "name": "github_user",
               "type": {
-                "kind": "SCALAR",
-                "name": "uuid",
+                "kind": "INPUT_OBJECT",
+                "name": "github_users_obj_rel_insert_input",
                 "ofType": null
               }
             },
             {
               "defaultValue": null,
               "description": null,
-              "name": "thread",
+              "name": "id",
               "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "threads_obj_rel_insert_input",
+                "kind": "SCALAR",
+                "name": "uuid",
                 "ofType": null
               }
             },
@@ -3495,16 +3459,6 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "author",
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "github_users_order_by",
-                "ofType": null
-              }
-            },
-            {
-              "defaultValue": null,
-              "description": null,
               "name": "author_github_node_id",
               "type": {
                 "kind": "ENUM",
@@ -3535,20 +3489,20 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "id",
+              "name": "github_user",
               "type": {
-                "kind": "ENUM",
-                "name": "order_by",
+                "kind": "INPUT_OBJECT",
+                "name": "github_users_order_by",
                 "ofType": null
               }
             },
             {
               "defaultValue": null,
               "description": null,
-              "name": "thread",
+              "name": "id",
               "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "threads_order_by",
+                "kind": "ENUM",
+                "name": "order_by",
                 "ofType": null
               }
             },
@@ -5301,15 +5255,177 @@
               }
             },
             {
-              "args": [],
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "distinct select on columns",
+                  "name": "distinct_on",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "threads_select_column",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "limit the number of rows returned",
+                  "name": "limit",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "skip the first n rows. Use only with order_by",
+                  "name": "offset",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "sort the rows by one or more columns",
+                  "name": "order_by",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "threads_order_by",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows returned",
+                  "name": "where",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "threads_bool_exp",
+                    "ofType": null
+                  }
+                }
+              ],
               "deprecationReason": null,
-              "description": "An object relationship",
+              "description": "An array relationship",
               "isDeprecated": false,
-              "name": "thread",
+              "name": "threads",
               "type": {
-                "kind": "OBJECT",
-                "name": "threads",
-                "ofType": null
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "threads",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "distinct select on columns",
+                  "name": "distinct_on",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "threads_select_column",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "limit the number of rows returned",
+                  "name": "limit",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "skip the first n rows. Use only with order_by",
+                  "name": "offset",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "sort the rows by one or more columns",
+                  "name": "order_by",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "threads_order_by",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows returned",
+                  "name": "where",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "threads_bool_exp",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "An aggregate relationship",
+              "isDeprecated": false,
+              "name": "threads_aggregate",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "threads_aggregate",
+                  "ofType": null
+                }
               }
             }
           ],
@@ -5649,7 +5765,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "thread",
+              "name": "threads",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "threads_bool_exp",
@@ -5738,10 +5854,10 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "thread",
+              "name": "threads",
               "type": {
                 "kind": "INPUT_OBJECT",
-                "name": "threads_obj_rel_insert_input",
+                "name": "threads_arr_rel_insert_input",
                 "ofType": null
               }
             }
@@ -6026,10 +6142,10 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "thread",
+              "name": "threads_aggregate",
               "type": {
                 "kind": "INPUT_OBJECT",
-                "name": "threads_order_by",
+                "name": "threads_aggregate_order_by",
                 "ofType": null
               }
             }
@@ -6536,7 +6652,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "SCALAR",
-                  "name": "Boolean",
+                  "name": "String",
                   "ofType": null
                 }
               }
@@ -8941,7 +9057,7 @@
                 }
               ],
               "deprecationReason": null,
-              "description": "fetch data from the table: \"threads\"",
+              "description": "An array relationship",
               "isDeprecated": false,
               "name": "threads",
               "type": {
@@ -9032,7 +9148,7 @@
                 }
               ],
               "deprecationReason": null,
-              "description": "fetch aggregated fields from the table: \"threads\"",
+              "description": "An aggregate relationship",
               "isDeprecated": false,
               "name": "threads_aggregate",
               "type": {
@@ -10214,7 +10330,7 @@
                 }
               ],
               "deprecationReason": null,
-              "description": "fetch data from the table: \"threads\"",
+              "description": "An array relationship",
               "isDeprecated": false,
               "name": "threads",
               "type": {
@@ -10305,7 +10421,7 @@
                 }
               ],
               "deprecationReason": null,
-              "description": "fetch aggregated fields from the table: \"threads\"",
+              "description": "An aggregate relationship",
               "isDeprecated": false,
               "name": "threads_aggregate",
               "type": {
@@ -11026,6 +11142,170 @@
           "possibleTypes": null
         },
         {
+          "description": "order by aggregate values of table \"threads\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "avg",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "threads_avg_order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "count",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "max",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "threads_max_order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "min",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "threads_min_order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "stddev",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "threads_stddev_order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "stddev_pop",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "threads_stddev_pop_order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "stddev_samp",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "threads_stddev_samp_order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "sum",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "threads_sum_order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "var_pop",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "threads_var_pop_order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "var_samp",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "threads_var_samp_order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "variance",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "threads_variance_order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "threads_aggregate_order_by",
+          "possibleTypes": null
+        },
+        {
+          "description": "input type for inserting array relation for remote table \"threads\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "data",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "threads_insert_input",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": "on conflict condition",
+              "name": "on_conflict",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "threads_on_conflict",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "threads_arr_rel_insert_input",
+          "possibleTypes": null
+        },
+        {
           "description": "aggregate avg on columns",
           "enumValues": null,
           "fields": [
@@ -11046,6 +11326,27 @@
           "interfaces": [],
           "kind": "OBJECT",
           "name": "threads_avg_fields",
+          "possibleTypes": null
+        },
+        {
+          "description": "order by avg() on columns of table \"threads\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_line_number",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "threads_avg_order_by",
           "possibleTypes": null
         },
         {
@@ -11320,6 +11621,57 @@
           "possibleTypes": null
         },
         {
+          "description": "order by max() on columns of table \"threads\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "id",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_commit",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_file_path",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_line_number",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "threads_max_order_by",
+          "possibleTypes": null
+        },
+        {
           "description": "aggregate min on columns",
           "enumValues": null,
           "fields": [
@@ -11379,6 +11731,57 @@
           "possibleTypes": null
         },
         {
+          "description": "order by min() on columns of table \"threads\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "id",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_commit",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_file_path",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_line_number",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "threads_min_order_by",
+          "possibleTypes": null
+        },
+        {
           "description": "response of any mutation on the table \"threads\"",
           "enumValues": null,
           "fields": [
@@ -11427,41 +11830,6 @@
           "interfaces": [],
           "kind": "OBJECT",
           "name": "threads_mutation_response",
-          "possibleTypes": null
-        },
-        {
-          "description": "input type for inserting object relation for remote table \"threads\"",
-          "enumValues": null,
-          "fields": null,
-          "inputFields": [
-            {
-              "defaultValue": null,
-              "description": null,
-              "name": "data",
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "threads_insert_input",
-                  "ofType": null
-                }
-              }
-            },
-            {
-              "defaultValue": null,
-              "description": "on conflict condition",
-              "name": "on_conflict",
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "threads_on_conflict",
-                "ofType": null
-              }
-            }
-          ],
-          "interfaces": null,
-          "kind": "INPUT_OBJECT",
-          "name": "threads_obj_rel_insert_input",
           "possibleTypes": null
         },
         {
@@ -11717,6 +12085,27 @@
           "possibleTypes": null
         },
         {
+          "description": "order by stddev() on columns of table \"threads\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_line_number",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "threads_stddev_order_by",
+          "possibleTypes": null
+        },
+        {
           "description": "aggregate stddev_pop on columns",
           "enumValues": null,
           "fields": [
@@ -11737,6 +12126,27 @@
           "interfaces": [],
           "kind": "OBJECT",
           "name": "threads_stddev_pop_fields",
+          "possibleTypes": null
+        },
+        {
+          "description": "order by stddev_pop() on columns of table \"threads\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_line_number",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "threads_stddev_pop_order_by",
           "possibleTypes": null
         },
         {
@@ -11763,6 +12173,27 @@
           "possibleTypes": null
         },
         {
+          "description": "order by stddev_samp() on columns of table \"threads\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_line_number",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "threads_stddev_samp_order_by",
+          "possibleTypes": null
+        },
+        {
           "description": "aggregate sum on columns",
           "enumValues": null,
           "fields": [
@@ -11783,6 +12214,27 @@
           "interfaces": [],
           "kind": "OBJECT",
           "name": "threads_sum_fields",
+          "possibleTypes": null
+        },
+        {
+          "description": "order by sum() on columns of table \"threads\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_line_number",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "threads_sum_order_by",
           "possibleTypes": null
         },
         {
@@ -11844,6 +12296,27 @@
           "possibleTypes": null
         },
         {
+          "description": "order by var_pop() on columns of table \"threads\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_line_number",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "threads_var_pop_order_by",
+          "possibleTypes": null
+        },
+        {
           "description": "aggregate var_samp on columns",
           "enumValues": null,
           "fields": [
@@ -11867,6 +12340,27 @@
           "possibleTypes": null
         },
         {
+          "description": "order by var_samp() on columns of table \"threads\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_line_number",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "threads_var_samp_order_by",
+          "possibleTypes": null
+        },
+        {
           "description": "aggregate variance on columns",
           "enumValues": null,
           "fields": [
@@ -11887,6 +12381,27 @@
           "interfaces": [],
           "kind": "OBJECT",
           "name": "threads_variance_fields",
+          "possibleTypes": null
+        },
+        {
+          "description": "order by variance() on columns of table \"threads\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_line_number",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "threads_variance_order_by",
           "possibleTypes": null
         },
         {
