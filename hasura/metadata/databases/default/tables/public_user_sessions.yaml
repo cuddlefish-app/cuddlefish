@@ -2,6 +2,6 @@ table:
   name: user_sessions
   schema: public
 object_relationships:
-- name: user
+- name: github_user
   using:
-    foreign_key_constraint_on: user_github_id
+    foreign_key_constraint_on: user_github_node_id

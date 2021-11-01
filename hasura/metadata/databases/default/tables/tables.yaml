@@ -1,6 +1,6 @@
 - "!include public_blamelines.yaml"
 - "!include public_comments.yaml"
+- "!include public_github_users.yaml"
 - "!include public_lines.yaml"
 - "!include public_threads.yaml"
 - "!include public_user_sessions.yaml"
-- "!include public_users.yaml"

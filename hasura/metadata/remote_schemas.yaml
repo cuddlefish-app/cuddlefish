@@ -2,3 +2,5 @@
   definition:
     url_from_env: API_GRAPHQL_ENDPOINT
     timeout_seconds: 600
+    forward_client_headers: true
+  comment: ""

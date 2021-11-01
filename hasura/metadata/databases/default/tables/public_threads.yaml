@@ -2,37 +2,19 @@ table:
   name: threads
   schema: public
 array_relationships:
-  - name: comments
-    using:
-      foreign_key_constraint_on:
-        column: thread_id
-        table:
-          name: comments
-          schema: public
-insert_permissions:
-  - permission:
-      backend_only: false
-      check: {}
-      columns:
-        - original_commit
-        - original_file_path
-        - original_line_number
-    role: user
+- name: comments
+  using:
+    foreign_key_constraint_on:
+      column: thread_id
+      table:
+        name: comments
+        schema: public
 select_permissions:
-  - permission:
-      columns:
-        - original_line_number
-        - original_commit
-        - original_file_path
-        - id
-      filter: {}
-    role: anonymous
-  - permission:
-      columns:
-        - id
-        - original_commit
-        - original_file_path
-        - original_line_number
-      filter: {}
-      limit: 1000
-    role: user
+- permission:
+    columns:
+    - id
+    - original_commit
+    - original_file_path
+    - original_line_number
+    filter: {}
+  role: user
