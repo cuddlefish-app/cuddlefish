@@ -1,41 +1,29 @@
 // TODO
-// - rendering existing threads
-// - subscribing to thread updates
+// - email notifications
+// - send feedback
+// - subscribing to thread updates (on file close, unsubscribe)
+// - open line in github
+// - email link -> open vscode -> show readonly file with comment thread
+// - reactions
+// - private repo -> interest form
+// - show "code author", "contributor", etc labels to comments.
+// - lowprio: what's up with that collapse button?
+// - lowprio: auto link @-links
 
-import { gql } from "@apollo/client/core";
 import * as child_process from "child_process";
 import * as util from "util";
 import * as vscode from "vscode";
+import { CommentJefe } from "./comments";
 import {
   eraseCuddlefishSessionToken,
-  getApolloClientWithAuth,
   getCuddlefishSessionTokenModal,
   getOctokitModal,
   GitHubCredentials,
 } from "./credentials";
-import {
-  AllThreadsQuery,
-  AllThreadsQueryVariables,
-  StartThreadMutation,
-  StartThreadMutationVariables,
-} from "./generated/hasura-types";
 import * as git from "./git";
-import { BlameLine, blamelineToString } from "./git";
-import {
-  assert,
-  assertNotNull,
-  logErrors0,
-  logErrors1,
-  logErrors2,
-  notNull,
-} from "./utils";
+import { assert, logErrors0, logErrors1, logErrors2, notNull } from "./utils";
 
 const exec = util.promisify(child_process.exec);
-// const fs = vscode.workspace.fs;
-
-// function sleep(ms: number): Promise<void> {
-//   return new Promise((resolve) => setTimeout(resolve, ms));
-// }
 
 // An ugly hack to work around https://github.com/microsoft/vscode/issues/135712
 // Using vscode.Uri's as keys doesn't work, so we use `uri.toString()` instead.
@@ -133,6 +121,8 @@ export async function activate(context: vscode.ExtensionContext) {
     "cuddlefish-comments",
     "Cuddlefish Comments"
   );
+  const commentJefe = new CommentJefe(context, credentials, commentController);
+  commentController.options = { placeHolder: "What's on your mind?" };
   commentController.commentingRangeProvider = {
     provideCommentingRanges: logErrors2(
       async (
@@ -148,8 +138,7 @@ export async function activate(context: vscode.ExtensionContext) {
           return [];
         }
 
-        // TODO when files are opened:
-        // - [ ] subscribe to hasura for updates
+        uriToDocument.set(document.uri.toString(), document);
 
         const blameinfo = await git.blame(
           repo,
@@ -157,6 +146,9 @@ export async function activate(context: vscode.ExtensionContext) {
           document.getText(),
           undefined
         );
+
+        // Load the existing comments and subscribe to updates.
+        await commentJefe.trackDocument(document.uri, blameinfo.blamehunks);
 
         // Subtract one to account for the fact that VSCode is 0-indexed.
         // Subtract another one to account for the fact that hunksize 1
@@ -167,111 +159,6 @@ export async function activate(context: vscode.ExtensionContext) {
             currStartLine - 1,
             currStartLine + hunksize - 2,
           ]);
-
-        uriToDocument.set(document.uri.toString(), document);
-
-        ////////////////////////////////////////////////////////////////////////
-        const client = await getApolloClientWithAuth(context, credentials);
-        const show = (x: any) => {
-          console.log(x);
-          return x;
-        };
-        const { blamelineToCurrLine, currLineToBlameline } =
-          git.blamehunksToBlamelines(blameinfo.blamehunks);
-
-        for (const [currLine, blamehunk] of currLineToBlameline.entries()) {
-          console.log(`${currLine} ${JSON.stringify(blamehunk)}`);
-        }
-
-        const res = await client.query<
-          AllThreadsQuery,
-          AllThreadsQueryVariables
-        >({
-          query: gql`
-            query AllThreads($cond: lines_bool_exp!) {
-              lines(where: $cond) {
-                commit
-                file_path
-                line_number
-                threads {
-                  id
-                  comments(order_by: { created_at: desc }) {
-                    id
-                    body
-                    author_github_node_id
-                    github_user {
-                      github_username
-                      github_name
-                    }
-                  }
-                }
-              }
-            }
-          `,
-          variables: {
-            cond: {
-              _or: show(
-                Array.from(currLineToBlameline.values(), (blameline) => ({
-                  commit: { _eq: blameline.origCommitHash },
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  file_path: { _eq: blameline.filepath },
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  line_number: { _eq: blameline.origLine },
-                }))
-              ),
-            },
-          },
-        });
-        console.log("querying threads");
-        console.log(res.data.lines);
-        for (const line of res.data.lines) {
-          console.log(line);
-          const orig: BlameLine = {
-            origCommitHash: line.commit,
-            filepath: line.file_path,
-            origLine: line.line_number,
-          };
-          const currLine = blamelineToCurrLine.get(blamelineToString(orig));
-          assertNotNull(currLine);
-
-          // It may occasionally be the case that there is an entry in the `lines` table that has no corresponding threads. This is somewhat future-proofing ourselves against the case where we are doing blamelines via the web interface.
-          if (line.threads.length === 0) {
-            continue;
-          }
-
-          assert(
-            line.threads.length === 1,
-            "there should be no more than one thread per line"
-          );
-          const thread = line.threads[0];
-          assert(
-            thread.comments.length >= 1,
-            "there should be at least one comment in a thread"
-          );
-
-          // TODO: dedup these by thread id. right now every time we provideCommentingRanges we get extra copies of the same thread.
-          commentController.createCommentThread(
-            document.uri,
-            new vscode.Range(currLine - 1, 0, currLine - 1, 1),
-            thread.comments.map((comment) => {
-              const username = comment.github_user.github_username;
-              const name = comment.github_user.github_name;
-              const avatarUrl = `https://avatars.githubusercontent.com/${username}?s=40`;
-              return {
-                author: {
-                  iconPath: vscode.Uri.parse(avatarUrl),
-                  name:
-                    typeof name === "string" && name.length > 0
-                      ? `${name} (@${username})`
-                      : `@${username}`,
-                },
-                body: `id:${thread.id} ${comment.body}`,
-                mode: vscode.CommentMode.Preview,
-              };
-            })
-          );
-        }
-        ////////////////////////////////////////////////////////////////////////
 
         // TODO unclear from the docs if Range is inclusive or exclusive.
         // Either way this seems to do the right thing for now.
@@ -286,9 +173,6 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       "cuddlefish-comments.startThread",
       logErrors1(async (reply: vscode.CommentReply) => {
-        console.log("Starting a new thread");
-        console.log(reply);
-
         // We should only be showing the comment gutters if we're in a file
         // that's in a git repo.
         const gitRepoRoot = notNull(await git.repoRoot(reply.thread.uri));
@@ -300,12 +184,12 @@ export async function activate(context: vscode.ExtensionContext) {
           uriToDocument.get(reply.thread.uri.toString())
         );
 
-        const lineNumber = reply.thread.range.start.line + 1;
+        const currLineNumber = reply.thread.range.start.line + 1;
         const { blamehunks } = await git.blame(
           gitRepoRoot,
           reply.thread.uri.path,
           document.getText(),
-          lineNumber
+          currLineNumber
         );
         assert(blamehunks.length === 1, "expected exactly on blamehunk");
         const blamehunk = blamehunks[0];
@@ -313,60 +197,19 @@ export async function activate(context: vscode.ExtensionContext) {
           blamehunk.origCommitHash !== git.ZERO_HASH,
           "expected non-zero commit hash"
         );
-        assert(blamehunk.currStartLine === lineNumber, "wrong line");
+        assert(blamehunk.currStartLine === currLineNumber, "wrong line");
         console.log(
           `staring a thread on original line ${JSON.stringify(blamehunk)}`
         );
 
-        // TODO maybe present the original commit author name in some user-friendly way?
-
-        // TODO use graphql codegen to get type safe queries
-        const client = await getApolloClientWithAuth(context, credentials);
-        const res = await client.mutate<
-          StartThreadMutation,
-          StartThreadMutationVariables
-        >({
-          mutation: gql`
-            mutation StartThread(
-              $repoIds: [String!]!
-              $commitHash: String!
-              $filePath: String!
-              $lineNumber: Int!
-              $body: String!
-            ) {
-              StartThread(
-                repoIds: $repoIds
-                commitHash: $commitHash
-                filePath: $filePath
-                lineNumber: $lineNumber
-                body: $body
-              )
-            }
-          `,
-          variables: {
-            repoIds: githubRemotes,
-            commitHash: blamehunk.origCommitHash,
-            filePath: blamehunk.filepath,
-            lineNumber: blamehunk.origStartLine,
-            body: reply.text,
-          },
-        });
-        assert(res.errors === undefined, "graphql errors");
-        assertNotNull(res.data);
-        const new_thread_id = res.data.StartThread;
-
-        // TODO:
-        // - [ ] parse the response and render the thread
-        // - [ ] if this is the first thread the user has started show a nice info/welcome message
-        // - [ ] add profile photo
-
-        reply.thread.comments = [
-          {
-            author: { name: "Samuel Ainsworth" },
-            body: reply.text,
-            mode: vscode.CommentMode.Preview,
-          },
-        ];
+        // Actually start the thread.
+        await commentJefe.startThread(
+          githubRemotes,
+          blamehunk.origCommitHash,
+          blamehunk.filepath,
+          blamehunk.origStartLine,
+          reply
+        );
       })
     )
   );
@@ -376,13 +219,15 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       "cuddlefish-comments.commentOnThread",
       logErrors1(async (reply: vscode.CommentReply) => {
-        // TODO
-        console.group("commentOnThread");
-        console.log(reply);
-
-        throw new Error("not implemented");
+        await commentJefe.addComment(reply);
       })
     )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("cuddlefish-comments.dispose", () => {
+      commentController.dispose();
+    })
   );
 }
 

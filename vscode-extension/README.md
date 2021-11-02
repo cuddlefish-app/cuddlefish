@@ -19,7 +19,7 @@ Download the hasura schema definition with apollo:
 "gql:download": "npx rover graph introspect http://localhost:8080/v1/graphql --header x-hasura-admin-secret:hasurasecret --header x-hasura-role:user > hasura-schema.gql",
 ```
 
-Run `npm run gql:codegen` to download the schema and generate TS types in development.
+Run `npm run gql:codegen -- --watch` to download the schema and generate TS types in development.
 
 ## Features
 

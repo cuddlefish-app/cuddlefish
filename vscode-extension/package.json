@@ -19,7 +19,7 @@
 		"commands": [
 			{
 				"command": "cuddlefish-comments.login",
-				"category": "CF Comments",
+				"category": "Cuddlefish Comments",
 				"title": "Login"
 			},
 			{

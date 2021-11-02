@@ -10,7 +10,11 @@ import { setContext } from "@apollo/client/link/context";
 import * as Octokit from "@octokit/rest";
 import { fetch } from "cross-fetch";
 import * as vscode from "vscode";
-import { assert, isString } from "./utils";
+import {
+  StartCuddlefishSessionMutation,
+  StartCuddlefishSessionMutationVariables,
+} from "./generated/hasura-types";
+import { notNull } from "./utils";
 
 const GITHUB_AUTH_PROVIDER_ID = "github";
 const CUDDLEFISH_SESSION_TOKEN = "cuddlefish-session-token";
@@ -86,8 +90,7 @@ export class GitHubCredentials {
 export async function getOctokitModal(
   creds: GitHubCredentials
 ): Promise<Octokit.Octokit> {
-  const session = await creds.getSessionModal();
-  assert(session !== undefined, "Could not get GitHub credentials.");
+  const session = notNull(await creds.getSessionModal());
   return new Octokit.Octokit({ auth: session.accessToken });
 }
 
@@ -114,7 +117,10 @@ export async function getCuddlefishSessionTokenModal(
 
     // Get a potentially anonymous client.
     const client = getApolloClientQuiet(context);
-    const res = await client.mutate({
+    const res = await client.mutate<
+      StartCuddlefishSessionMutation,
+      StartCuddlefishSessionMutationVariables
+    >({
       mutation: gql`
         mutation StartCuddlefishSession($githubAccessToken: String!) {
           StartCuddlefishSession(githubAccessToken: $githubAccessToken)
@@ -122,8 +128,7 @@ export async function getCuddlefishSessionTokenModal(
       `,
       variables: { githubAccessToken: vscodeSession.accessToken },
     });
-    const token = res.data.StartCuddlefishSession;
-    assert(isString(token), "session token is not a string");
+    const token = notNull(res.data).StartCuddlefishSession;
     context.globalState.update(CUDDLEFISH_SESSION_TOKEN, token);
     return token;
   }
@@ -184,8 +189,7 @@ export async function getApolloClientWithAuth(
   context: vscode.ExtensionContext,
   creds: GitHubCredentials
 ) {
-  const token = await getCuddlefishSessionTokenModal(context, creds);
-  assert(token !== undefined, "Could not get GitHub credentials.");
+  const token = notNull(await getCuddlefishSessionTokenModal(context, creds));
   if (
     apolloClient !== undefined &&
     apolloClient.cuddlefishSessionToken !== token

@@ -115,7 +115,7 @@ type BlameCommit = {
   summary?: string;
   previous?: string;
 };
-type BlameHunk = {
+export type BlameHunk = {
   origCommitHash: string;
   filepath: string;
   origStartLine: number;

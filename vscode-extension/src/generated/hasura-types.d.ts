@@ -10,7 +10,7 @@ export type Scalars = {
   Int: number;
   Float: number;
   timestamptz: any;
-  uuid: any;
+  uuid: string;
 };
 
 /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
@@ -158,6 +158,12 @@ export type Comments_Bool_Exp = {
   thread_id?: Maybe<Uuid_Comparison_Exp>;
 };
 
+/** input type for inserting data into table "comments" */
+export type Comments_Insert_Input = {
+  body?: Maybe<Scalars['String']>;
+  thread_id?: Maybe<Scalars['uuid']>;
+};
+
 /** order by max() on columns of table "comments" */
 export type Comments_Max_Order_By = {
   /** The GitHub node id of the user who authored this comment. */
@@ -176,6 +182,15 @@ export type Comments_Min_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   thread_id?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "comments" */
+export type Comments_Mutation_Response = {
+  __typename?: 'comments_mutation_response';
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data from the rows affected by the mutation */
+  returning: Array<Comments>;
 };
 
 /** Ordering options when selecting data from "comments". */
@@ -318,6 +333,10 @@ export type Mutation_Root = {
   CalculateBlameLines: Scalars['Boolean'];
   StartCuddlefishSession: Scalars['String'];
   StartThread: Scalars['String'];
+  /** insert data into the table: "comments" */
+  insert_comments?: Maybe<Comments_Mutation_Response>;
+  /** insert a single row into the table: "comments" */
+  insert_comments_one?: Maybe<Comments>;
 };
 
 
@@ -342,6 +361,18 @@ export type Mutation_RootStartThreadArgs = {
   filePath: Scalars['String'];
   lineNumber: Scalars['Int'];
   repoIds: Array<Scalars['String']>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_CommentsArgs = {
+  objects: Array<Comments_Insert_Input>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Comments_OneArgs = {
+  object: Comments_Insert_Input;
 };
 
 /** column ordering options */
@@ -720,19 +751,12 @@ export type Uuid_Comparison_Exp = {
   _nin?: Maybe<Array<Scalars['uuid']>>;
 };
 
-export type StartCuddlefishSessionMutationVariables = Exact<{
-  githubAccessToken: Scalars['String'];
-}>;
-
-
-export type StartCuddlefishSessionMutation = { __typename?: 'mutation_root', StartCuddlefishSession: string };
-
 export type AllThreadsQueryVariables = Exact<{
   cond: Lines_Bool_Exp;
 }>;
 
 
-export type AllThreadsQuery = { __typename?: 'query_root', lines: Array<{ __typename?: 'lines', commit: string, file_path: string, line_number: number, threads: Array<{ __typename?: 'threads', id: any, comments: Array<{ __typename?: 'comments', id: any, body: string, author_github_node_id: string, github_user: { __typename?: 'github_users', github_username: string, github_name?: string | null | undefined } }> }> }> };
+export type AllThreadsQuery = { __typename?: 'query_root', lines: Array<{ __typename?: 'lines', commit: string, file_path: string, line_number: number, threads: Array<{ __typename?: 'threads', id: string, comments: Array<{ __typename?: 'comments', id: string, body: string, author_github_node_id: string, github_user: { __typename?: 'github_users', github_username: string, github_name?: string | null | undefined } }> }> }> };
 
 export type StartThreadMutationVariables = Exact<{
   repoIds: Array<Scalars['String']> | Scalars['String'];
@@ -744,3 +768,18 @@ export type StartThreadMutationVariables = Exact<{
 
 
 export type StartThreadMutation = { __typename?: 'mutation_root', StartThread: string };
+
+export type AddCommentMutationVariables = Exact<{
+  body: Scalars['String'];
+  threadId: Scalars['uuid'];
+}>;
+
+
+export type AddCommentMutation = { __typename?: 'mutation_root', insert_comments_one?: { __typename?: 'comments', id: string } | null | undefined };
+
+export type StartCuddlefishSessionMutationVariables = Exact<{
+  githubAccessToken: Scalars['String'];
+}>;
+
+
+export type StartCuddlefishSessionMutation = { __typename?: 'mutation_root', StartCuddlefishSession: string };

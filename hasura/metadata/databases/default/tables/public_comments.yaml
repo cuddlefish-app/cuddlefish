@@ -5,6 +5,16 @@ object_relationships:
 - name: github_user
   using:
     foreign_key_constraint_on: author_github_node_id
+insert_permissions:
+- permission:
+    backend_only: false
+    check: {}
+    columns:
+    - body
+    - thread_id
+    set:
+      author_github_node_id: x-hasura-User-Id
+  role: user
 select_permissions:
 - permission:
     columns:
