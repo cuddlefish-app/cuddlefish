@@ -1,0 +1,12 @@
+overwrite: true
+schema:
+  - "https://api.github.com/graphql":
+      headers:
+        x-hasura-role: admin
+        x-hasura-admin-secret: "hasurasecret"
+documents: "github.ts"
+generates:
+  src/generated/github-types.d.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"

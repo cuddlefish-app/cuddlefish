@@ -1,12 +1,22 @@
 table:
   name: lines
   schema: public
+object_relationships:
+- name: github_repos
+  using:
+    manual_configuration:
+      column_mapping:
+        commit_hash: commit_hash
+      insertion_order: null
+      remote_table:
+        name: commit_github_repo
+        schema: public
 array_relationships:
 - name: threads
   using:
     manual_configuration:
       column_mapping:
-        commit: original_commit
+        commit_hash: original_commit_hash
         file_path: original_file_path
         line_number: original_line_number
       insertion_order: null
@@ -16,14 +26,14 @@ array_relationships:
 select_permissions:
 - permission:
     columns:
-    - commit
+    - commit_hash
     - file_path
     - line_number
     filter: {}
   role: anonymous
 - permission:
     columns:
-    - commit
+    - commit_hash
     - file_path
     - line_number
     filter: {}

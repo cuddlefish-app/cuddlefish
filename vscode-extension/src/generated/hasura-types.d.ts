@@ -68,12 +68,12 @@ export type String_Comparison_Exp = {
  */
 export type Blamelines = {
   __typename?: 'blamelines';
-  original_commit: Scalars['String'];
+  original_commit_hash: Scalars['String'];
   original_file_path: Scalars['String'];
   /** An object relationship */
   original_line?: Maybe<Lines>;
   original_line_number: Scalars['Int'];
-  x_commit: Scalars['String'];
+  x_commit_hash: Scalars['String'];
   x_file_path: Scalars['String'];
   x_line_number: Scalars['Int'];
 };
@@ -83,22 +83,22 @@ export type Blamelines_Bool_Exp = {
   _and?: Maybe<Array<Blamelines_Bool_Exp>>;
   _not?: Maybe<Blamelines_Bool_Exp>;
   _or?: Maybe<Array<Blamelines_Bool_Exp>>;
-  original_commit?: Maybe<String_Comparison_Exp>;
+  original_commit_hash?: Maybe<String_Comparison_Exp>;
   original_file_path?: Maybe<String_Comparison_Exp>;
   original_line?: Maybe<Lines_Bool_Exp>;
   original_line_number?: Maybe<Int_Comparison_Exp>;
-  x_commit?: Maybe<String_Comparison_Exp>;
+  x_commit_hash?: Maybe<String_Comparison_Exp>;
   x_file_path?: Maybe<String_Comparison_Exp>;
   x_line_number?: Maybe<Int_Comparison_Exp>;
 };
 
 /** Ordering options when selecting data from "blamelines". */
 export type Blamelines_Order_By = {
-  original_commit?: Maybe<Order_By>;
+  original_commit_hash?: Maybe<Order_By>;
   original_file_path?: Maybe<Order_By>;
   original_line?: Maybe<Lines_Order_By>;
   original_line_number?: Maybe<Order_By>;
-  x_commit?: Maybe<Order_By>;
+  x_commit_hash?: Maybe<Order_By>;
   x_file_path?: Maybe<Order_By>;
   x_line_number?: Maybe<Order_By>;
 };
@@ -106,13 +106,13 @@ export type Blamelines_Order_By = {
 /** select columns of table "blamelines" */
 export enum Blamelines_Select_Column {
   /** column name */
-  OriginalCommit = 'original_commit',
+  OriginalCommitHash = 'original_commit_hash',
   /** column name */
   OriginalFilePath = 'original_file_path',
   /** column name */
   OriginalLineNumber = 'original_line_number',
   /** column name */
-  XCommit = 'x_commit',
+  XCommitHash = 'x_commit_hash',
   /** column name */
   XFilePath = 'x_file_path',
   /** column name */
@@ -135,6 +135,8 @@ export type Comments = {
   /** An object relationship */
   github_user: Github_Users;
   id: Scalars['uuid'];
+  /** An object relationship */
+  thread: Threads;
   thread_id: Scalars['uuid'];
 };
 
@@ -155,6 +157,7 @@ export type Comments_Bool_Exp = {
   created_at?: Maybe<Timestamptz_Comparison_Exp>;
   github_user?: Maybe<Github_Users_Bool_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
+  thread?: Maybe<Threads_Bool_Exp>;
   thread_id?: Maybe<Uuid_Comparison_Exp>;
 };
 
@@ -200,6 +203,7 @@ export type Comments_Order_By = {
   created_at?: Maybe<Order_By>;
   github_user?: Maybe<Github_Users_Order_By>;
   id?: Maybe<Order_By>;
+  thread?: Maybe<Threads_Order_By>;
   thread_id?: Maybe<Order_By>;
 };
 
@@ -275,7 +279,7 @@ export enum Github_Users_Select_Column {
  */
 export type Lines = {
   __typename?: 'lines';
-  commit: Scalars['String'];
+  commit_hash: Scalars['String'];
   file_path: Scalars['String'];
   line_number: Scalars['Int'];
   /** An array relationship */
@@ -303,7 +307,7 @@ export type Lines_Bool_Exp = {
   _and?: Maybe<Array<Lines_Bool_Exp>>;
   _not?: Maybe<Lines_Bool_Exp>;
   _or?: Maybe<Array<Lines_Bool_Exp>>;
-  commit?: Maybe<String_Comparison_Exp>;
+  commit_hash?: Maybe<String_Comparison_Exp>;
   file_path?: Maybe<String_Comparison_Exp>;
   line_number?: Maybe<Int_Comparison_Exp>;
   threads?: Maybe<Threads_Bool_Exp>;
@@ -311,7 +315,7 @@ export type Lines_Bool_Exp = {
 
 /** Ordering options when selecting data from "lines". */
 export type Lines_Order_By = {
-  commit?: Maybe<Order_By>;
+  commit_hash?: Maybe<Order_By>;
   file_path?: Maybe<Order_By>;
   line_number?: Maybe<Order_By>;
   threads_aggregate?: Maybe<Threads_Aggregate_Order_By>;
@@ -320,7 +324,7 @@ export type Lines_Order_By = {
 /** select columns of table "lines" */
 export enum Lines_Select_Column {
   /** column name */
-  Commit = 'commit',
+  CommitHash = 'commit_hash',
   /** column name */
   FilePath = 'file_path',
   /** column name */
@@ -427,7 +431,7 @@ export type Query_RootBlamelinesArgs = {
 
 
 export type Query_RootBlamelines_By_PkArgs = {
-  x_commit: Scalars['String'];
+  x_commit_hash: Scalars['String'];
   x_file_path: Scalars['String'];
   x_line_number: Scalars['Int'];
 };
@@ -471,7 +475,7 @@ export type Query_RootLinesArgs = {
 
 
 export type Query_RootLines_By_PkArgs = {
-  commit: Scalars['String'];
+  commit_hash: Scalars['String'];
   file_path: Scalars['String'];
   line_number: Scalars['Int'];
 };
@@ -525,7 +529,7 @@ export type Subscription_RootBlamelinesArgs = {
 
 
 export type Subscription_RootBlamelines_By_PkArgs = {
-  x_commit: Scalars['String'];
+  x_commit_hash: Scalars['String'];
   x_file_path: Scalars['String'];
   x_line_number: Scalars['Int'];
 };
@@ -569,7 +573,7 @@ export type Subscription_RootLinesArgs = {
 
 
 export type Subscription_RootLines_By_PkArgs = {
-  commit: Scalars['String'];
+  commit_hash: Scalars['String'];
   file_path: Scalars['String'];
   line_number: Scalars['Int'];
 };
@@ -600,8 +604,10 @@ export type Threads = {
   /** An array relationship */
   comments: Array<Comments>;
   id: Scalars['uuid'];
-  original_commit: Scalars['String'];
+  original_commit_hash: Scalars['String'];
   original_file_path: Scalars['String'];
+  /** An object relationship */
+  original_line?: Maybe<Lines>;
   original_line_number: Scalars['Int'];
 };
 
@@ -648,15 +654,16 @@ export type Threads_Bool_Exp = {
   _or?: Maybe<Array<Threads_Bool_Exp>>;
   comments?: Maybe<Comments_Bool_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
-  original_commit?: Maybe<String_Comparison_Exp>;
+  original_commit_hash?: Maybe<String_Comparison_Exp>;
   original_file_path?: Maybe<String_Comparison_Exp>;
+  original_line?: Maybe<Lines_Bool_Exp>;
   original_line_number?: Maybe<Int_Comparison_Exp>;
 };
 
 /** order by max() on columns of table "threads" */
 export type Threads_Max_Order_By = {
   id?: Maybe<Order_By>;
-  original_commit?: Maybe<Order_By>;
+  original_commit_hash?: Maybe<Order_By>;
   original_file_path?: Maybe<Order_By>;
   original_line_number?: Maybe<Order_By>;
 };
@@ -664,7 +671,7 @@ export type Threads_Max_Order_By = {
 /** order by min() on columns of table "threads" */
 export type Threads_Min_Order_By = {
   id?: Maybe<Order_By>;
-  original_commit?: Maybe<Order_By>;
+  original_commit_hash?: Maybe<Order_By>;
   original_file_path?: Maybe<Order_By>;
   original_line_number?: Maybe<Order_By>;
 };
@@ -673,8 +680,9 @@ export type Threads_Min_Order_By = {
 export type Threads_Order_By = {
   comments_aggregate?: Maybe<Comments_Aggregate_Order_By>;
   id?: Maybe<Order_By>;
-  original_commit?: Maybe<Order_By>;
+  original_commit_hash?: Maybe<Order_By>;
   original_file_path?: Maybe<Order_By>;
+  original_line?: Maybe<Lines_Order_By>;
   original_line_number?: Maybe<Order_By>;
 };
 
@@ -683,7 +691,7 @@ export enum Threads_Select_Column {
   /** column name */
   Id = 'id',
   /** column name */
-  OriginalCommit = 'original_commit',
+  OriginalCommitHash = 'original_commit_hash',
   /** column name */
   OriginalFilePath = 'original_file_path',
   /** column name */
@@ -756,7 +764,7 @@ export type AllThreadsQueryVariables = Exact<{
 }>;
 
 
-export type AllThreadsQuery = { __typename?: 'query_root', lines: Array<{ __typename?: 'lines', commit: string, file_path: string, line_number: number, threads: Array<{ __typename?: 'threads', id: string, comments: Array<{ __typename?: 'comments', id: string, body: string, author_github_node_id: string, github_user: { __typename?: 'github_users', github_username: string, github_name?: string | null | undefined } }> }> }> };
+export type AllThreadsQuery = { __typename?: 'query_root', lines: Array<{ __typename?: 'lines', commit_hash: string, file_path: string, line_number: number, threads: Array<{ __typename?: 'threads', id: string, comments: Array<{ __typename?: 'comments', id: string, body: string, author_github_node_id: string, github_user: { __typename?: 'github_users', github_username: string, github_name?: string | null | undefined } }> }> }> };
 
 export type StartThreadMutationVariables = Exact<{
   repoIds: Array<Scalars['String']> | Scalars['String'];

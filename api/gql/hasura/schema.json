@@ -1114,7 +1114,7 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -1174,7 +1174,7 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
-              "name": "x_commit",
+              "name": "x_commit_hash",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -1536,7 +1536,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "String_comparison_exp",
@@ -1576,7 +1576,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "x_commit",
+              "name": "x_commit_hash",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "String_comparison_exp",
@@ -1665,7 +1665,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -1705,7 +1705,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "x_commit",
+              "name": "x_commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -1747,7 +1747,7 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -1783,7 +1783,7 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
-              "name": "x_commit",
+              "name": "x_commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -1830,7 +1830,7 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -1866,7 +1866,7 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
-              "name": "x_commit",
+              "name": "x_commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -2020,7 +2020,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "ENUM",
                 "name": "order_by",
@@ -2060,7 +2060,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "x_commit",
+              "name": "x_commit_hash",
               "type": {
                 "kind": "ENUM",
                 "name": "order_by",
@@ -2101,7 +2101,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "x_commit",
+              "name": "x_commit_hash",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -2153,7 +2153,7 @@
               "deprecationReason": null,
               "description": "column name",
               "isDeprecated": false,
-              "name": "original_commit"
+              "name": "original_commit_hash"
             },
             {
               "deprecationReason": null,
@@ -2171,7 +2171,7 @@
               "deprecationReason": null,
               "description": "column name",
               "isDeprecated": false,
-              "name": "x_commit"
+              "name": "x_commit_hash"
             },
             {
               "deprecationReason": null,
@@ -2201,7 +2201,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -2231,7 +2231,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "x_commit",
+              "name": "x_commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -2411,7 +2411,7 @@
               "deprecationReason": null,
               "description": "column name",
               "isDeprecated": false,
-              "name": "original_commit"
+              "name": "original_commit_hash"
             },
             {
               "deprecationReason": null,
@@ -2429,7 +2429,7 @@
               "deprecationReason": null,
               "description": "column name",
               "isDeprecated": false,
-              "name": "x_commit"
+              "name": "x_commit_hash"
             },
             {
               "deprecationReason": null,
@@ -2636,6 +2636,22 @@
                 "ofType": {
                   "kind": "SCALAR",
                   "name": "uuid",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "An object relationship",
+              "isDeprecated": false,
+              "name": "thread",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "threads",
                   "ofType": null
                 }
               }
@@ -2978,6 +2994,16 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "thread",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "threads_bool_exp",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "thread_id",
               "type": {
                 "kind": "INPUT_OBJECT",
@@ -3060,6 +3086,16 @@
               "type": {
                 "kind": "SCALAR",
                 "name": "uuid",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "thread",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "threads_obj_rel_insert_input",
                 "ofType": null
               }
             },
@@ -3509,6 +3545,16 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "thread",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "threads_order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "thread_id",
               "type": {
                 "kind": "ENUM",
@@ -3688,6 +3734,1689 @@
           "interfaces": null,
           "kind": "ENUM",
           "name": "comments_update_column",
+          "possibleTypes": null
+        },
+        {
+          "description": "Mapping between commit hashes and the GitHub repos that contain them. Convenient for looking up commits in the GitHub API which requires specifying a parent repo.\n\n\ncolumns and relationships of \"commit_github_repo\"\n",
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "commit_hash",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "repo_github_node_id",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "commit_github_repo",
+          "possibleTypes": null
+        },
+        {
+          "description": "aggregated selection of \"commit_github_repo\"",
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "aggregate",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commit_github_repo_aggregate_fields",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "nodes",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "commit_github_repo",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "commit_github_repo_aggregate",
+          "possibleTypes": null
+        },
+        {
+          "description": "aggregate fields of \"commit_github_repo\"",
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "commit_github_repo_select_column",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "distinct",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "count",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "max",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commit_github_repo_max_fields",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "min",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commit_github_repo_min_fields",
+                "ofType": null
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "commit_github_repo_aggregate_fields",
+          "possibleTypes": null
+        },
+        {
+          "description": "order by aggregate values of table \"commit_github_repo\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "count",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "max",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "commit_github_repo_max_order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "min",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "commit_github_repo_min_order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commit_github_repo_aggregate_order_by",
+          "possibleTypes": null
+        },
+        {
+          "description": "input type for inserting array relation for remote table \"commit_github_repo\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "data",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "commit_github_repo_insert_input",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": "on conflict condition",
+              "name": "on_conflict",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "commit_github_repo_on_conflict",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commit_github_repo_arr_rel_insert_input",
+          "possibleTypes": null
+        },
+        {
+          "description": "Boolean expression to filter rows from the table \"commit_github_repo\". All fields are combined with a logical 'AND'.",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "_and",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commit_github_repo_bool_exp",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "_not",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "commit_github_repo_bool_exp",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "_or",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commit_github_repo_bool_exp",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "commit_hash",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "String_comparison_exp",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "repo_github_node_id",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "String_comparison_exp",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commit_github_repo_bool_exp",
+          "possibleTypes": null
+        },
+        {
+          "description": "unique or primary key constraints on table \"commit_github_repo\"",
+          "enumValues": [
+            {
+              "deprecationReason": null,
+              "description": "unique or primary key constraint",
+              "isDeprecated": false,
+              "name": "commit_github_repo_pkey"
+            }
+          ],
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "kind": "ENUM",
+          "name": "commit_github_repo_constraint",
+          "possibleTypes": null
+        },
+        {
+          "description": "input type for inserting data into table \"commit_github_repo\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "commit_hash",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "repo_github_node_id",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commit_github_repo_insert_input",
+          "possibleTypes": null
+        },
+        {
+          "description": "aggregate max on columns",
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "commit_hash",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "repo_github_node_id",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "commit_github_repo_max_fields",
+          "possibleTypes": null
+        },
+        {
+          "description": "order by max() on columns of table \"commit_github_repo\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "commit_hash",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "repo_github_node_id",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commit_github_repo_max_order_by",
+          "possibleTypes": null
+        },
+        {
+          "description": "aggregate min on columns",
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "commit_hash",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "repo_github_node_id",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "commit_github_repo_min_fields",
+          "possibleTypes": null
+        },
+        {
+          "description": "order by min() on columns of table \"commit_github_repo\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "commit_hash",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "repo_github_node_id",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commit_github_repo_min_order_by",
+          "possibleTypes": null
+        },
+        {
+          "description": "response of any mutation on the table \"commit_github_repo\"",
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "number of rows affected by the mutation",
+              "isDeprecated": false,
+              "name": "affected_rows",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "data from the rows affected by the mutation",
+              "isDeprecated": false,
+              "name": "returning",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "commit_github_repo",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "commit_github_repo_mutation_response",
+          "possibleTypes": null
+        },
+        {
+          "description": "input type for inserting object relation for remote table \"commit_github_repo\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "data",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "commit_github_repo_insert_input",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": "on conflict condition",
+              "name": "on_conflict",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "commit_github_repo_on_conflict",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commit_github_repo_obj_rel_insert_input",
+          "possibleTypes": null
+        },
+        {
+          "description": "on conflict condition type for table \"commit_github_repo\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "constraint",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "commit_github_repo_constraint",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": "[]",
+              "description": null,
+              "name": "update_columns",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "commit_github_repo_update_column",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "where",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "commit_github_repo_bool_exp",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commit_github_repo_on_conflict",
+          "possibleTypes": null
+        },
+        {
+          "description": "Ordering options when selecting data from \"commit_github_repo\".",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "commit_hash",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "repo_github_node_id",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commit_github_repo_order_by",
+          "possibleTypes": null
+        },
+        {
+          "description": "primary key columns input for table: commit_github_repo",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "commit_hash",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "repo_github_node_id",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commit_github_repo_pk_columns_input",
+          "possibleTypes": null
+        },
+        {
+          "description": "select columns of table \"commit_github_repo\"",
+          "enumValues": [
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
+              "name": "commit_hash"
+            },
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
+              "name": "repo_github_node_id"
+            }
+          ],
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "kind": "ENUM",
+          "name": "commit_github_repo_select_column",
+          "possibleTypes": null
+        },
+        {
+          "description": "input type for updating data in table \"commit_github_repo\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "commit_hash",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "repo_github_node_id",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commit_github_repo_set_input",
+          "possibleTypes": null
+        },
+        {
+          "description": "update columns of table \"commit_github_repo\"",
+          "enumValues": [
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
+              "name": "commit_hash"
+            },
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
+              "name": "repo_github_node_id"
+            }
+          ],
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "kind": "ENUM",
+          "name": "commit_github_repo_update_column",
+          "possibleTypes": null
+        },
+        {
+          "description": "columns and relationships of \"commits\"",
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "author_email",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "author_name",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "commit_hash",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "committer_email",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "committer_name",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "commits",
+          "possibleTypes": null
+        },
+        {
+          "description": "aggregated selection of \"commits\"",
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "aggregate",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commits_aggregate_fields",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "nodes",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "commits",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "commits_aggregate",
+          "possibleTypes": null
+        },
+        {
+          "description": "aggregate fields of \"commits\"",
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "commits_select_column",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "distinct",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "count",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "max",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commits_max_fields",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "min",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commits_min_fields",
+                "ofType": null
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "commits_aggregate_fields",
+          "possibleTypes": null
+        },
+        {
+          "description": "Boolean expression to filter rows from the table \"commits\". All fields are combined with a logical 'AND'.",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "_and",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commits_bool_exp",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "_not",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "commits_bool_exp",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "_or",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commits_bool_exp",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "author_email",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "String_comparison_exp",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "author_name",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "String_comparison_exp",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "commit_hash",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "String_comparison_exp",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "committer_email",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "String_comparison_exp",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "committer_name",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "String_comparison_exp",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commits_bool_exp",
+          "possibleTypes": null
+        },
+        {
+          "description": "unique or primary key constraints on table \"commits\"",
+          "enumValues": [
+            {
+              "deprecationReason": null,
+              "description": "unique or primary key constraint",
+              "isDeprecated": false,
+              "name": "commits_pkey"
+            }
+          ],
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "kind": "ENUM",
+          "name": "commits_constraint",
+          "possibleTypes": null
+        },
+        {
+          "description": "input type for inserting data into table \"commits\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "author_email",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "author_name",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "commit_hash",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "committer_email",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "committer_name",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commits_insert_input",
+          "possibleTypes": null
+        },
+        {
+          "description": "aggregate max on columns",
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "author_email",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "author_name",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "commit_hash",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "committer_email",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "committer_name",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "commits_max_fields",
+          "possibleTypes": null
+        },
+        {
+          "description": "aggregate min on columns",
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "author_email",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "author_name",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "commit_hash",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "committer_email",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "committer_name",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "commits_min_fields",
+          "possibleTypes": null
+        },
+        {
+          "description": "response of any mutation on the table \"commits\"",
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "number of rows affected by the mutation",
+              "isDeprecated": false,
+              "name": "affected_rows",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "data from the rows affected by the mutation",
+              "isDeprecated": false,
+              "name": "returning",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "commits",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "commits_mutation_response",
+          "possibleTypes": null
+        },
+        {
+          "description": "on conflict condition type for table \"commits\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "constraint",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "commits_constraint",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": "[]",
+              "description": null,
+              "name": "update_columns",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "commits_update_column",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "where",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "commits_bool_exp",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commits_on_conflict",
+          "possibleTypes": null
+        },
+        {
+          "description": "Ordering options when selecting data from \"commits\".",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "author_email",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "author_name",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "commit_hash",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "committer_email",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "committer_name",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commits_order_by",
+          "possibleTypes": null
+        },
+        {
+          "description": "primary key columns input for table: commits",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "commit_hash",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commits_pk_columns_input",
+          "possibleTypes": null
+        },
+        {
+          "description": "select columns of table \"commits\"",
+          "enumValues": [
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
+              "name": "author_email"
+            },
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
+              "name": "author_name"
+            },
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
+              "name": "commit_hash"
+            },
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
+              "name": "committer_email"
+            },
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
+              "name": "committer_name"
+            }
+          ],
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "kind": "ENUM",
+          "name": "commits_select_column",
+          "possibleTypes": null
+        },
+        {
+          "description": "input type for updating data in table \"commits\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "author_email",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "author_name",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "commit_hash",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "committer_email",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "committer_name",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "commits_set_input",
+          "possibleTypes": null
+        },
+        {
+          "description": "update columns of table \"commits\"",
+          "enumValues": [
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
+              "name": "author_email"
+            },
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
+              "name": "author_name"
+            },
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
+              "name": "commit_hash"
+            },
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
+              "name": "committer_email"
+            },
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
+              "name": "committer_name"
+            }
+          ],
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "kind": "ENUM",
+          "name": "commits_update_column",
           "possibleTypes": null
         },
         {
@@ -5211,7 +6940,7 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
-              "name": "commit",
+              "name": "commit_hash",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -5236,6 +6965,18 @@
                   "name": "String",
                   "ofType": null
                 }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "An object relationship",
+              "isDeprecated": false,
+              "name": "github_repos",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commit_github_repo",
+                "ofType": null
               }
             },
             {
@@ -5735,7 +7476,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "commit",
+              "name": "commit_hash",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "String_comparison_exp",
@@ -5749,6 +7490,16 @@
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "String_comparison_exp",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "github_repos",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "commit_github_repo_bool_exp",
                 "ofType": null
               }
             },
@@ -5824,7 +7575,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "commit",
+              "name": "commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -5838,6 +7589,16 @@
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "github_repos",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "commit_github_repo_obj_rel_insert_input",
                 "ofType": null
               }
             },
@@ -5876,7 +7637,7 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
-              "name": "commit",
+              "name": "commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -5923,7 +7684,7 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
-              "name": "commit",
+              "name": "commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -6112,7 +7873,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "commit",
+              "name": "commit_hash",
               "type": {
                 "kind": "ENUM",
                 "name": "order_by",
@@ -6126,6 +7887,16 @@
               "type": {
                 "kind": "ENUM",
                 "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "github_repos",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "commit_github_repo_order_by",
                 "ofType": null
               }
             },
@@ -6163,7 +7934,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "commit",
+              "name": "commit_hash",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -6215,7 +7986,7 @@
               "deprecationReason": null,
               "description": "column name",
               "isDeprecated": false,
-              "name": "commit"
+              "name": "commit_hash"
             },
             {
               "deprecationReason": null,
@@ -6245,7 +8016,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "commit",
+              "name": "commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -6377,7 +8148,7 @@
               "deprecationReason": null,
               "description": "column name",
               "isDeprecated": false,
-              "name": "commit"
+              "name": "commit_hash"
             },
             {
               "deprecationReason": null,
@@ -6689,7 +8460,7 @@
                 {
                   "defaultValue": null,
                   "description": null,
-                  "name": "x_commit",
+                  "name": "x_commit_hash",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -6804,6 +8575,128 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
+                      "name": "commit_github_repo_bool_exp",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "delete data from the table: \"commit_github_repo\"",
+              "isDeprecated": false,
+              "name": "delete_commit_github_repo",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commit_github_repo_mutation_response",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "commit_hash",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "repo_github_node_id",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "delete single row from the table: \"commit_github_repo\"",
+              "isDeprecated": false,
+              "name": "delete_commit_github_repo_by_pk",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commit_github_repo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows which have to be deleted",
+                  "name": "where",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "commits_bool_exp",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "delete data from the table: \"commits\"",
+              "isDeprecated": false,
+              "name": "delete_commits",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commits_mutation_response",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "commit_hash",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "delete single row from the table: \"commits\"",
+              "isDeprecated": false,
+              "name": "delete_commits_by_pk",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commits",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows which have to be deleted",
+                  "name": "where",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
                       "name": "github_users_bool_exp",
                       "ofType": null
                     }
@@ -6879,7 +8772,7 @@
                 {
                   "defaultValue": null,
                   "description": null,
-                  "name": "commit",
+                  "name": "commit_hash",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -7198,6 +9091,170 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "comments",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "the rows to be inserted",
+                  "name": "objects",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "LIST",
+                      "name": null,
+                      "ofType": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                          "kind": "INPUT_OBJECT",
+                          "name": "commit_github_repo_insert_input",
+                          "ofType": null
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "on conflict condition",
+                  "name": "on_conflict",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commit_github_repo_on_conflict",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "insert data into the table: \"commit_github_repo\"",
+              "isDeprecated": false,
+              "name": "insert_commit_github_repo",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commit_github_repo_mutation_response",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "the row to be inserted",
+                  "name": "object",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "commit_github_repo_insert_input",
+                      "ofType": null
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "on conflict condition",
+                  "name": "on_conflict",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commit_github_repo_on_conflict",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "insert a single row into the table: \"commit_github_repo\"",
+              "isDeprecated": false,
+              "name": "insert_commit_github_repo_one",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commit_github_repo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "the rows to be inserted",
+                  "name": "objects",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "LIST",
+                      "name": null,
+                      "ofType": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                          "kind": "INPUT_OBJECT",
+                          "name": "commits_insert_input",
+                          "ofType": null
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "on conflict condition",
+                  "name": "on_conflict",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commits_on_conflict",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "insert data into the table: \"commits\"",
+              "isDeprecated": false,
+              "name": "insert_commits",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commits_mutation_response",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "the row to be inserted",
+                  "name": "object",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "commits_insert_input",
+                      "ofType": null
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "on conflict condition",
+                  "name": "on_conflict",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commits_on_conflict",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "insert a single row into the table: \"commits\"",
+              "isDeprecated": false,
+              "name": "insert_commits_one",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commits",
                 "ofType": null
               }
             },
@@ -7694,6 +9751,154 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "comments",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "sets the columns of the filtered rows to the given values",
+                  "name": "_set",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commit_github_repo_set_input",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows which have to be updated",
+                  "name": "where",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "commit_github_repo_bool_exp",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "update data of the table: \"commit_github_repo\"",
+              "isDeprecated": false,
+              "name": "update_commit_github_repo",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commit_github_repo_mutation_response",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "sets the columns of the filtered rows to the given values",
+                  "name": "_set",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commit_github_repo_set_input",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "pk_columns",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "commit_github_repo_pk_columns_input",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "update single row of the table: \"commit_github_repo\"",
+              "isDeprecated": false,
+              "name": "update_commit_github_repo_by_pk",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commit_github_repo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "sets the columns of the filtered rows to the given values",
+                  "name": "_set",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commits_set_input",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows which have to be updated",
+                  "name": "where",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "commits_bool_exp",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "update data of the table: \"commits\"",
+              "isDeprecated": false,
+              "name": "update_commits",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commits_mutation_response",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "sets the columns of the filtered rows to the given values",
+                  "name": "_set",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commits_set_input",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "pk_columns",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "commits_pk_columns_input",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "update single row of the table: \"commits\"",
+              "isDeprecated": false,
+              "name": "update_commits_by_pk",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commits",
                 "ofType": null
               }
             },
@@ -8290,7 +10495,7 @@
                 {
                   "defaultValue": null,
                   "description": null,
-                  "name": "x_commit",
+                  "name": "x_commit_hash",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -8538,6 +10743,422 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "comments",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "distinct select on columns",
+                  "name": "distinct_on",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "commit_github_repo_select_column",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "limit the number of rows returned",
+                  "name": "limit",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "skip the first n rows. Use only with order_by",
+                  "name": "offset",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "sort the rows by one or more columns",
+                  "name": "order_by",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "commit_github_repo_order_by",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows returned",
+                  "name": "where",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commit_github_repo_bool_exp",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "fetch data from the table: \"commit_github_repo\"",
+              "isDeprecated": false,
+              "name": "commit_github_repo",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "commit_github_repo",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "distinct select on columns",
+                  "name": "distinct_on",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "commit_github_repo_select_column",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "limit the number of rows returned",
+                  "name": "limit",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "skip the first n rows. Use only with order_by",
+                  "name": "offset",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "sort the rows by one or more columns",
+                  "name": "order_by",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "commit_github_repo_order_by",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows returned",
+                  "name": "where",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commit_github_repo_bool_exp",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "fetch aggregated fields from the table: \"commit_github_repo\"",
+              "isDeprecated": false,
+              "name": "commit_github_repo_aggregate",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "commit_github_repo_aggregate",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "commit_hash",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "repo_github_node_id",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "fetch data from the table: \"commit_github_repo\" using primary key columns",
+              "isDeprecated": false,
+              "name": "commit_github_repo_by_pk",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commit_github_repo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "distinct select on columns",
+                  "name": "distinct_on",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "commits_select_column",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "limit the number of rows returned",
+                  "name": "limit",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "skip the first n rows. Use only with order_by",
+                  "name": "offset",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "sort the rows by one or more columns",
+                  "name": "order_by",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "commits_order_by",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows returned",
+                  "name": "where",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commits_bool_exp",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "fetch data from the table: \"commits\"",
+              "isDeprecated": false,
+              "name": "commits",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "commits",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "distinct select on columns",
+                  "name": "distinct_on",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "commits_select_column",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "limit the number of rows returned",
+                  "name": "limit",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "skip the first n rows. Use only with order_by",
+                  "name": "offset",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "sort the rows by one or more columns",
+                  "name": "order_by",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "commits_order_by",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows returned",
+                  "name": "where",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commits_bool_exp",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "fetch aggregated fields from the table: \"commits\"",
+              "isDeprecated": false,
+              "name": "commits_aggregate",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "commits_aggregate",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "commit_hash",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "fetch data from the table: \"commits\" using primary key columns",
+              "isDeprecated": false,
+              "name": "commits_by_pk",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commits",
                 "ofType": null
               }
             },
@@ -8921,7 +11542,7 @@
                 {
                   "defaultValue": null,
                   "description": null,
-                  "name": "commit",
+                  "name": "commit_hash",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -9579,7 +12200,7 @@
                 {
                   "defaultValue": null,
                   "description": null,
-                  "name": "x_commit",
+                  "name": "x_commit_hash",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -9827,6 +12448,422 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "comments",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "distinct select on columns",
+                  "name": "distinct_on",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "commit_github_repo_select_column",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "limit the number of rows returned",
+                  "name": "limit",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "skip the first n rows. Use only with order_by",
+                  "name": "offset",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "sort the rows by one or more columns",
+                  "name": "order_by",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "commit_github_repo_order_by",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows returned",
+                  "name": "where",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commit_github_repo_bool_exp",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "fetch data from the table: \"commit_github_repo\"",
+              "isDeprecated": false,
+              "name": "commit_github_repo",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "commit_github_repo",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "distinct select on columns",
+                  "name": "distinct_on",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "commit_github_repo_select_column",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "limit the number of rows returned",
+                  "name": "limit",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "skip the first n rows. Use only with order_by",
+                  "name": "offset",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "sort the rows by one or more columns",
+                  "name": "order_by",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "commit_github_repo_order_by",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows returned",
+                  "name": "where",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commit_github_repo_bool_exp",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "fetch aggregated fields from the table: \"commit_github_repo\"",
+              "isDeprecated": false,
+              "name": "commit_github_repo_aggregate",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "commit_github_repo_aggregate",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "commit_hash",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "repo_github_node_id",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "fetch data from the table: \"commit_github_repo\" using primary key columns",
+              "isDeprecated": false,
+              "name": "commit_github_repo_by_pk",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commit_github_repo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "distinct select on columns",
+                  "name": "distinct_on",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "commits_select_column",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "limit the number of rows returned",
+                  "name": "limit",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "skip the first n rows. Use only with order_by",
+                  "name": "offset",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "sort the rows by one or more columns",
+                  "name": "order_by",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "commits_order_by",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows returned",
+                  "name": "where",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commits_bool_exp",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "fetch data from the table: \"commits\"",
+              "isDeprecated": false,
+              "name": "commits",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "commits",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "distinct select on columns",
+                  "name": "distinct_on",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "commits_select_column",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "limit the number of rows returned",
+                  "name": "limit",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "skip the first n rows. Use only with order_by",
+                  "name": "offset",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "sort the rows by one or more columns",
+                  "name": "order_by",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "commits_order_by",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows returned",
+                  "name": "where",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commits_bool_exp",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "fetch aggregated fields from the table: \"commits\"",
+              "isDeprecated": false,
+              "name": "commits_aggregate",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "commits_aggregate",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "commit_hash",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "fetch data from the table: \"commits\" using primary key columns",
+              "isDeprecated": false,
+              "name": "commits_by_pk",
+              "type": {
+                "kind": "OBJECT",
+                "name": "commits",
                 "ofType": null
               }
             },
@@ -10210,7 +13247,7 @@
                 {
                   "defaultValue": null,
                   "description": null,
-                  "name": "commit",
+                  "name": "commit_hash",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -10848,6 +13885,180 @@
               }
             },
             {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "distinct select on columns",
+                  "name": "distinct_on",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "commit_github_repo_select_column",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "limit the number of rows returned",
+                  "name": "limit",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "skip the first n rows. Use only with order_by",
+                  "name": "offset",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "sort the rows by one or more columns",
+                  "name": "order_by",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "commit_github_repo_order_by",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows returned",
+                  "name": "where",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commit_github_repo_bool_exp",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "An array relationship",
+              "isDeprecated": false,
+              "name": "github_repos",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "commit_github_repo",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "distinct select on columns",
+                  "name": "distinct_on",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "commit_github_repo_select_column",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "limit the number of rows returned",
+                  "name": "limit",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "skip the first n rows. Use only with order_by",
+                  "name": "offset",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "sort the rows by one or more columns",
+                  "name": "order_by",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "commit_github_repo_order_by",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "filter the rows returned",
+                  "name": "where",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "commit_github_repo_bool_exp",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "An aggregate relationship",
+              "isDeprecated": false,
+              "name": "github_repos_aggregate",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "commit_github_repo_aggregate",
+                  "ofType": null
+                }
+              }
+            },
+            {
               "args": [],
               "deprecationReason": null,
               "description": null,
@@ -10868,7 +14079,7 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -10893,6 +14104,18 @@
                   "name": "String",
                   "ofType": null
                 }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "An object relationship",
+              "isDeprecated": false,
+              "name": "original_line",
+              "type": {
+                "kind": "OBJECT",
+                "name": "lines",
+                "ofType": null
               }
             },
             {
@@ -11413,6 +14636,16 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "github_repos",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "commit_github_repo_bool_exp",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "id",
               "type": {
                 "kind": "INPUT_OBJECT",
@@ -11423,7 +14656,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "String_comparison_exp",
@@ -11437,6 +14670,16 @@
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "String_comparison_exp",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_line",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "lines_bool_exp",
                 "ofType": null
               }
             },
@@ -11518,6 +14761,16 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "github_repos",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "commit_github_repo_arr_rel_insert_input",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "id",
               "type": {
                 "kind": "SCALAR",
@@ -11528,7 +14781,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -11542,6 +14795,16 @@
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_line",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "lines_obj_rel_insert_input",
                 "ofType": null
               }
             },
@@ -11582,7 +14845,7 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -11638,7 +14901,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "ENUM",
                 "name": "order_by",
@@ -11692,7 +14955,7 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -11748,7 +15011,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "ENUM",
                 "name": "order_by",
@@ -11833,6 +15096,41 @@
           "possibleTypes": null
         },
         {
+          "description": "input type for inserting object relation for remote table \"threads\"",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "data",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "threads_insert_input",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": "on conflict condition",
+              "name": "on_conflict",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "threads_on_conflict",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "threads_obj_rel_insert_input",
+          "possibleTypes": null
+        },
+        {
           "description": "on conflict condition type for table \"threads\"",
           "enumValues": null,
           "fields": null,
@@ -11907,6 +15205,16 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "github_repos_aggregate",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "commit_github_repo_aggregate_order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "id",
               "type": {
                 "kind": "ENUM",
@@ -11917,7 +15225,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "ENUM",
                 "name": "order_by",
@@ -11931,6 +15239,16 @@
               "type": {
                 "kind": "ENUM",
                 "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "original_line",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "lines_order_by",
                 "ofType": null
               }
             },
@@ -11988,7 +15306,7 @@
               "deprecationReason": null,
               "description": "column name",
               "isDeprecated": false,
-              "name": "original_commit"
+              "name": "original_commit_hash"
             },
             {
               "deprecationReason": null,
@@ -12028,7 +15346,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "original_commit",
+              "name": "original_commit_hash",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -12250,7 +15568,7 @@
               "deprecationReason": null,
               "description": "column name",
               "isDeprecated": false,
-              "name": "original_commit"
+              "name": "original_commit_hash"
             },
             {
               "deprecationReason": null,

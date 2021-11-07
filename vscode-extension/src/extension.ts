@@ -10,6 +10,7 @@
 // - lowprio: what's up with that collapse button?
 // - lowprio: auto link @-links
 
+import { Mutex } from "async-mutex";
 import * as child_process from "child_process";
 import * as util from "util";
 import * as vscode from "vscode";
@@ -123,47 +124,59 @@ export async function activate(context: vscode.ExtensionContext) {
   );
   const commentJefe = new CommentJefe(context, credentials, commentController);
   commentController.options = { placeHolder: "What's on your mind?" };
+
+  // Due to some weird VSCode bug, we need to make sure that we only ever
+  // `provideCommentingRanges` one at a time. Otherwise, it's possible for it to
+  // be called twice in short succession, and the second call will empty out all
+  // of the threads that were loaded by the first call. Why this happens is
+  // beyond me.
+  //
+  // Moving the mutex to only run `trackDocument` exclusively doesn't seem to
+  // solve it either.
+  // TODO figure out what exactly is going wrong here. Perhaps it has something
+  // to do with `uriToDocument`?
+  const mutex = new Mutex();
   commentController.commentingRangeProvider = {
     provideCommentingRanges: logErrors2(
-      async (
-        document: vscode.TextDocument,
-        _token: vscode.CancellationToken
-      ) => {
-        // This gets called every single time a file is opened, even though the
-        // comment threads on the file are cached by VSCode.
-        console.log("provideCommentingRanges");
+      async (document: vscode.TextDocument, _token: vscode.CancellationToken) =>
+        await mutex.runExclusive(async () => {
+          // This gets called every single time a file is opened, even though the
+          // comment threads on the file are cached by VSCode.
+          console.log("provideCommentingRanges");
 
-        const repo = await isCommentingAllowed(document);
-        if (repo === undefined) {
-          return [];
-        }
+          const repo = await isCommentingAllowed(document);
+          if (repo === undefined) {
+            return [];
+          }
 
-        uriToDocument.set(document.uri.toString(), document);
+          uriToDocument.set(document.uri.toString(), document);
 
-        const blameinfo = await git.blame(
-          repo,
-          document.fileName,
-          document.getText(),
-          undefined
-        );
+          const blameinfo = await git.blame(
+            repo,
+            document.fileName,
+            document.getText(),
+            undefined
+          );
 
-        // Load the existing comments and subscribe to updates.
-        await commentJefe.trackDocument(document.uri, blameinfo.blamehunks);
+          // Load the existing comments and subscribe to updates.
+          await commentJefe.trackDocument(document.uri, blameinfo.blamehunks);
 
-        // Subtract one to account for the fact that VSCode is 0-indexed.
-        // Subtract another one to account for the fact that hunksize 1
-        // implies the range [17, 17], not [17, 18].
-        const ranges = blameinfo.blamehunks
-          .filter((hunk) => hunk.origCommitHash !== git.ZERO_HASH)
-          .map(({ currStartLine, hunksize }) => [
-            currStartLine - 1,
-            currStartLine + hunksize - 2,
-          ]);
+          // TODO also check that we don't allow commenting on commits that haven't been pushed yet. See https://stackoverflow.com/questions/2016901/viewing-unpushed-git-commits
 
-        // TODO unclear from the docs if Range is inclusive or exclusive.
-        // Either way this seems to do the right thing for now.
-        return ranges.map(([a, b]) => new vscode.Range(a, 0, b, 0));
-      }
+          // Subtract one to account for the fact that VSCode is 0-indexed.
+          // Subtract another one to account for the fact that hunksize 1
+          // implies the range [17, 17], not [17, 18].
+          const ranges = blameinfo.blamehunks
+            .filter((hunk) => hunk.origCommitHash !== git.ZERO_HASH)
+            .map(({ currStartLine, hunksize }) => [
+              currStartLine - 1,
+              currStartLine + hunksize - 2,
+            ]);
+
+          // TODO unclear from the docs if Range is inclusive or exclusive.
+          // Either way this seems to do the right thing for now.
+          return ranges.map(([a, b]) => new vscode.Range(a, 0, b, 0));
+        })
     ),
   };
   context.subscriptions.push(commentController);

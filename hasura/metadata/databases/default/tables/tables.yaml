@@ -1,5 +1,7 @@
 - "!include public_blamelines.yaml"
 - "!include public_comments.yaml"
+- "!include public_commit_github_repo.yaml"
+- "!include public_commits.yaml"
 - "!include public_github_users.yaml"
 - "!include public_lines.yaml"
 - "!include public_threads.yaml"

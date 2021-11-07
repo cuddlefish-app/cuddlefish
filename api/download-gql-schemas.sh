@@ -3,9 +3,8 @@
 # See https://sipb.mit.edu/doc/safe-shell/
 set -euf -o pipefail
 
-# Don't source /etc/cuddlefish-dev.env here because that would break CI which
-# injects these env vars on its own. Instead you'll need to export them yourself
-# when running locally.
+# Pull in all the env vars from /etc/cuddlefish-dev.env
+set -a; source /etc/cuddlefish-dev.env; set +a
 
 # See https://github.com/graphql-rust/graphql-client/tree/master/graphql_client_cli
 

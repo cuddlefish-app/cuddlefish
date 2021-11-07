@@ -124,10 +124,13 @@ pub async fn insert_blamelines(
 )]
 struct LookupExistingBlamelines;
 
-pub async fn lookup_existing_blamelines(commit: &str, file_path: &str) -> anyhow::Result<bool> {
+pub async fn lookup_existing_blamelines(
+  commit_hash: &str,
+  file_path: &str,
+) -> anyhow::Result<bool> {
   let res: lookup_existing_blamelines::ResponseData = ADMIN_hasura_request(
     &LookupExistingBlamelines::build_query(lookup_existing_blamelines::Variables {
-      commit: commit.into(),
+      commit_hash: commit_hash.into(),
       file_path: file_path.into(),
     }),
   )
@@ -243,12 +246,16 @@ pub async fn end_user_session(session_token: &str) -> anyhow::Result<()> {
 struct UpsertLine;
 
 pub async fn upsert_line(
+  repo_github_node_id: &GitHubNodeId,
   commit_hash: &str,
   file_path: &str,
   line_number: u32,
 ) -> anyhow::Result<()> {
+  // TODO also upsert into the commit_github_repo table
+
   let _: upsert_line::ResponseData =
     ADMIN_hasura_request(&UpsertLine::build_query(upsert_line::Variables {
+      repo_github_node_id: repo_github_node_id.0.to_string(),
       commit_hash: commit_hash.to_string(),
       file_path: file_path.to_string(),
       line_number: line_number.into(),
@@ -270,12 +277,13 @@ struct StartThread;
 /// Returns the created thread's ID.
 pub async fn start_thread(
   author_github_node_id: &GitHubUserId,
+  repo_github_node_id: &GitHubNodeId,
   commit_hash: &str,
   file_path: &str,
   line_number: u32,
   body: &str,
 ) -> anyhow::Result<String> {
-  upsert_line(&commit_hash, &file_path, line_number).await?;
+  upsert_line(repo_github_node_id, &commit_hash, &file_path, line_number).await?;
 
   let res: start_thread::ResponseData =
     ADMIN_hasura_request(&StartThread::build_query(start_thread::Variables {

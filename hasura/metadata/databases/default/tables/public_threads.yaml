@@ -1,6 +1,18 @@
 table:
   name: threads
   schema: public
+object_relationships:
+- name: original_line
+  using:
+    manual_configuration:
+      column_mapping:
+        original_commit_hash: commit_hash
+        original_file_path: file_path
+        original_line_number: line_number
+      insertion_order: null
+      remote_table:
+        name: lines
+        schema: public
 array_relationships:
 - name: comments
   using:
@@ -9,11 +21,20 @@ array_relationships:
       table:
         name: comments
         schema: public
+- name: github_repos
+  using:
+    manual_configuration:
+      column_mapping:
+        original_commit_hash: commit_hash
+      insertion_order: null
+      remote_table:
+        name: commit_github_repo
+        schema: public
 select_permissions:
 - permission:
     columns:
     - id
-    - original_commit
+    - original_commit_hash
     - original_file_path
     - original_line_number
     filter: {}

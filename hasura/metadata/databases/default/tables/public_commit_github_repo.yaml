@@ -1,0 +1,3 @@
+table:
+  name: commit_github_repo
+  schema: public

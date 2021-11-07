@@ -6,9 +6,9 @@
 #      }
 #    }
 # if the blameline doesn't exist. Otherwise null becomes "blamelines".
-query LookupExistingBlamelines($commit: String!, $file_path: String!) {
+query LookupExistingBlamelines($commit_hash: String!, $file_path: String!) {
   blamelines_by_pk(
-    x_commit: $commit
+    x_commit_hash: $commit_hash
     x_file_path: $file_path
     x_line_number: 1
   ) {
@@ -75,25 +75,39 @@ mutation EndUserSession($session_token: uuid!) {
 # See https://github.com/graphql-rust/graphql-client/issues/394 as to why we have to select these fields.
 # TODO put this back into StartThread...
 mutation UpsertLine(
+  $repo_github_node_id: String!
   $commit_hash: String!
   $file_path: String!
   $line_number: Int!
 ) {
   insert_lines_one(
     object: {
-      commit: $commit_hash
+      commit_hash: $commit_hash
       file_path: $file_path
       line_number: $line_number
     }
     on_conflict: {
       constraint: lines_pkey
       # TODO: This is a hack. This is the only way to do an upsert in hasura; we must update at least one field.
-      update_columns: [commit, file_path, line_number]
+      update_columns: [commit_hash, file_path, line_number]
     }
   ) {
-    commit
+    commit_hash
     file_path
     line_number
+  }
+  insert_commit_github_repo_one(
+    object: {
+      commit_hash: $commit_hash
+      repo_github_node_id: $repo_github_node_id
+    }
+    on_conflict: {
+      constraint: commit_github_repo_pkey
+      update_columns: [commit_hash, repo_github_node_id]
+    }
+  ) {
+    commit_hash
+    repo_github_node_id
   }
 }
 
@@ -106,7 +120,7 @@ mutation StartThread(
 ) {
   insert_threads_one(
     object: {
-      original_commit: $commit_hash
+      original_commit_hash: $commit_hash
       original_file_path: $file_path
       original_line_number: $line_number
       comments: {

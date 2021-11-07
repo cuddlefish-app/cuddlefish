@@ -1,0 +1,1 @@
+CREATE TABLE "public"."commits" ("commit" text NOT NULL, "author_name" text NOT NULL, "author_email" text NOT NULL, "committer_name" text NOT NULL, "committer_email" text NOT NULL, PRIMARY KEY ("commit") , UNIQUE ("commit"));

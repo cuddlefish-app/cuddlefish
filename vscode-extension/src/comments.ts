@@ -74,7 +74,7 @@ export class CommentJefe {
       query: gql`
         query AllThreads($cond: lines_bool_exp!) {
           lines(where: $cond) {
-            commit
+            commit_hash
             file_path
             line_number
             threads {
@@ -95,7 +95,8 @@ export class CommentJefe {
       variables: {
         cond: {
           _or: Array.from(currLineToBlameline.values(), (blameline) => ({
-            commit: { _eq: blameline.origCommitHash },
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            commit_hash: { _eq: blameline.origCommitHash },
             // eslint-disable-next-line @typescript-eslint/naming-convention
             file_path: { _eq: blameline.filepath },
             // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -104,10 +105,11 @@ export class CommentJefe {
         },
       },
     });
+    assert(res.error === undefined, "graphql errors");
     assert(res.errors === undefined, "graphql errors");
     for (const line of res.data.lines) {
       const orig: BlameLine = {
-        origCommitHash: line.commit,
+        origCommitHash: line.commit_hash,
         filepath: line.file_path,
         origLine: line.line_number,
       };
@@ -179,66 +181,72 @@ export class CommentJefe {
     origLine: number,
     reply: vscode.CommentReply
   ) {
-    // Preemptively update the UI, then fix after completing the request.
-    const userInfo = await this._getOctokitUserInfo();
-    reply.thread.comments = [
-      {
+    try {
+      // Preemptively update the UI, then fix after completing the request.
+      const userInfo = await this._getOctokitUserInfo();
+      reply.thread.comments = [
+        {
+          author: getAuthor(userInfo.data.login, userInfo.data.name),
+          body: reply.text,
+          mode: vscode.CommentMode.Preview,
+        },
+      ];
+
+      const client = await this._getApolloClient();
+      const res = await client.mutate<
+        StartThreadMutation,
+        StartThreadMutationVariables
+      >({
+        mutation: gql`
+          mutation StartThread(
+            $repoIds: [String!]!
+            $commitHash: String!
+            $filePath: String!
+            $lineNumber: Int!
+            $body: String!
+          ) {
+            StartThread(
+              repoIds: $repoIds
+              commitHash: $commitHash
+              filePath: $filePath
+              lineNumber: $lineNumber
+              body: $body
+            )
+          }
+        `,
+        variables: {
+          repoIds: githubRemotes,
+          commitHash: origCommitHash,
+          filePath: filepath,
+          lineNumber: origLine,
+          body: reply.text,
+        },
+      });
+      assert(res.errors === undefined, "graphql errors");
+      const newCFThreadId = notNull(res.data).StartThread;
+
+      // Put this new thread into cfThreadIdToCommentThread
+      const uriString = reply.thread.uri.toString();
+      this.cfThreadIdToCommentThread.set(
+        JSON.stringify([uriString, newCFThreadId]),
+        reply.thread
+      );
+
+      // Actually add comment to the new thread with cfThreadId. We should already
+      // have this document in our subscriptions, so it should also be taken care
+      // of that way.
+      const newComment: CFComment = {
         author: getAuthor(userInfo.data.login, userInfo.data.name),
         body: reply.text,
         mode: vscode.CommentMode.Preview,
-      },
-    ];
-
-    const client = await this._getApolloClient();
-    const res = await client.mutate<
-      StartThreadMutation,
-      StartThreadMutationVariables
-    >({
-      mutation: gql`
-        mutation StartThread(
-          $repoIds: [String!]!
-          $commitHash: String!
-          $filePath: String!
-          $lineNumber: Int!
-          $body: String!
-        ) {
-          StartThread(
-            repoIds: $repoIds
-            commitHash: $commitHash
-            filePath: $filePath
-            lineNumber: $lineNumber
-            body: $body
-          )
-        }
-      `,
-      variables: {
-        repoIds: githubRemotes,
-        commitHash: origCommitHash,
-        filePath: filepath,
-        lineNumber: origLine,
-        body: reply.text,
-      },
-    });
-    assert(res.errors === undefined, "graphql errors");
-    const newCFThreadId = notNull(res.data).StartThread;
-
-    // Put this new thread into cfThreadIdToCommentThread
-    const uriString = reply.thread.uri.toString();
-    this.cfThreadIdToCommentThread.set(
-      JSON.stringify([uriString, newCFThreadId]),
-      reply.thread
-    );
-
-    // Actually add comment to the new thread with cfThreadId. We should already
-    // have this document in our subscriptions, so it should also be taken care
-    // of that way.
-    const newComment: CFComment = {
-      author: getAuthor(userInfo.data.login, userInfo.data.name),
-      body: reply.text,
-      mode: vscode.CommentMode.Preview,
-      cfThreadId: newCFThreadId,
-    };
-    reply.thread.comments = [newComment];
+        cfThreadId: newCFThreadId,
+      };
+      reply.thread.comments = [newComment];
+    } catch (err) {
+      reply.thread.dispose();
+      // Throw the error up the chain so that we can log it, etc.
+      throw err;
+    }
   }
 
   async addComment(reply: vscode.CommentReply) {

@@ -8,10 +8,11 @@ Notes:
 
 TODO:
 
-- Get TS types for gql operations
 - `startThread` enablement is currently `!commentIsEmpty && !activeEditorIsDirty`. It's not clear if activeEditorIsDirty will be correct when the user has two editors open: one has the comment and the other is dirty. See https://code.visualstudio.com/api/references/when-clause-contexts for more info. Can't find a better context.
 - Upgrade nodegit dependency once 0.28.0 is released. See https://github.com/nodegit/nodegit/issues/1840 and https://github.com/nodegit/nodegit/issues/1864.
 - add a feedback option!
+- make it work as a ["Web Extension"](https://code.visualstudio.com/api/extension-guides/web-extensions)
+  - wasm can be used in web extensions according to this quote: "The browser runtime environment only supports the execution of JavaScript and WebAssembly. Libraries written in other programming languages need to be cross-compiled, for instance there is tooling to compile C/C++ and Rust to WebAssembly. The vscode-anycode extension, for example, uses tree-sitter, which is C/C++ code compiled to WebAssembly." could we cross-compile libgit2 to wasm?
 
 Download the hasura schema definition with apollo:
 

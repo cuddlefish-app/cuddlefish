@@ -6,7 +6,7 @@ object_relationships:
   using:
     manual_configuration:
       column_mapping:
-        original_commit: commit
+        original_commit_hash: commit_hash
         original_file_path: file_path
         original_line_number: line_number
       insertion_order: null
@@ -16,20 +16,20 @@ object_relationships:
 select_permissions:
 - permission:
     columns:
-    - original_commit
+    - original_commit_hash
     - original_file_path
     - original_line_number
-    - x_commit
+    - x_commit_hash
     - x_file_path
     - x_line_number
     filter: {}
   role: anonymous
 - permission:
     columns:
-    - original_commit
+    - original_commit_hash
     - original_file_path
     - original_line_number
-    - x_commit
+    - x_commit_hash
     - x_file_path
     - x_line_number
     filter: {}

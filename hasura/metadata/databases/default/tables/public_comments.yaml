@@ -5,6 +5,9 @@ object_relationships:
 - name: github_user
   using:
     foreign_key_constraint_on: author_github_node_id
+- name: thread
+  using:
+    foreign_key_constraint_on: thread_id
 insert_permissions:
 - permission:
     backend_only: false
@@ -25,3 +28,14 @@ select_permissions:
     - author_github_node_id
     filter: {}
   role: user
+event_triggers:
+- definition:
+    enable_manual: false
+    insert:
+      columns: "*"
+  name: insert_comments
+  retry_conf:
+    interval_sec: 60
+    num_retries: 10
+    timeout_sec: 60
+  webhook_from_env: INSERT_COMMENTS_WEBHOOK_URL

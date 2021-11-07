@@ -252,7 +252,7 @@ async fn gql_start_thread_inner(
   // Note: This is shockingly slow, eg. 700ms on a single repo. Another potentially faster way to do this is to first
   // check if we have this commit somewhere in hasura already which would imply that it exists on a public repo.
   log::trace!("starting commit lookup");
-  let mut repo_with_commit = None;
+  let mut repo_with_commit_option = None;
   for repo_id in repo_ids {
     let repo_id_parsed = parse_repo_id(&repo_id)?;
     let (owner, name) = match repo_id_parsed {
@@ -262,7 +262,7 @@ async fn gql_start_thread_inner(
     let res = github::lookup_commit(Some(&gh_auth), &owner, &name, &commit_hash).await?;
     if let Some((repo_id, is_private, contains_commit)) = res {
       if !is_private && contains_commit {
-        repo_with_commit = Some(repo_id);
+        repo_with_commit_option = Some(repo_id);
         break;
       }
     }
@@ -271,11 +271,13 @@ async fn gql_start_thread_inner(
 
   // TODO we should also maintain a mapping of commits -> containing repos in hasura so that we can use it when sending
   // email notifications.
-  ensure!(repo_with_commit.is_some());
+  // ensure!(repo_with_commit.is_some());
+  let repo_id = repo_with_commit_option.ok_or_else(|| anyhow!("no repo with commit"))?;
 
   // line_number is i32 but also asserted to be > 0 above, so it should fit into u32, no problem.
   let new_thread_id = hasura::start_thread(
     &gh_auth.github_node_id,
+    &repo_id,
     &commit_hash,
     &file_path,
     line_number.try_into().unwrap(),
