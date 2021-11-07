@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getSendgrid, logHandlerErrors } from "../../utils";
+import { logHandlerErrors } from "../../common_utils";
+import { getSendgrid } from "../../server_utils";
 
 export default logHandlerErrors(
   async (req: NextApiRequest, res: NextApiResponse<{}>) => {

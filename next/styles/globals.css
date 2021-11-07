@@ -1,4 +1,6 @@
-html,
+/* We don't want this to apply to the pages in `pages/emails/`! */
+
+/* html,
 body {
   padding: 0;
   margin: 0;
@@ -13,4 +15,4 @@ a {
 
 * {
   box-sizing: border-box;
-}
+} */

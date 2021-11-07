@@ -4,20 +4,20 @@ import { isRight } from "fp-ts/lib/Either";
 import * as t from "io-ts";
 import { DateFromISOString } from "io-ts-types/lib/DateFromISOString";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { lookupRepoByNodeId } from "../../github";
-import {
-  CommentContextQuery,
-  CommentContextQueryVariables,
-} from "../../src/generated/admin-hasura-types";
+import ReactDOMServer from "react-dom/server";
 import {
   ADMIN_buildApolloClient,
   assert,
   assert400,
-  getSendgrid,
-  isString,
   logHandlerErrors,
-  notNull,
-} from "../../utils";
+} from "../../common_utils";
+import { lookupRepoByNodeId } from "../../github";
+import { getSendgrid } from "../../server_utils";
+import {
+  CommentContextQuery,
+  CommentContextQueryVariables,
+} from "../../src/generated/admin-hasura-types";
+import NewThreadEmail from "../emails/new_thread";
 
 // TODO: more specific validation on uuid types
 // Example created_at: 2021-11-05T04:09:07.537667+00:00
@@ -186,7 +186,6 @@ async function sendNewThreadEmails(
     "admin",
     { owner, repo },
     thread,
-    commit,
     newComment,
     newCommentAuthor
   );
@@ -198,7 +197,6 @@ async function sendNewThreadEmails(
       "author",
       { owner, repo },
       thread,
-      commit,
       newComment,
       newCommentAuthor
     );
@@ -214,7 +212,6 @@ async function sendNewThreadEmails(
       "committer",
       { owner, repo },
       thread,
-      commit,
       newComment,
       newCommentAuthor
     );
@@ -230,7 +227,6 @@ async function sendNewThreadEmail(
     original_file_path: string;
     original_line_number: number;
   },
-  commit: { sha: string; html_url: string },
   newComment: {
     thread_id: string;
     author_github_node_id: string;
@@ -246,43 +242,19 @@ async function sendNewThreadEmail(
 ) {
   // TODO check recipient's email preferences
   // TODO check common no-reply email patterns
-
+  // TODO lookup PRs that involve this commit
   // TODO try to find recipient's name/username from their email via GitHub API, can use our own db if necessary
 
-  const verb =
-    role === "author"
-      ? "wrote"
-      : role === "committer"
-      ? "committed"
-      : "participated in";
-  const signature =
-    isString(newCommentAuthor.github_name) &&
-    notNull(newCommentAuthor.github_name).length > 0
-      ? `${newCommentAuthor.github_name} (@${newCommentAuthor.github_username})`
-      : `@${newCommentAuthor.github_username}`;
-  // TODO link to the exact line in question not just the commit.
-  // TODO lookup PRs that involve this commit
-  // TODO turn this into a next.js page so that we can iterate faster
-  const lineUrl = `https://github.com/${repo.owner}/${repo.repo}/blob/${thread.original_commit_hash}/${thread.original_file_path}#L${thread.original_line_number}`;
-  const body = `
-<p>Hi ${recipient.name.length > 0 ? recipient.name : recipient.email}!</p>
-
-<p>I have a question/comment about <a href="${lineUrl}">this line of code</a> that you ${verb}:</p>
-
-<p>${newComment.body}</p>
-
-<p> -- ${signature}</p>
-
-<p>You can respond by replying to this email or via the Cuddlefish <a href="TODO">VSCode extension</a>! Here's the original <a href="${
-    commit.html_url
-  }">commit</a>.</p>
-
-<hr />
-<div style="color: #999;">
-<p>What is this? cuddlefish.app is Google Docs-style comments for code. For developers, by developers. <a href="https://github.com/cuddlefish-app/cuddlefish">Check us out on GitHub</a>! Feedback? <a href="mailto:skainsworth+cuddlefish@gmail.com">Let us know!</a></p>
-<p><small>Too many emails? <a href="mailto:skainsworth+cuddlefish@gmail.com">unsubscribe</a></small></p>
-</div>
-  `;
+  const html = ReactDOMServer.renderToStaticMarkup(
+    NewThreadEmail({
+      repo,
+      thread,
+      newComment,
+      newCommentAuthor,
+      recipient,
+      role,
+    })
+  );
   const fromName =
     newCommentAuthor.github_name || `@${newCommentAuthor.github_username}`;
   await getSendgrid().send({
@@ -293,14 +265,8 @@ async function sendNewThreadEmail(
       email: "fish@cuddlefish.app",
     },
     subject: `💬 ${truncate(newComment.body.replaceAll("\n", " "), 100)}`,
-    html: body,
+    html,
   });
-
-  // Things to include:
-  // - link to github commit line
-  // - code highlighted region of line referenced
-  // - comment text (markdown rendered)
-  // - link to vscode extension
 }
 
 function truncate(str: string, len: number) {

@@ -2845,6 +2845,11 @@ export type Unnamed_1_QueryVariables = Exact<{ [key: string]: never; }>;
 
 export type Unnamed_1_Query = { __typename: 'query_root' };
 
+export type Unnamed_2_QueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type Unnamed_2_Query = { __typename: 'query_root' };
+
 export type CommentContextQueryVariables = Exact<{
   commentId: Scalars['uuid'];
 }>;

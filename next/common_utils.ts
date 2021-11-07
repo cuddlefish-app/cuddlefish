@@ -5,14 +5,7 @@ import {
   InMemoryCache,
 } from "@apollo/client/core";
 import { setContext } from "@apollo/client/link/context";
-import * as _sendgrid from "@sendgrid/mail";
 import { NextApiRequest, NextApiResponse } from "next";
-
-// Never error in the module scope. See https://github.com/vercel/next.js/issues/31046.
-export function getSendgrid() {
-  _sendgrid.setApiKey(notNull(process.env.SENDGRID_API_KEY));
-  return _sendgrid;
-}
 
 export function ADMIN_buildApolloClient() {
   const uri = notNull(process.env.HASURA_GRAPHQL_URL);

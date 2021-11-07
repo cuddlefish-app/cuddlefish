@@ -16,8 +16,9 @@ As much as possible we try to 1-index line number in the backend and hasura. VSC
 
   - sending basic email for new thread
 
-    - create next.js page for the email body for faster development
-    - syntax highlighting? (shiki? how is the line highlighting with hover accomplished here: https://fatihkalifa.com/typescript-twoslash)
+    - include code snippet syntax highlighting? (shiki? how is the line highlighting with hover accomplished here: https://fatihkalifa.com/typescript-twoslash)
+
+    - markdown syntax highlighting? (see https://github.com/antfu/markdown-it-shiki)
 
   - sending basic email for new comment
 
@@ -25,21 +26,26 @@ As much as possible we try to 1-index line number in the backend and hasura. VSC
 
     - threading (https://stackoverflow.com/questions/35521459/send-email-as-reply-to-thread, https://github.com/sendgrid/sendgrid-nodejs/issues/690)
 
-- launch
-
-  - push vscode extension to the marketplace
-  - set up render postgres, hasura
-  - set up next.js/vercel
-
 - receive email
 
+  - use ngrok for easy development
+
   - [sendgrid parse setup](https://docs.sendgrid.com/for-developers/parsing-email/setting-up-the-inbound-parse-webhook#additional-resources)
+
   - parse email contents
+
   - check for signed requests coming from sendgrid
 
   - insert comment in the comments table
 
-  - how to do this in development environment?
+- launch
+
+  - push vscode extension to the marketplace
+    - fix hardcoded dev urls
+  - set up render postgres, hasura
+    - figure out how to do config as code
+  - set up next.js/vercel
+    - disable email, sendgrid, and github test routes
 
 - set up test suite (jest?)
 
@@ -47,6 +53,7 @@ As much as possible we try to 1-index line number in the backend and hasura. VSC
 
 - Link in email that opens up straight to extension on the right file/line!
 
+- disallow commenting on empty lines
 - comment reactions
 - email notifications for new user signups
 - subscribe for updates

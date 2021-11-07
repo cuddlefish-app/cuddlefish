@@ -7,7 +7,7 @@ import {
   assert400,
   logHandlerErrors,
   notNull,
-} from "../../utils";
+} from "../../common_utils";
 
 export default logHandlerErrors(
   async (req: NextApiRequest, res: NextApiResponse<{}>) => {
