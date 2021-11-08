@@ -1,5 +1,4 @@
 // TODO
-// - email notifications
 // - send feedback
 // - subscribing to thread updates (on file close, unsubscribe)
 // - open line in github
@@ -161,11 +160,17 @@ export async function activate(context: vscode.ExtensionContext) {
           // Load the existing comments and subscribe to updates.
           await commentJefe.trackDocument(document.uri, blameinfo.blamehunks);
 
+          // TODO don't allow commenting on lines that contain only whitespace
           // TODO also check that we don't allow commenting on commits that haven't been pushed yet. See https://stackoverflow.com/questions/2016901/viewing-unpushed-git-commits
+          // TODO how to identify remote name and remote branch for the current branch?
+          // git log origin/main..HEAD --format=format:"%H"
+          // See https://stackoverflow.com/questions/171550/find-out-which-remote-branch-a-local-branch-is-tracking
+          // git rev-parse --abbrev-ref --symbolic-full-name @{u}
 
           // Subtract one to account for the fact that VSCode is 0-indexed.
-          // Subtract another one to account for the fact that hunksize 1
-          // implies the range [17, 17], not [17, 18].
+          // Subtract another one from the end of the interval to account for
+          // the fact that hunksize 1 implies the range [17, 17], not [17, 18].
+          // Ranges are inclusive on both ends.
           const ranges = blameinfo.blamehunks
             .filter((hunk) => hunk.origCommitHash !== git.ZERO_HASH)
             .map(({ currStartLine, hunksize }) => [
