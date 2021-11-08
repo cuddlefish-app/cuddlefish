@@ -8,7 +8,9 @@ import { setContext } from "@apollo/client/link/context";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export function ADMIN_buildApolloClient() {
-  const uri = notNull(process.env.HASURA_GRAPHQL_URL);
+  const hasuraHost = notNull(process.env.HASURA_HOST);
+  const hasuraPort = notNull(process.env.HASURA_PORT);
+  const uri = `http://${hasuraHost}:${hasuraPort}/v1/graphql`;
 
   // See https://www.apollographql.com/docs/react/networking/authentication/#header
   // See https://github.com/apollographql/apollo-client/issues/8967 as to why
@@ -17,7 +19,7 @@ export function ADMIN_buildApolloClient() {
     ...previousContext,
     headers: {
       ...previousContext.headers,
-      "x-hasura-admin-secret": notNull(process.env.HASURA_ADMIN_SECRET),
+      "x-hasura-admin-secret": notNull(process.env.HASURA_GRAPHQL_ADMIN_SECRET),
     },
   }));
   return new ApolloClient({

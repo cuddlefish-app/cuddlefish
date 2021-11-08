@@ -14,8 +14,9 @@ export default logHandlerErrors(
     assert400(req.method === "GET", "GET only");
 
     // Check that we have the requisite env vars
-    notNull(process.env.HASURA_GRAPHQL_URL);
-    notNull(process.env.HASURA_ADMIN_SECRET);
+    notNull(process.env.HASURA_HOST);
+    notNull(process.env.HASURA_PORT);
+    notNull(process.env.HASURA_GRAPHQL_ADMIN_SECRET);
     notNull(process.env.API_SECRET);
     notNull(process.env.SENDGRID_API_KEY);
     notNull(process.env.GITHUB_API_TOKEN);

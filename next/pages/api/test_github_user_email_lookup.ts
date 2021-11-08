@@ -3,7 +3,6 @@ import { assert400, logHandlerErrors } from "../../common_utils";
 import { getSendgrid } from "../../server_utils";
 import { CF_APP_EMAIL } from "./config";
 
-// TODO we can remove this route and just write some test cases
 export default logHandlerErrors(
   async (req: NextApiRequest, res: NextApiResponse<{}>) => {
     assert400(
