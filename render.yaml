@@ -80,8 +80,9 @@ services:
   - name: cf-next
     type: web
     env: node
-    buildCommand: cd next && npm run build
-    startCommand: cd next && npm run start
+    buildCommand: cd next/ && npm ci && npm run build
+    startCommand: cd next/ && npm run start
+    healthCheckPath: /api/healthz
 
 databases:
   # This is the Render name of the database, not the postgres name of the
