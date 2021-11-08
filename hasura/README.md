@@ -2,12 +2,6 @@
 
 Public access is available and is given the role `anonymous`.
 
-TODO:
-
-- update schema to support people responding via email
-  - Add email column to the session_tokens table, and add a constraint that exactly one of email or github_id is present.
-- add GH access_token column to the `github_users` table
-
 ## Development
 
 Run `docker compose up` or `docker compose --file docker-compose.macos.yaml up`. It will run hasura and postgres locally with persistence across runs. Note that the api server must be up and running before you can run the `docker compose up` command.
@@ -32,8 +26,4 @@ Users can interact with the app by logging in through GitHub or by responding to
 
 ### Threads
 
-The `threads` table stores all the threads. It should be unique on `(commit, file, linenumber)` when `resolved == false`.
-
-TODO:
-
-- actually apply that constraint with a partial unique index: https://stackoverflow.com/questions/16236365/postgresql-conditionally-unique-constraint.
+The `threads` table stores all the threads. It is unique on `(commit, file, linenumber)`.
