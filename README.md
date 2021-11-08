@@ -25,10 +25,19 @@ As much as possible we try to 1-index line number in the backend and hasura. VSC
 - VSCode extension
 
   - disallow commenting on empty lines
-  - disallow commenting on lines from commits that are not pushed yet
+  - disallow commenting on lines from commits that are not pushed yet. See https://stackoverflow.com/questions/2016901/viewing-unpushed-git-commits.
   - speed up comment creation (seems like we are hitting github's auth endpoint every time?)
   - Link in email that opens up straight to extension on the right file/line!
   - subscribe for updates
+  - Use the reply `label` attribute to show "code author", "code committer", etc.
+
+- API
+
+  - check that insert_comments_webhook is receiving requests from hasura with `API_SECRET`
+
+- Hasura
+
+  - Update description of the comments table, now that the TODO should be done there
 
 - Sending email
 
