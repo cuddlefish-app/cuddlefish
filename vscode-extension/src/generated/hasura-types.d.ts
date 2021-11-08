@@ -128,12 +128,12 @@ export enum Blamelines_Select_Column {
  */
 export type Comments = {
   __typename?: 'comments';
-  /** The GitHub node id of the user who authored this comment. */
-  author_github_node_id: Scalars['String'];
+  /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
+  author_github_node_id?: Maybe<Scalars['String']>;
   body: Scalars['String'];
   created_at: Scalars['timestamptz'];
   /** An object relationship */
-  github_user: Github_Users;
+  github_user?: Maybe<Github_Users>;
   id: Scalars['uuid'];
   /** An object relationship */
   thread: Threads;
@@ -169,7 +169,7 @@ export type Comments_Insert_Input = {
 
 /** order by max() on columns of table "comments" */
 export type Comments_Max_Order_By = {
-  /** The GitHub node id of the user who authored this comment. */
+  /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
   author_github_node_id?: Maybe<Order_By>;
   body?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
@@ -179,7 +179,7 @@ export type Comments_Max_Order_By = {
 
 /** order by min() on columns of table "comments" */
 export type Comments_Min_Order_By = {
-  /** The GitHub node id of the user who authored this comment. */
+  /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
   author_github_node_id?: Maybe<Order_By>;
   body?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
@@ -764,7 +764,7 @@ export type AllThreadsQueryVariables = Exact<{
 }>;
 
 
-export type AllThreadsQuery = { __typename?: 'query_root', lines: Array<{ __typename?: 'lines', commit_hash: string, file_path: string, line_number: number, threads: Array<{ __typename?: 'threads', id: string, comments: Array<{ __typename?: 'comments', id: string, body: string, author_github_node_id: string, github_user: { __typename?: 'github_users', github_username: string, github_name?: string | null | undefined } }> }> }> };
+export type AllThreadsQuery = { __typename?: 'query_root', lines: Array<{ __typename?: 'lines', commit_hash: string, file_path: string, line_number: number, threads: Array<{ __typename?: 'threads', id: string, comments: Array<{ __typename?: 'comments', id: string, body: string, author_github_node_id?: string | null | undefined, github_user?: { __typename?: 'github_users', github_username: string, github_name?: string | null | undefined } | null | undefined }> }> }> };
 
 export type StartThreadMutationVariables = Exact<{
   repoIds: Array<Scalars['String']> | Scalars['String'];
