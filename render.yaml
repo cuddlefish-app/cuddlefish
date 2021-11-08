@@ -77,6 +77,12 @@ services:
       - key: RUST_LOG
         value: "api=trace"
 
+  - name: cf-next
+    type: web
+    env: node
+    buildCommand: cd next && npm run build
+    startCommand: cd next && npm run start
+
 databases:
   # This is the Render name of the database, not the postgres name of the
   # database. Render may add a suffix. In our case that doesn't seem to be the
