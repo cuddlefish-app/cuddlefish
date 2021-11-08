@@ -108,12 +108,18 @@ function useLatestBranchCommitSHA(
 
 function BlobPage() {
   // For whatever reason, react-router dumps the wildcard path match into key 0.
-  const { 0: filePath, owner, repo, branch } = useParams() as {
+  const {
+    0: filePath,
+    owner,
+    repo,
+    branch,
+  } = useParams() as {
     0: any;
     owner: string;
     repo: string;
     branch: string;
   };
+  // TODO should this use Suspense instead?
   const commitSHA = useLatestBranchCommitSHA(owner, repo, branch);
   if (commitSHA !== null)
     return (

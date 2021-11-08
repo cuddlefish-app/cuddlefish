@@ -1,0 +1,3166 @@
+schema {
+  query: query_root
+  mutation: mutation_root
+  subscription: subscription_root
+}
+
+"""
+Matches lines to their original sources via git blame information.
+
+
+columns and relationships of "blamelines"
+
+"""
+type blamelines {
+  original_commit: String!
+  original_file_path: String!
+
+  """An object relationship"""
+  original_line: lines
+  original_line_number: Int!
+  x_commit: String!
+  x_file_path: String!
+  x_line_number: Int!
+}
+
+"""
+aggregated selection of "blamelines"
+"""
+type blamelines_aggregate {
+  aggregate: blamelines_aggregate_fields
+  nodes: [blamelines!]!
+}
+
+"""
+aggregate fields of "blamelines"
+"""
+type blamelines_aggregate_fields {
+  avg: blamelines_avg_fields
+  count(columns: [blamelines_select_column!], distinct: Boolean): Int
+  max: blamelines_max_fields
+  min: blamelines_min_fields
+  stddev: blamelines_stddev_fields
+  stddev_pop: blamelines_stddev_pop_fields
+  stddev_samp: blamelines_stddev_samp_fields
+  sum: blamelines_sum_fields
+  var_pop: blamelines_var_pop_fields
+  var_samp: blamelines_var_samp_fields
+  variance: blamelines_variance_fields
+}
+
+"""
+order by aggregate values of table "blamelines"
+"""
+input blamelines_aggregate_order_by {
+  avg: blamelines_avg_order_by
+  count: order_by
+  max: blamelines_max_order_by
+  min: blamelines_min_order_by
+  stddev: blamelines_stddev_order_by
+  stddev_pop: blamelines_stddev_pop_order_by
+  stddev_samp: blamelines_stddev_samp_order_by
+  sum: blamelines_sum_order_by
+  var_pop: blamelines_var_pop_order_by
+  var_samp: blamelines_var_samp_order_by
+  variance: blamelines_variance_order_by
+}
+
+"""
+input type for inserting array relation for remote table "blamelines"
+"""
+input blamelines_arr_rel_insert_input {
+  data: [blamelines_insert_input!]!
+  on_conflict: blamelines_on_conflict
+}
+
+"""aggregate avg on columns"""
+type blamelines_avg_fields {
+  original_line_number: Float
+  x_line_number: Float
+}
+
+"""
+order by avg() on columns of table "blamelines"
+"""
+input blamelines_avg_order_by {
+  original_line_number: order_by
+  x_line_number: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "blamelines". All fields are combined with a logical 'AND'.
+"""
+input blamelines_bool_exp {
+  _and: [blamelines_bool_exp]
+  _not: blamelines_bool_exp
+  _or: [blamelines_bool_exp]
+  original_commit: String_comparison_exp
+  original_file_path: String_comparison_exp
+  original_line: lines_bool_exp
+  original_line_number: Int_comparison_exp
+  x_commit: String_comparison_exp
+  x_file_path: String_comparison_exp
+  x_line_number: Int_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "blamelines"
+"""
+enum blamelines_constraint {
+  """unique or primary key constraint"""
+  blamelines_pkey
+}
+
+"""
+input type for incrementing integer column in table "blamelines"
+"""
+input blamelines_inc_input {
+  original_line_number: Int
+  x_line_number: Int
+}
+
+"""
+input type for inserting data into table "blamelines"
+"""
+input blamelines_insert_input {
+  original_commit: String
+  original_file_path: String
+  original_line: lines_obj_rel_insert_input
+  original_line_number: Int
+  x_commit: String
+  x_file_path: String
+  x_line_number: Int
+}
+
+"""aggregate max on columns"""
+type blamelines_max_fields {
+  original_commit: String
+  original_file_path: String
+  original_line_number: Int
+  x_commit: String
+  x_file_path: String
+  x_line_number: Int
+}
+
+"""
+order by max() on columns of table "blamelines"
+"""
+input blamelines_max_order_by {
+  original_commit: order_by
+  original_file_path: order_by
+  original_line_number: order_by
+  x_commit: order_by
+  x_file_path: order_by
+  x_line_number: order_by
+}
+
+"""aggregate min on columns"""
+type blamelines_min_fields {
+  original_commit: String
+  original_file_path: String
+  original_line_number: Int
+  x_commit: String
+  x_file_path: String
+  x_line_number: Int
+}
+
+"""
+order by min() on columns of table "blamelines"
+"""
+input blamelines_min_order_by {
+  original_commit: order_by
+  original_file_path: order_by
+  original_line_number: order_by
+  x_commit: order_by
+  x_file_path: order_by
+  x_line_number: order_by
+}
+
+"""
+response of any mutation on the table "blamelines"
+"""
+type blamelines_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [blamelines!]!
+}
+
+"""
+input type for inserting object relation for remote table "blamelines"
+"""
+input blamelines_obj_rel_insert_input {
+  data: blamelines_insert_input!
+  on_conflict: blamelines_on_conflict
+}
+
+"""
+on conflict condition type for table "blamelines"
+"""
+input blamelines_on_conflict {
+  constraint: blamelines_constraint!
+  update_columns: [blamelines_update_column!]!
+  where: blamelines_bool_exp
+}
+
+"""
+ordering options when selecting data from "blamelines"
+"""
+input blamelines_order_by {
+  original_commit: order_by
+  original_file_path: order_by
+  original_line: lines_order_by
+  original_line_number: order_by
+  x_commit: order_by
+  x_file_path: order_by
+  x_line_number: order_by
+}
+
+"""
+primary key columns input for table: "blamelines"
+"""
+input blamelines_pk_columns_input {
+  x_commit: String!
+  x_file_path: String!
+  x_line_number: Int!
+}
+
+"""
+select columns of table "blamelines"
+"""
+enum blamelines_select_column {
+  """column name"""
+  original_commit
+
+  """column name"""
+  original_file_path
+
+  """column name"""
+  original_line_number
+
+  """column name"""
+  x_commit
+
+  """column name"""
+  x_file_path
+
+  """column name"""
+  x_line_number
+}
+
+"""
+input type for updating data in table "blamelines"
+"""
+input blamelines_set_input {
+  original_commit: String
+  original_file_path: String
+  original_line_number: Int
+  x_commit: String
+  x_file_path: String
+  x_line_number: Int
+}
+
+"""aggregate stddev on columns"""
+type blamelines_stddev_fields {
+  original_line_number: Float
+  x_line_number: Float
+}
+
+"""
+order by stddev() on columns of table "blamelines"
+"""
+input blamelines_stddev_order_by {
+  original_line_number: order_by
+  x_line_number: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type blamelines_stddev_pop_fields {
+  original_line_number: Float
+  x_line_number: Float
+}
+
+"""
+order by stddev_pop() on columns of table "blamelines"
+"""
+input blamelines_stddev_pop_order_by {
+  original_line_number: order_by
+  x_line_number: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type blamelines_stddev_samp_fields {
+  original_line_number: Float
+  x_line_number: Float
+}
+
+"""
+order by stddev_samp() on columns of table "blamelines"
+"""
+input blamelines_stddev_samp_order_by {
+  original_line_number: order_by
+  x_line_number: order_by
+}
+
+"""aggregate sum on columns"""
+type blamelines_sum_fields {
+  original_line_number: Int
+  x_line_number: Int
+}
+
+"""
+order by sum() on columns of table "blamelines"
+"""
+input blamelines_sum_order_by {
+  original_line_number: order_by
+  x_line_number: order_by
+}
+
+"""
+update columns of table "blamelines"
+"""
+enum blamelines_update_column {
+  """column name"""
+  original_commit
+
+  """column name"""
+  original_file_path
+
+  """column name"""
+  original_line_number
+
+  """column name"""
+  x_commit
+
+  """column name"""
+  x_file_path
+
+  """column name"""
+  x_line_number
+}
+
+"""aggregate var_pop on columns"""
+type blamelines_var_pop_fields {
+  original_line_number: Float
+  x_line_number: Float
+}
+
+"""
+order by var_pop() on columns of table "blamelines"
+"""
+input blamelines_var_pop_order_by {
+  original_line_number: order_by
+  x_line_number: order_by
+}
+
+"""aggregate var_samp on columns"""
+type blamelines_var_samp_fields {
+  original_line_number: Float
+  x_line_number: Float
+}
+
+"""
+order by var_samp() on columns of table "blamelines"
+"""
+input blamelines_var_samp_order_by {
+  original_line_number: order_by
+  x_line_number: order_by
+}
+
+"""aggregate variance on columns"""
+type blamelines_variance_fields {
+  original_line_number: Float
+  x_line_number: Float
+}
+
+"""
+order by variance() on columns of table "blamelines"
+"""
+input blamelines_variance_order_by {
+  original_line_number: order_by
+  x_line_number: order_by
+}
+
+"""
+expression to compare columns of type Boolean. All fields are combined with logical 'AND'.
+"""
+input Boolean_comparison_exp {
+  _eq: Boolean
+  _gt: Boolean
+  _gte: Boolean
+  _in: [Boolean!]
+  _is_null: Boolean
+  _lt: Boolean
+  _lte: Boolean
+  _neq: Boolean
+  _nin: [Boolean!]
+}
+
+"""
+columns and relationships of "comments"
+"""
+type comments {
+  """An object relationship"""
+  author: users!
+  author_github_id: Int!
+  body: String!
+  created_at: timestamptz!
+  id: uuid!
+  thread_id: uuid!
+}
+
+"""
+aggregated selection of "comments"
+"""
+type comments_aggregate {
+  aggregate: comments_aggregate_fields
+  nodes: [comments!]!
+}
+
+"""
+aggregate fields of "comments"
+"""
+type comments_aggregate_fields {
+  avg: comments_avg_fields
+  count(columns: [comments_select_column!], distinct: Boolean): Int
+  max: comments_max_fields
+  min: comments_min_fields
+  stddev: comments_stddev_fields
+  stddev_pop: comments_stddev_pop_fields
+  stddev_samp: comments_stddev_samp_fields
+  sum: comments_sum_fields
+  var_pop: comments_var_pop_fields
+  var_samp: comments_var_samp_fields
+  variance: comments_variance_fields
+}
+
+"""
+order by aggregate values of table "comments"
+"""
+input comments_aggregate_order_by {
+  avg: comments_avg_order_by
+  count: order_by
+  max: comments_max_order_by
+  min: comments_min_order_by
+  stddev: comments_stddev_order_by
+  stddev_pop: comments_stddev_pop_order_by
+  stddev_samp: comments_stddev_samp_order_by
+  sum: comments_sum_order_by
+  var_pop: comments_var_pop_order_by
+  var_samp: comments_var_samp_order_by
+  variance: comments_variance_order_by
+}
+
+"""
+input type for inserting array relation for remote table "comments"
+"""
+input comments_arr_rel_insert_input {
+  data: [comments_insert_input!]!
+  on_conflict: comments_on_conflict
+}
+
+"""aggregate avg on columns"""
+type comments_avg_fields {
+  author_github_id: Float
+}
+
+"""
+order by avg() on columns of table "comments"
+"""
+input comments_avg_order_by {
+  author_github_id: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "comments". All fields are combined with a logical 'AND'.
+"""
+input comments_bool_exp {
+  _and: [comments_bool_exp]
+  _not: comments_bool_exp
+  _or: [comments_bool_exp]
+  author: users_bool_exp
+  author_github_id: Int_comparison_exp
+  body: String_comparison_exp
+  created_at: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  thread_id: uuid_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "comments"
+"""
+enum comments_constraint {
+  """unique or primary key constraint"""
+  comments_pkey
+}
+
+"""
+input type for incrementing integer column in table "comments"
+"""
+input comments_inc_input {
+  author_github_id: Int
+}
+
+"""
+input type for inserting data into table "comments"
+"""
+input comments_insert_input {
+  author: users_obj_rel_insert_input
+  author_github_id: Int
+  body: String
+  created_at: timestamptz
+  id: uuid
+  thread_id: uuid
+}
+
+"""aggregate max on columns"""
+type comments_max_fields {
+  author_github_id: Int
+  body: String
+  created_at: timestamptz
+  id: uuid
+  thread_id: uuid
+}
+
+"""
+order by max() on columns of table "comments"
+"""
+input comments_max_order_by {
+  author_github_id: order_by
+  body: order_by
+  created_at: order_by
+  id: order_by
+  thread_id: order_by
+}
+
+"""aggregate min on columns"""
+type comments_min_fields {
+  author_github_id: Int
+  body: String
+  created_at: timestamptz
+  id: uuid
+  thread_id: uuid
+}
+
+"""
+order by min() on columns of table "comments"
+"""
+input comments_min_order_by {
+  author_github_id: order_by
+  body: order_by
+  created_at: order_by
+  id: order_by
+  thread_id: order_by
+}
+
+"""
+response of any mutation on the table "comments"
+"""
+type comments_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [comments!]!
+}
+
+"""
+input type for inserting object relation for remote table "comments"
+"""
+input comments_obj_rel_insert_input {
+  data: comments_insert_input!
+  on_conflict: comments_on_conflict
+}
+
+"""
+on conflict condition type for table "comments"
+"""
+input comments_on_conflict {
+  constraint: comments_constraint!
+  update_columns: [comments_update_column!]!
+  where: comments_bool_exp
+}
+
+"""
+ordering options when selecting data from "comments"
+"""
+input comments_order_by {
+  author: users_order_by
+  author_github_id: order_by
+  body: order_by
+  created_at: order_by
+  id: order_by
+  thread_id: order_by
+}
+
+"""
+primary key columns input for table: "comments"
+"""
+input comments_pk_columns_input {
+  id: uuid!
+}
+
+"""
+select columns of table "comments"
+"""
+enum comments_select_column {
+  """column name"""
+  author_github_id
+
+  """column name"""
+  body
+
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  thread_id
+}
+
+"""
+input type for updating data in table "comments"
+"""
+input comments_set_input {
+  author_github_id: Int
+  body: String
+  created_at: timestamptz
+  id: uuid
+  thread_id: uuid
+}
+
+"""aggregate stddev on columns"""
+type comments_stddev_fields {
+  author_github_id: Float
+}
+
+"""
+order by stddev() on columns of table "comments"
+"""
+input comments_stddev_order_by {
+  author_github_id: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type comments_stddev_pop_fields {
+  author_github_id: Float
+}
+
+"""
+order by stddev_pop() on columns of table "comments"
+"""
+input comments_stddev_pop_order_by {
+  author_github_id: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type comments_stddev_samp_fields {
+  author_github_id: Float
+}
+
+"""
+order by stddev_samp() on columns of table "comments"
+"""
+input comments_stddev_samp_order_by {
+  author_github_id: order_by
+}
+
+"""aggregate sum on columns"""
+type comments_sum_fields {
+  author_github_id: Int
+}
+
+"""
+order by sum() on columns of table "comments"
+"""
+input comments_sum_order_by {
+  author_github_id: order_by
+}
+
+"""
+update columns of table "comments"
+"""
+enum comments_update_column {
+  """column name"""
+  author_github_id
+
+  """column name"""
+  body
+
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  thread_id
+}
+
+"""aggregate var_pop on columns"""
+type comments_var_pop_fields {
+  author_github_id: Float
+}
+
+"""
+order by var_pop() on columns of table "comments"
+"""
+input comments_var_pop_order_by {
+  author_github_id: order_by
+}
+
+"""aggregate var_samp on columns"""
+type comments_var_samp_fields {
+  author_github_id: Float
+}
+
+"""
+order by var_samp() on columns of table "comments"
+"""
+input comments_var_samp_order_by {
+  author_github_id: order_by
+}
+
+"""aggregate variance on columns"""
+type comments_variance_fields {
+  author_github_id: Float
+}
+
+"""
+order by variance() on columns of table "comments"
+"""
+input comments_variance_order_by {
+  author_github_id: order_by
+}
+
+"""
+expression to compare columns of type Int. All fields are combined with logical 'AND'.
+"""
+input Int_comparison_exp {
+  _eq: Int
+  _gt: Int
+  _gte: Int
+  _in: [Int!]
+  _is_null: Boolean
+  _lt: Int
+  _lte: Int
+  _neq: Int
+  _nin: [Int!]
+}
+
+"""
+Uniquely identifies a line of code anywhere in the git universe.
+
+
+columns and relationships of "lines"
+
+"""
+type lines {
+  commit: String!
+  file_path: String!
+  line_number: Int!
+
+  """An array relationship"""
+  threads(
+    """distinct select on columns"""
+    distinct_on: [threads_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [threads_order_by!]
+
+    """filter the rows returned"""
+    where: threads_bool_exp
+  ): [threads!]!
+
+  """An aggregated array relationship"""
+  threads_aggregate(
+    """distinct select on columns"""
+    distinct_on: [threads_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [threads_order_by!]
+
+    """filter the rows returned"""
+    where: threads_bool_exp
+  ): threads_aggregate!
+}
+
+"""
+aggregated selection of "lines"
+"""
+type lines_aggregate {
+  aggregate: lines_aggregate_fields
+  nodes: [lines!]!
+}
+
+"""
+aggregate fields of "lines"
+"""
+type lines_aggregate_fields {
+  avg: lines_avg_fields
+  count(columns: [lines_select_column!], distinct: Boolean): Int
+  max: lines_max_fields
+  min: lines_min_fields
+  stddev: lines_stddev_fields
+  stddev_pop: lines_stddev_pop_fields
+  stddev_samp: lines_stddev_samp_fields
+  sum: lines_sum_fields
+  var_pop: lines_var_pop_fields
+  var_samp: lines_var_samp_fields
+  variance: lines_variance_fields
+}
+
+"""
+order by aggregate values of table "lines"
+"""
+input lines_aggregate_order_by {
+  avg: lines_avg_order_by
+  count: order_by
+  max: lines_max_order_by
+  min: lines_min_order_by
+  stddev: lines_stddev_order_by
+  stddev_pop: lines_stddev_pop_order_by
+  stddev_samp: lines_stddev_samp_order_by
+  sum: lines_sum_order_by
+  var_pop: lines_var_pop_order_by
+  var_samp: lines_var_samp_order_by
+  variance: lines_variance_order_by
+}
+
+"""
+input type for inserting array relation for remote table "lines"
+"""
+input lines_arr_rel_insert_input {
+  data: [lines_insert_input!]!
+  on_conflict: lines_on_conflict
+}
+
+"""aggregate avg on columns"""
+type lines_avg_fields {
+  line_number: Float
+}
+
+"""
+order by avg() on columns of table "lines"
+"""
+input lines_avg_order_by {
+  line_number: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "lines". All fields are combined with a logical 'AND'.
+"""
+input lines_bool_exp {
+  _and: [lines_bool_exp]
+  _not: lines_bool_exp
+  _or: [lines_bool_exp]
+  commit: String_comparison_exp
+  file_path: String_comparison_exp
+  line_number: Int_comparison_exp
+  threads: threads_bool_exp
+}
+
+"""
+unique or primary key constraints on table "lines"
+"""
+enum lines_constraint {
+  """unique or primary key constraint"""
+  lines_pkey
+}
+
+"""
+input type for incrementing integer column in table "lines"
+"""
+input lines_inc_input {
+  line_number: Int
+}
+
+"""
+input type for inserting data into table "lines"
+"""
+input lines_insert_input {
+  commit: String
+  file_path: String
+  line_number: Int
+  threads: threads_arr_rel_insert_input
+}
+
+"""aggregate max on columns"""
+type lines_max_fields {
+  commit: String
+  file_path: String
+  line_number: Int
+}
+
+"""
+order by max() on columns of table "lines"
+"""
+input lines_max_order_by {
+  commit: order_by
+  file_path: order_by
+  line_number: order_by
+}
+
+"""aggregate min on columns"""
+type lines_min_fields {
+  commit: String
+  file_path: String
+  line_number: Int
+}
+
+"""
+order by min() on columns of table "lines"
+"""
+input lines_min_order_by {
+  commit: order_by
+  file_path: order_by
+  line_number: order_by
+}
+
+"""
+response of any mutation on the table "lines"
+"""
+type lines_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [lines!]!
+}
+
+"""
+input type for inserting object relation for remote table "lines"
+"""
+input lines_obj_rel_insert_input {
+  data: lines_insert_input!
+  on_conflict: lines_on_conflict
+}
+
+"""
+on conflict condition type for table "lines"
+"""
+input lines_on_conflict {
+  constraint: lines_constraint!
+  update_columns: [lines_update_column!]!
+  where: lines_bool_exp
+}
+
+"""
+ordering options when selecting data from "lines"
+"""
+input lines_order_by {
+  commit: order_by
+  file_path: order_by
+  line_number: order_by
+  threads_aggregate: threads_aggregate_order_by
+}
+
+"""
+primary key columns input for table: "lines"
+"""
+input lines_pk_columns_input {
+  commit: String!
+  file_path: String!
+  line_number: Int!
+}
+
+"""
+select columns of table "lines"
+"""
+enum lines_select_column {
+  """column name"""
+  commit
+
+  """column name"""
+  file_path
+
+  """column name"""
+  line_number
+}
+
+"""
+input type for updating data in table "lines"
+"""
+input lines_set_input {
+  commit: String
+  file_path: String
+  line_number: Int
+}
+
+"""aggregate stddev on columns"""
+type lines_stddev_fields {
+  line_number: Float
+}
+
+"""
+order by stddev() on columns of table "lines"
+"""
+input lines_stddev_order_by {
+  line_number: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type lines_stddev_pop_fields {
+  line_number: Float
+}
+
+"""
+order by stddev_pop() on columns of table "lines"
+"""
+input lines_stddev_pop_order_by {
+  line_number: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type lines_stddev_samp_fields {
+  line_number: Float
+}
+
+"""
+order by stddev_samp() on columns of table "lines"
+"""
+input lines_stddev_samp_order_by {
+  line_number: order_by
+}
+
+"""aggregate sum on columns"""
+type lines_sum_fields {
+  line_number: Int
+}
+
+"""
+order by sum() on columns of table "lines"
+"""
+input lines_sum_order_by {
+  line_number: order_by
+}
+
+"""
+update columns of table "lines"
+"""
+enum lines_update_column {
+  """column name"""
+  commit
+
+  """column name"""
+  file_path
+
+  """column name"""
+  line_number
+}
+
+"""aggregate var_pop on columns"""
+type lines_var_pop_fields {
+  line_number: Float
+}
+
+"""
+order by var_pop() on columns of table "lines"
+"""
+input lines_var_pop_order_by {
+  line_number: order_by
+}
+
+"""aggregate var_samp on columns"""
+type lines_var_samp_fields {
+  line_number: Float
+}
+
+"""
+order by var_samp() on columns of table "lines"
+"""
+input lines_var_samp_order_by {
+  line_number: order_by
+}
+
+"""aggregate variance on columns"""
+type lines_variance_fields {
+  line_number: Float
+}
+
+"""
+order by variance() on columns of table "lines"
+"""
+input lines_variance_order_by {
+  line_number: order_by
+}
+
+type Mutation {
+  CalculateBlameLines(filePath: String!, lastCommit: String!, repoId: String!): Boolean!
+}
+
+"""mutation root"""
+type mutation_root {
+  CalculateBlameLines(filePath: String!, lastCommit: String!, repoId: String!): Boolean!
+
+  """
+  delete data from the table: "blamelines"
+  """
+  delete_blamelines(
+    """filter the rows which have to be deleted"""
+    where: blamelines_bool_exp!
+  ): blamelines_mutation_response
+
+  """
+  delete single row from the table: "blamelines"
+  """
+  delete_blamelines_by_pk(x_commit: String!, x_file_path: String!, x_line_number: Int!): blamelines
+
+  """
+  delete data from the table: "comments"
+  """
+  delete_comments(
+    """filter the rows which have to be deleted"""
+    where: comments_bool_exp!
+  ): comments_mutation_response
+
+  """
+  delete single row from the table: "comments"
+  """
+  delete_comments_by_pk(id: uuid!): comments
+
+  """
+  delete data from the table: "lines"
+  """
+  delete_lines(
+    """filter the rows which have to be deleted"""
+    where: lines_bool_exp!
+  ): lines_mutation_response
+
+  """
+  delete single row from the table: "lines"
+  """
+  delete_lines_by_pk(commit: String!, file_path: String!, line_number: Int!): lines
+
+  """
+  delete data from the table: "threads"
+  """
+  delete_threads(
+    """filter the rows which have to be deleted"""
+    where: threads_bool_exp!
+  ): threads_mutation_response
+
+  """
+  delete single row from the table: "threads"
+  """
+  delete_threads_by_pk(id: uuid!): threads
+
+  """
+  delete data from the table: "user_sessions"
+  """
+  delete_user_sessions(
+    """filter the rows which have to be deleted"""
+    where: user_sessions_bool_exp!
+  ): user_sessions_mutation_response
+
+  """
+  delete single row from the table: "user_sessions"
+  """
+  delete_user_sessions_by_pk(
+    """Also used as "session token"."""
+    id: uuid!
+  ): user_sessions
+
+  """
+  delete data from the table: "users"
+  """
+  delete_users(
+    """filter the rows which have to be deleted"""
+    where: users_bool_exp!
+  ): users_mutation_response
+
+  """
+  delete single row from the table: "users"
+  """
+  delete_users_by_pk(
+    """An integer id that GitHub gives every user."""
+    github_id: Int!
+  ): users
+
+  """
+  insert data into the table: "blamelines"
+  """
+  insert_blamelines(
+    """the rows to be inserted"""
+    objects: [blamelines_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: blamelines_on_conflict
+  ): blamelines_mutation_response
+
+  """
+  insert a single row into the table: "blamelines"
+  """
+  insert_blamelines_one(
+    """the row to be inserted"""
+    object: blamelines_insert_input!
+
+    """on conflict condition"""
+    on_conflict: blamelines_on_conflict
+  ): blamelines
+
+  """
+  insert data into the table: "comments"
+  """
+  insert_comments(
+    """the rows to be inserted"""
+    objects: [comments_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: comments_on_conflict
+  ): comments_mutation_response
+
+  """
+  insert a single row into the table: "comments"
+  """
+  insert_comments_one(
+    """the row to be inserted"""
+    object: comments_insert_input!
+
+    """on conflict condition"""
+    on_conflict: comments_on_conflict
+  ): comments
+
+  """
+  insert data into the table: "lines"
+  """
+  insert_lines(
+    """the rows to be inserted"""
+    objects: [lines_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: lines_on_conflict
+  ): lines_mutation_response
+
+  """
+  insert a single row into the table: "lines"
+  """
+  insert_lines_one(
+    """the row to be inserted"""
+    object: lines_insert_input!
+
+    """on conflict condition"""
+    on_conflict: lines_on_conflict
+  ): lines
+
+  """
+  insert data into the table: "threads"
+  """
+  insert_threads(
+    """the rows to be inserted"""
+    objects: [threads_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: threads_on_conflict
+  ): threads_mutation_response
+
+  """
+  insert a single row into the table: "threads"
+  """
+  insert_threads_one(
+    """the row to be inserted"""
+    object: threads_insert_input!
+
+    """on conflict condition"""
+    on_conflict: threads_on_conflict
+  ): threads
+
+  """
+  insert data into the table: "user_sessions"
+  """
+  insert_user_sessions(
+    """the rows to be inserted"""
+    objects: [user_sessions_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: user_sessions_on_conflict
+  ): user_sessions_mutation_response
+
+  """
+  insert a single row into the table: "user_sessions"
+  """
+  insert_user_sessions_one(
+    """the row to be inserted"""
+    object: user_sessions_insert_input!
+
+    """on conflict condition"""
+    on_conflict: user_sessions_on_conflict
+  ): user_sessions
+
+  """
+  insert data into the table: "users"
+  """
+  insert_users(
+    """the rows to be inserted"""
+    objects: [users_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: users_on_conflict
+  ): users_mutation_response
+
+  """
+  insert a single row into the table: "users"
+  """
+  insert_users_one(
+    """the row to be inserted"""
+    object: users_insert_input!
+
+    """on conflict condition"""
+    on_conflict: users_on_conflict
+  ): users
+
+  """
+  update data of the table: "blamelines"
+  """
+  update_blamelines(
+    """increments the integer columns with given value of the filtered values"""
+    _inc: blamelines_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: blamelines_set_input
+
+    """filter the rows which have to be updated"""
+    where: blamelines_bool_exp!
+  ): blamelines_mutation_response
+
+  """
+  update single row of the table: "blamelines"
+  """
+  update_blamelines_by_pk(
+    """increments the integer columns with given value of the filtered values"""
+    _inc: blamelines_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: blamelines_set_input
+    pk_columns: blamelines_pk_columns_input!
+  ): blamelines
+
+  """
+  update data of the table: "comments"
+  """
+  update_comments(
+    """increments the integer columns with given value of the filtered values"""
+    _inc: comments_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: comments_set_input
+
+    """filter the rows which have to be updated"""
+    where: comments_bool_exp!
+  ): comments_mutation_response
+
+  """
+  update single row of the table: "comments"
+  """
+  update_comments_by_pk(
+    """increments the integer columns with given value of the filtered values"""
+    _inc: comments_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: comments_set_input
+    pk_columns: comments_pk_columns_input!
+  ): comments
+
+  """
+  update data of the table: "lines"
+  """
+  update_lines(
+    """increments the integer columns with given value of the filtered values"""
+    _inc: lines_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: lines_set_input
+
+    """filter the rows which have to be updated"""
+    where: lines_bool_exp!
+  ): lines_mutation_response
+
+  """
+  update single row of the table: "lines"
+  """
+  update_lines_by_pk(
+    """increments the integer columns with given value of the filtered values"""
+    _inc: lines_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: lines_set_input
+    pk_columns: lines_pk_columns_input!
+  ): lines
+
+  """
+  update data of the table: "threads"
+  """
+  update_threads(
+    """increments the integer columns with given value of the filtered values"""
+    _inc: threads_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: threads_set_input
+
+    """filter the rows which have to be updated"""
+    where: threads_bool_exp!
+  ): threads_mutation_response
+
+  """
+  update single row of the table: "threads"
+  """
+  update_threads_by_pk(
+    """increments the integer columns with given value of the filtered values"""
+    _inc: threads_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: threads_set_input
+    pk_columns: threads_pk_columns_input!
+  ): threads
+
+  """
+  update data of the table: "user_sessions"
+  """
+  update_user_sessions(
+    """increments the integer columns with given value of the filtered values"""
+    _inc: user_sessions_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: user_sessions_set_input
+
+    """filter the rows which have to be updated"""
+    where: user_sessions_bool_exp!
+  ): user_sessions_mutation_response
+
+  """
+  update single row of the table: "user_sessions"
+  """
+  update_user_sessions_by_pk(
+    """increments the integer columns with given value of the filtered values"""
+    _inc: user_sessions_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: user_sessions_set_input
+    pk_columns: user_sessions_pk_columns_input!
+  ): user_sessions
+
+  """
+  update data of the table: "users"
+  """
+  update_users(
+    """increments the integer columns with given value of the filtered values"""
+    _inc: users_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: users_set_input
+
+    """filter the rows which have to be updated"""
+    where: users_bool_exp!
+  ): users_mutation_response
+
+  """
+  update single row of the table: "users"
+  """
+  update_users_by_pk(
+    """increments the integer columns with given value of the filtered values"""
+    _inc: users_inc_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: users_set_input
+    pk_columns: users_pk_columns_input!
+  ): users
+}
+
+"""column ordering options"""
+enum order_by {
+  """in the ascending order, nulls last"""
+  asc
+
+  """in the ascending order, nulls first"""
+  asc_nulls_first
+
+  """in the ascending order, nulls last"""
+  asc_nulls_last
+
+  """in the descending order, nulls first"""
+  desc
+
+  """in the descending order, nulls first"""
+  desc_nulls_first
+
+  """in the descending order, nulls last"""
+  desc_nulls_last
+}
+
+type Query {
+  noop: Boolean!
+}
+
+"""query root"""
+type query_root {
+  """
+  fetch data from the table: "blamelines"
+  """
+  blamelines(
+    """distinct select on columns"""
+    distinct_on: [blamelines_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [blamelines_order_by!]
+
+    """filter the rows returned"""
+    where: blamelines_bool_exp
+  ): [blamelines!]!
+
+  """
+  fetch aggregated fields from the table: "blamelines"
+  """
+  blamelines_aggregate(
+    """distinct select on columns"""
+    distinct_on: [blamelines_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [blamelines_order_by!]
+
+    """filter the rows returned"""
+    where: blamelines_bool_exp
+  ): blamelines_aggregate!
+
+  """fetch data from the table: "blamelines" using primary key columns"""
+  blamelines_by_pk(x_commit: String!, x_file_path: String!, x_line_number: Int!): blamelines
+
+  """
+  fetch data from the table: "comments"
+  """
+  comments(
+    """distinct select on columns"""
+    distinct_on: [comments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [comments_order_by!]
+
+    """filter the rows returned"""
+    where: comments_bool_exp
+  ): [comments!]!
+
+  """
+  fetch aggregated fields from the table: "comments"
+  """
+  comments_aggregate(
+    """distinct select on columns"""
+    distinct_on: [comments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [comments_order_by!]
+
+    """filter the rows returned"""
+    where: comments_bool_exp
+  ): comments_aggregate!
+
+  """fetch data from the table: "comments" using primary key columns"""
+  comments_by_pk(id: uuid!): comments
+
+  """
+  fetch data from the table: "lines"
+  """
+  lines(
+    """distinct select on columns"""
+    distinct_on: [lines_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [lines_order_by!]
+
+    """filter the rows returned"""
+    where: lines_bool_exp
+  ): [lines!]!
+
+  """
+  fetch aggregated fields from the table: "lines"
+  """
+  lines_aggregate(
+    """distinct select on columns"""
+    distinct_on: [lines_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [lines_order_by!]
+
+    """filter the rows returned"""
+    where: lines_bool_exp
+  ): lines_aggregate!
+
+  """fetch data from the table: "lines" using primary key columns"""
+  lines_by_pk(commit: String!, file_path: String!, line_number: Int!): lines
+  noop: Boolean!
+
+  """
+  fetch data from the table: "threads"
+  """
+  threads(
+    """distinct select on columns"""
+    distinct_on: [threads_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [threads_order_by!]
+
+    """filter the rows returned"""
+    where: threads_bool_exp
+  ): [threads!]!
+
+  """
+  fetch aggregated fields from the table: "threads"
+  """
+  threads_aggregate(
+    """distinct select on columns"""
+    distinct_on: [threads_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [threads_order_by!]
+
+    """filter the rows returned"""
+    where: threads_bool_exp
+  ): threads_aggregate!
+
+  """fetch data from the table: "threads" using primary key columns"""
+  threads_by_pk(id: uuid!): threads
+
+  """
+  fetch data from the table: "user_sessions"
+  """
+  user_sessions(
+    """distinct select on columns"""
+    distinct_on: [user_sessions_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [user_sessions_order_by!]
+
+    """filter the rows returned"""
+    where: user_sessions_bool_exp
+  ): [user_sessions!]!
+
+  """
+  fetch aggregated fields from the table: "user_sessions"
+  """
+  user_sessions_aggregate(
+    """distinct select on columns"""
+    distinct_on: [user_sessions_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [user_sessions_order_by!]
+
+    """filter the rows returned"""
+    where: user_sessions_bool_exp
+  ): user_sessions_aggregate!
+
+  """fetch data from the table: "user_sessions" using primary key columns"""
+  user_sessions_by_pk(
+    """Also used as "session token"."""
+    id: uuid!
+  ): user_sessions
+
+  """
+  fetch data from the table: "users"
+  """
+  users(
+    """distinct select on columns"""
+    distinct_on: [users_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [users_order_by!]
+
+    """filter the rows returned"""
+    where: users_bool_exp
+  ): [users!]!
+
+  """
+  fetch aggregated fields from the table: "users"
+  """
+  users_aggregate(
+    """distinct select on columns"""
+    distinct_on: [users_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [users_order_by!]
+
+    """filter the rows returned"""
+    where: users_bool_exp
+  ): users_aggregate!
+
+  """fetch data from the table: "users" using primary key columns"""
+  users_by_pk(
+    """An integer id that GitHub gives every user."""
+    github_id: Int!
+  ): users
+}
+
+"""
+expression to compare columns of type String. All fields are combined with logical 'AND'.
+"""
+input String_comparison_exp {
+  _eq: String
+  _gt: String
+  _gte: String
+  _ilike: String
+  _in: [String!]
+  _is_null: Boolean
+  _like: String
+  _lt: String
+  _lte: String
+  _neq: String
+  _nilike: String
+  _nin: [String!]
+  _nlike: String
+  _nsimilar: String
+  _similar: String
+}
+
+"""subscription root"""
+type subscription_root {
+  """
+  fetch data from the table: "blamelines"
+  """
+  blamelines(
+    """distinct select on columns"""
+    distinct_on: [blamelines_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [blamelines_order_by!]
+
+    """filter the rows returned"""
+    where: blamelines_bool_exp
+  ): [blamelines!]!
+
+  """
+  fetch aggregated fields from the table: "blamelines"
+  """
+  blamelines_aggregate(
+    """distinct select on columns"""
+    distinct_on: [blamelines_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [blamelines_order_by!]
+
+    """filter the rows returned"""
+    where: blamelines_bool_exp
+  ): blamelines_aggregate!
+
+  """fetch data from the table: "blamelines" using primary key columns"""
+  blamelines_by_pk(x_commit: String!, x_file_path: String!, x_line_number: Int!): blamelines
+
+  """
+  fetch data from the table: "comments"
+  """
+  comments(
+    """distinct select on columns"""
+    distinct_on: [comments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [comments_order_by!]
+
+    """filter the rows returned"""
+    where: comments_bool_exp
+  ): [comments!]!
+
+  """
+  fetch aggregated fields from the table: "comments"
+  """
+  comments_aggregate(
+    """distinct select on columns"""
+    distinct_on: [comments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [comments_order_by!]
+
+    """filter the rows returned"""
+    where: comments_bool_exp
+  ): comments_aggregate!
+
+  """fetch data from the table: "comments" using primary key columns"""
+  comments_by_pk(id: uuid!): comments
+
+  """
+  fetch data from the table: "lines"
+  """
+  lines(
+    """distinct select on columns"""
+    distinct_on: [lines_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [lines_order_by!]
+
+    """filter the rows returned"""
+    where: lines_bool_exp
+  ): [lines!]!
+
+  """
+  fetch aggregated fields from the table: "lines"
+  """
+  lines_aggregate(
+    """distinct select on columns"""
+    distinct_on: [lines_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [lines_order_by!]
+
+    """filter the rows returned"""
+    where: lines_bool_exp
+  ): lines_aggregate!
+
+  """fetch data from the table: "lines" using primary key columns"""
+  lines_by_pk(commit: String!, file_path: String!, line_number: Int!): lines
+
+  """
+  fetch data from the table: "threads"
+  """
+  threads(
+    """distinct select on columns"""
+    distinct_on: [threads_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [threads_order_by!]
+
+    """filter the rows returned"""
+    where: threads_bool_exp
+  ): [threads!]!
+
+  """
+  fetch aggregated fields from the table: "threads"
+  """
+  threads_aggregate(
+    """distinct select on columns"""
+    distinct_on: [threads_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [threads_order_by!]
+
+    """filter the rows returned"""
+    where: threads_bool_exp
+  ): threads_aggregate!
+
+  """fetch data from the table: "threads" using primary key columns"""
+  threads_by_pk(id: uuid!): threads
+
+  """
+  fetch data from the table: "user_sessions"
+  """
+  user_sessions(
+    """distinct select on columns"""
+    distinct_on: [user_sessions_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [user_sessions_order_by!]
+
+    """filter the rows returned"""
+    where: user_sessions_bool_exp
+  ): [user_sessions!]!
+
+  """
+  fetch aggregated fields from the table: "user_sessions"
+  """
+  user_sessions_aggregate(
+    """distinct select on columns"""
+    distinct_on: [user_sessions_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [user_sessions_order_by!]
+
+    """filter the rows returned"""
+    where: user_sessions_bool_exp
+  ): user_sessions_aggregate!
+
+  """fetch data from the table: "user_sessions" using primary key columns"""
+  user_sessions_by_pk(
+    """Also used as "session token"."""
+    id: uuid!
+  ): user_sessions
+
+  """
+  fetch data from the table: "users"
+  """
+  users(
+    """distinct select on columns"""
+    distinct_on: [users_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [users_order_by!]
+
+    """filter the rows returned"""
+    where: users_bool_exp
+  ): [users!]!
+
+  """
+  fetch aggregated fields from the table: "users"
+  """
+  users_aggregate(
+    """distinct select on columns"""
+    distinct_on: [users_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [users_order_by!]
+
+    """filter the rows returned"""
+    where: users_bool_exp
+  ): users_aggregate!
+
+  """fetch data from the table: "users" using primary key columns"""
+  users_by_pk(
+    """An integer id that GitHub gives every user."""
+    github_id: Int!
+  ): users
+}
+
+"""
+All threads. There's no constraint that there are comments for each thread.
+There is a constraint however that you can't have two threads on the same (file, line, commit).
+
+
+columns and relationships of "threads"
+
+"""
+type threads {
+  """An array relationship"""
+  comments(
+    """distinct select on columns"""
+    distinct_on: [comments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [comments_order_by!]
+
+    """filter the rows returned"""
+    where: comments_bool_exp
+  ): [comments!]!
+
+  """An aggregated array relationship"""
+  comments_aggregate(
+    """distinct select on columns"""
+    distinct_on: [comments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [comments_order_by!]
+
+    """filter the rows returned"""
+    where: comments_bool_exp
+  ): comments_aggregate!
+  id: uuid!
+  original_commit: String!
+  original_file_path: String!
+  original_line_number: Int!
+  resolved: Boolean
+}
+
+"""
+aggregated selection of "threads"
+"""
+type threads_aggregate {
+  aggregate: threads_aggregate_fields
+  nodes: [threads!]!
+}
+
+"""
+aggregate fields of "threads"
+"""
+type threads_aggregate_fields {
+  avg: threads_avg_fields
+  count(columns: [threads_select_column!], distinct: Boolean): Int
+  max: threads_max_fields
+  min: threads_min_fields
+  stddev: threads_stddev_fields
+  stddev_pop: threads_stddev_pop_fields
+  stddev_samp: threads_stddev_samp_fields
+  sum: threads_sum_fields
+  var_pop: threads_var_pop_fields
+  var_samp: threads_var_samp_fields
+  variance: threads_variance_fields
+}
+
+"""
+order by aggregate values of table "threads"
+"""
+input threads_aggregate_order_by {
+  avg: threads_avg_order_by
+  count: order_by
+  max: threads_max_order_by
+  min: threads_min_order_by
+  stddev: threads_stddev_order_by
+  stddev_pop: threads_stddev_pop_order_by
+  stddev_samp: threads_stddev_samp_order_by
+  sum: threads_sum_order_by
+  var_pop: threads_var_pop_order_by
+  var_samp: threads_var_samp_order_by
+  variance: threads_variance_order_by
+}
+
+"""
+input type for inserting array relation for remote table "threads"
+"""
+input threads_arr_rel_insert_input {
+  data: [threads_insert_input!]!
+  on_conflict: threads_on_conflict
+}
+
+"""aggregate avg on columns"""
+type threads_avg_fields {
+  original_line_number: Float
+}
+
+"""
+order by avg() on columns of table "threads"
+"""
+input threads_avg_order_by {
+  original_line_number: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "threads". All fields are combined with a logical 'AND'.
+"""
+input threads_bool_exp {
+  _and: [threads_bool_exp]
+  _not: threads_bool_exp
+  _or: [threads_bool_exp]
+  comments: comments_bool_exp
+  id: uuid_comparison_exp
+  original_commit: String_comparison_exp
+  original_file_path: String_comparison_exp
+  original_line_number: Int_comparison_exp
+  resolved: Boolean_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "threads"
+"""
+enum threads_constraint {
+  """unique or primary key constraint"""
+  threads_pkey
+}
+
+"""
+input type for incrementing integer column in table "threads"
+"""
+input threads_inc_input {
+  original_line_number: Int
+}
+
+"""
+input type for inserting data into table "threads"
+"""
+input threads_insert_input {
+  comments: comments_arr_rel_insert_input
+  id: uuid
+  original_commit: String
+  original_file_path: String
+  original_line_number: Int
+  resolved: Boolean
+}
+
+"""aggregate max on columns"""
+type threads_max_fields {
+  id: uuid
+  original_commit: String
+  original_file_path: String
+  original_line_number: Int
+}
+
+"""
+order by max() on columns of table "threads"
+"""
+input threads_max_order_by {
+  id: order_by
+  original_commit: order_by
+  original_file_path: order_by
+  original_line_number: order_by
+}
+
+"""aggregate min on columns"""
+type threads_min_fields {
+  id: uuid
+  original_commit: String
+  original_file_path: String
+  original_line_number: Int
+}
+
+"""
+order by min() on columns of table "threads"
+"""
+input threads_min_order_by {
+  id: order_by
+  original_commit: order_by
+  original_file_path: order_by
+  original_line_number: order_by
+}
+
+"""
+response of any mutation on the table "threads"
+"""
+type threads_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [threads!]!
+}
+
+"""
+input type for inserting object relation for remote table "threads"
+"""
+input threads_obj_rel_insert_input {
+  data: threads_insert_input!
+  on_conflict: threads_on_conflict
+}
+
+"""
+on conflict condition type for table "threads"
+"""
+input threads_on_conflict {
+  constraint: threads_constraint!
+  update_columns: [threads_update_column!]!
+  where: threads_bool_exp
+}
+
+"""
+ordering options when selecting data from "threads"
+"""
+input threads_order_by {
+  comments_aggregate: comments_aggregate_order_by
+  id: order_by
+  original_commit: order_by
+  original_file_path: order_by
+  original_line_number: order_by
+  resolved: order_by
+}
+
+"""
+primary key columns input for table: "threads"
+"""
+input threads_pk_columns_input {
+  id: uuid!
+}
+
+"""
+select columns of table "threads"
+"""
+enum threads_select_column {
+  """column name"""
+  id
+
+  """column name"""
+  original_commit
+
+  """column name"""
+  original_file_path
+
+  """column name"""
+  original_line_number
+
+  """column name"""
+  resolved
+}
+
+"""
+input type for updating data in table "threads"
+"""
+input threads_set_input {
+  id: uuid
+  original_commit: String
+  original_file_path: String
+  original_line_number: Int
+  resolved: Boolean
+}
+
+"""aggregate stddev on columns"""
+type threads_stddev_fields {
+  original_line_number: Float
+}
+
+"""
+order by stddev() on columns of table "threads"
+"""
+input threads_stddev_order_by {
+  original_line_number: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type threads_stddev_pop_fields {
+  original_line_number: Float
+}
+
+"""
+order by stddev_pop() on columns of table "threads"
+"""
+input threads_stddev_pop_order_by {
+  original_line_number: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type threads_stddev_samp_fields {
+  original_line_number: Float
+}
+
+"""
+order by stddev_samp() on columns of table "threads"
+"""
+input threads_stddev_samp_order_by {
+  original_line_number: order_by
+}
+
+"""aggregate sum on columns"""
+type threads_sum_fields {
+  original_line_number: Int
+}
+
+"""
+order by sum() on columns of table "threads"
+"""
+input threads_sum_order_by {
+  original_line_number: order_by
+}
+
+"""
+update columns of table "threads"
+"""
+enum threads_update_column {
+  """column name"""
+  id
+
+  """column name"""
+  original_commit
+
+  """column name"""
+  original_file_path
+
+  """column name"""
+  original_line_number
+
+  """column name"""
+  resolved
+}
+
+"""aggregate var_pop on columns"""
+type threads_var_pop_fields {
+  original_line_number: Float
+}
+
+"""
+order by var_pop() on columns of table "threads"
+"""
+input threads_var_pop_order_by {
+  original_line_number: order_by
+}
+
+"""aggregate var_samp on columns"""
+type threads_var_samp_fields {
+  original_line_number: Float
+}
+
+"""
+order by var_samp() on columns of table "threads"
+"""
+input threads_var_samp_order_by {
+  original_line_number: order_by
+}
+
+"""aggregate variance on columns"""
+type threads_variance_fields {
+  original_line_number: Float
+}
+
+"""
+order by variance() on columns of table "threads"
+"""
+input threads_variance_order_by {
+  original_line_number: order_by
+}
+
+scalar timestamptz
+
+"""
+expression to compare columns of type timestamptz. All fields are combined with logical 'AND'.
+"""
+input timestamptz_comparison_exp {
+  _eq: timestamptz
+  _gt: timestamptz
+  _gte: timestamptz
+  _in: [timestamptz!]
+  _is_null: Boolean
+  _lt: timestamptz
+  _lte: timestamptz
+  _neq: timestamptz
+  _nin: [timestamptz!]
+}
+
+"""
+columns and relationships of "user_sessions"
+"""
+type user_sessions {
+  created_at: timestamptz!
+
+  """Also used as "session token"."""
+  id: uuid!
+  user_github_id: Int!
+}
+
+"""
+aggregated selection of "user_sessions"
+"""
+type user_sessions_aggregate {
+  aggregate: user_sessions_aggregate_fields
+  nodes: [user_sessions!]!
+}
+
+"""
+aggregate fields of "user_sessions"
+"""
+type user_sessions_aggregate_fields {
+  avg: user_sessions_avg_fields
+  count(columns: [user_sessions_select_column!], distinct: Boolean): Int
+  max: user_sessions_max_fields
+  min: user_sessions_min_fields
+  stddev: user_sessions_stddev_fields
+  stddev_pop: user_sessions_stddev_pop_fields
+  stddev_samp: user_sessions_stddev_samp_fields
+  sum: user_sessions_sum_fields
+  var_pop: user_sessions_var_pop_fields
+  var_samp: user_sessions_var_samp_fields
+  variance: user_sessions_variance_fields
+}
+
+"""
+order by aggregate values of table "user_sessions"
+"""
+input user_sessions_aggregate_order_by {
+  avg: user_sessions_avg_order_by
+  count: order_by
+  max: user_sessions_max_order_by
+  min: user_sessions_min_order_by
+  stddev: user_sessions_stddev_order_by
+  stddev_pop: user_sessions_stddev_pop_order_by
+  stddev_samp: user_sessions_stddev_samp_order_by
+  sum: user_sessions_sum_order_by
+  var_pop: user_sessions_var_pop_order_by
+  var_samp: user_sessions_var_samp_order_by
+  variance: user_sessions_variance_order_by
+}
+
+"""
+input type for inserting array relation for remote table "user_sessions"
+"""
+input user_sessions_arr_rel_insert_input {
+  data: [user_sessions_insert_input!]!
+  on_conflict: user_sessions_on_conflict
+}
+
+"""aggregate avg on columns"""
+type user_sessions_avg_fields {
+  user_github_id: Float
+}
+
+"""
+order by avg() on columns of table "user_sessions"
+"""
+input user_sessions_avg_order_by {
+  user_github_id: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "user_sessions". All fields are combined with a logical 'AND'.
+"""
+input user_sessions_bool_exp {
+  _and: [user_sessions_bool_exp]
+  _not: user_sessions_bool_exp
+  _or: [user_sessions_bool_exp]
+  created_at: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  user_github_id: Int_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "user_sessions"
+"""
+enum user_sessions_constraint {
+  """unique or primary key constraint"""
+  user_sessions_pkey
+}
+
+"""
+input type for incrementing integer column in table "user_sessions"
+"""
+input user_sessions_inc_input {
+  user_github_id: Int
+}
+
+"""
+input type for inserting data into table "user_sessions"
+"""
+input user_sessions_insert_input {
+  created_at: timestamptz
+  id: uuid
+  user_github_id: Int
+}
+
+"""aggregate max on columns"""
+type user_sessions_max_fields {
+  created_at: timestamptz
+  id: uuid
+  user_github_id: Int
+}
+
+"""
+order by max() on columns of table "user_sessions"
+"""
+input user_sessions_max_order_by {
+  created_at: order_by
+  id: order_by
+  user_github_id: order_by
+}
+
+"""aggregate min on columns"""
+type user_sessions_min_fields {
+  created_at: timestamptz
+  id: uuid
+  user_github_id: Int
+}
+
+"""
+order by min() on columns of table "user_sessions"
+"""
+input user_sessions_min_order_by {
+  created_at: order_by
+  id: order_by
+  user_github_id: order_by
+}
+
+"""
+response of any mutation on the table "user_sessions"
+"""
+type user_sessions_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [user_sessions!]!
+}
+
+"""
+input type for inserting object relation for remote table "user_sessions"
+"""
+input user_sessions_obj_rel_insert_input {
+  data: user_sessions_insert_input!
+  on_conflict: user_sessions_on_conflict
+}
+
+"""
+on conflict condition type for table "user_sessions"
+"""
+input user_sessions_on_conflict {
+  constraint: user_sessions_constraint!
+  update_columns: [user_sessions_update_column!]!
+  where: user_sessions_bool_exp
+}
+
+"""
+ordering options when selecting data from "user_sessions"
+"""
+input user_sessions_order_by {
+  created_at: order_by
+  id: order_by
+  user_github_id: order_by
+}
+
+"""
+primary key columns input for table: "user_sessions"
+"""
+input user_sessions_pk_columns_input {
+  """Also used as "session token"."""
+  id: uuid!
+}
+
+"""
+select columns of table "user_sessions"
+"""
+enum user_sessions_select_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  user_github_id
+}
+
+"""
+input type for updating data in table "user_sessions"
+"""
+input user_sessions_set_input {
+  created_at: timestamptz
+  id: uuid
+  user_github_id: Int
+}
+
+"""aggregate stddev on columns"""
+type user_sessions_stddev_fields {
+  user_github_id: Float
+}
+
+"""
+order by stddev() on columns of table "user_sessions"
+"""
+input user_sessions_stddev_order_by {
+  user_github_id: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type user_sessions_stddev_pop_fields {
+  user_github_id: Float
+}
+
+"""
+order by stddev_pop() on columns of table "user_sessions"
+"""
+input user_sessions_stddev_pop_order_by {
+  user_github_id: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type user_sessions_stddev_samp_fields {
+  user_github_id: Float
+}
+
+"""
+order by stddev_samp() on columns of table "user_sessions"
+"""
+input user_sessions_stddev_samp_order_by {
+  user_github_id: order_by
+}
+
+"""aggregate sum on columns"""
+type user_sessions_sum_fields {
+  user_github_id: Int
+}
+
+"""
+order by sum() on columns of table "user_sessions"
+"""
+input user_sessions_sum_order_by {
+  user_github_id: order_by
+}
+
+"""
+update columns of table "user_sessions"
+"""
+enum user_sessions_update_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  user_github_id
+}
+
+"""aggregate var_pop on columns"""
+type user_sessions_var_pop_fields {
+  user_github_id: Float
+}
+
+"""
+order by var_pop() on columns of table "user_sessions"
+"""
+input user_sessions_var_pop_order_by {
+  user_github_id: order_by
+}
+
+"""aggregate var_samp on columns"""
+type user_sessions_var_samp_fields {
+  user_github_id: Float
+}
+
+"""
+order by var_samp() on columns of table "user_sessions"
+"""
+input user_sessions_var_samp_order_by {
+  user_github_id: order_by
+}
+
+"""aggregate variance on columns"""
+type user_sessions_variance_fields {
+  user_github_id: Float
+}
+
+"""
+order by variance() on columns of table "user_sessions"
+"""
+input user_sessions_variance_order_by {
+  user_github_id: order_by
+}
+
+"""
+Every time a user logs in these values get upserted.
+
+
+columns and relationships of "users"
+
+"""
+type users {
+  created_at: timestamptz
+
+  """User's email according to their GitHub account."""
+  github_email: String
+
+  """An integer id that GitHub gives every user."""
+  github_id: Int!
+
+  """User's name according to GitHub, eg. "Barack Obama"."""
+  github_name: String
+
+  """
+  Eg., "MDQ6VXNlcjIyNjg3Mg==". Seems to be used in the v4 GraphQL GitHub API.
+  """
+  github_node_id: String!
+  github_username: String!
+  updated_at: timestamptz
+}
+
+"""
+aggregated selection of "users"
+"""
+type users_aggregate {
+  aggregate: users_aggregate_fields
+  nodes: [users!]!
+}
+
+"""
+aggregate fields of "users"
+"""
+type users_aggregate_fields {
+  avg: users_avg_fields
+  count(columns: [users_select_column!], distinct: Boolean): Int
+  max: users_max_fields
+  min: users_min_fields
+  stddev: users_stddev_fields
+  stddev_pop: users_stddev_pop_fields
+  stddev_samp: users_stddev_samp_fields
+  sum: users_sum_fields
+  var_pop: users_var_pop_fields
+  var_samp: users_var_samp_fields
+  variance: users_variance_fields
+}
+
+"""
+order by aggregate values of table "users"
+"""
+input users_aggregate_order_by {
+  avg: users_avg_order_by
+  count: order_by
+  max: users_max_order_by
+  min: users_min_order_by
+  stddev: users_stddev_order_by
+  stddev_pop: users_stddev_pop_order_by
+  stddev_samp: users_stddev_samp_order_by
+  sum: users_sum_order_by
+  var_pop: users_var_pop_order_by
+  var_samp: users_var_samp_order_by
+  variance: users_variance_order_by
+}
+
+"""
+input type for inserting array relation for remote table "users"
+"""
+input users_arr_rel_insert_input {
+  data: [users_insert_input!]!
+  on_conflict: users_on_conflict
+}
+
+"""aggregate avg on columns"""
+type users_avg_fields {
+  github_id: Float
+}
+
+"""
+order by avg() on columns of table "users"
+"""
+input users_avg_order_by {
+  github_id: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "users". All fields are combined with a logical 'AND'.
+"""
+input users_bool_exp {
+  _and: [users_bool_exp]
+  _not: users_bool_exp
+  _or: [users_bool_exp]
+  created_at: timestamptz_comparison_exp
+  github_email: String_comparison_exp
+  github_id: Int_comparison_exp
+  github_name: String_comparison_exp
+  github_node_id: String_comparison_exp
+  github_username: String_comparison_exp
+  updated_at: timestamptz_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "users"
+"""
+enum users_constraint {
+  """unique or primary key constraint"""
+  users_github_id_key
+
+  """unique or primary key constraint"""
+  users_github_node_id_key
+
+  """unique or primary key constraint"""
+  users_github_username_key
+
+  """unique or primary key constraint"""
+  users_pkey
+}
+
+"""
+input type for incrementing integer column in table "users"
+"""
+input users_inc_input {
+  github_id: Int
+}
+
+"""
+input type for inserting data into table "users"
+"""
+input users_insert_input {
+  created_at: timestamptz
+  github_email: String
+  github_id: Int
+  github_name: String
+  github_node_id: String
+  github_username: String
+  updated_at: timestamptz
+}
+
+"""aggregate max on columns"""
+type users_max_fields {
+  created_at: timestamptz
+  github_email: String
+  github_id: Int
+  github_name: String
+  github_node_id: String
+  github_username: String
+  updated_at: timestamptz
+}
+
+"""
+order by max() on columns of table "users"
+"""
+input users_max_order_by {
+  created_at: order_by
+  github_email: order_by
+  github_id: order_by
+  github_name: order_by
+  github_node_id: order_by
+  github_username: order_by
+  updated_at: order_by
+}
+
+"""aggregate min on columns"""
+type users_min_fields {
+  created_at: timestamptz
+  github_email: String
+  github_id: Int
+  github_name: String
+  github_node_id: String
+  github_username: String
+  updated_at: timestamptz
+}
+
+"""
+order by min() on columns of table "users"
+"""
+input users_min_order_by {
+  created_at: order_by
+  github_email: order_by
+  github_id: order_by
+  github_name: order_by
+  github_node_id: order_by
+  github_username: order_by
+  updated_at: order_by
+}
+
+"""
+response of any mutation on the table "users"
+"""
+type users_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [users!]!
+}
+
+"""
+input type for inserting object relation for remote table "users"
+"""
+input users_obj_rel_insert_input {
+  data: users_insert_input!
+  on_conflict: users_on_conflict
+}
+
+"""
+on conflict condition type for table "users"
+"""
+input users_on_conflict {
+  constraint: users_constraint!
+  update_columns: [users_update_column!]!
+  where: users_bool_exp
+}
+
+"""
+ordering options when selecting data from "users"
+"""
+input users_order_by {
+  created_at: order_by
+  github_email: order_by
+  github_id: order_by
+  github_name: order_by
+  github_node_id: order_by
+  github_username: order_by
+  updated_at: order_by
+}
+
+"""
+primary key columns input for table: "users"
+"""
+input users_pk_columns_input {
+  """An integer id that GitHub gives every user."""
+  github_id: Int!
+}
+
+"""
+select columns of table "users"
+"""
+enum users_select_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  github_email
+
+  """column name"""
+  github_id
+
+  """column name"""
+  github_name
+
+  """column name"""
+  github_node_id
+
+  """column name"""
+  github_username
+
+  """column name"""
+  updated_at
+}
+
+"""
+input type for updating data in table "users"
+"""
+input users_set_input {
+  created_at: timestamptz
+  github_email: String
+  github_id: Int
+  github_name: String
+  github_node_id: String
+  github_username: String
+  updated_at: timestamptz
+}
+
+"""aggregate stddev on columns"""
+type users_stddev_fields {
+  github_id: Float
+}
+
+"""
+order by stddev() on columns of table "users"
+"""
+input users_stddev_order_by {
+  github_id: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type users_stddev_pop_fields {
+  github_id: Float
+}
+
+"""
+order by stddev_pop() on columns of table "users"
+"""
+input users_stddev_pop_order_by {
+  github_id: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type users_stddev_samp_fields {
+  github_id: Float
+}
+
+"""
+order by stddev_samp() on columns of table "users"
+"""
+input users_stddev_samp_order_by {
+  github_id: order_by
+}
+
+"""aggregate sum on columns"""
+type users_sum_fields {
+  github_id: Int
+}
+
+"""
+order by sum() on columns of table "users"
+"""
+input users_sum_order_by {
+  github_id: order_by
+}
+
+"""
+update columns of table "users"
+"""
+enum users_update_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  github_email
+
+  """column name"""
+  github_id
+
+  """column name"""
+  github_name
+
+  """column name"""
+  github_node_id
+
+  """column name"""
+  github_username
+
+  """column name"""
+  updated_at
+}
+
+"""aggregate var_pop on columns"""
+type users_var_pop_fields {
+  github_id: Float
+}
+
+"""
+order by var_pop() on columns of table "users"
+"""
+input users_var_pop_order_by {
+  github_id: order_by
+}
+
+"""aggregate var_samp on columns"""
+type users_var_samp_fields {
+  github_id: Float
+}
+
+"""
+order by var_samp() on columns of table "users"
+"""
+input users_var_samp_order_by {
+  github_id: order_by
+}
+
+"""aggregate variance on columns"""
+type users_variance_fields {
+  github_id: Float
+}
+
+"""
+order by variance() on columns of table "users"
+"""
+input users_variance_order_by {
+  github_id: order_by
+}
+
+scalar uuid
+
+"""
+expression to compare columns of type uuid. All fields are combined with logical 'AND'.
+"""
+input uuid_comparison_exp {
+  _eq: uuid
+  _gt: uuid
+  _gte: uuid
+  _in: [uuid!]
+  _is_null: Boolean
+  _lt: uuid
+  _lte: uuid
+  _neq: uuid
+  _nin: [uuid!]
+}
+

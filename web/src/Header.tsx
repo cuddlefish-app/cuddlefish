@@ -15,6 +15,7 @@ const UserAvatarDropDown: React.FC<{ user: UserInfo }> = ({ user }) => {
 const Header: React.FC = () => {
   const authstate = useAuthState();
   return (
+    // TODO: try using https://primer.style/components/Header
     <div className="Header">
       <div className="Header-item">
         <a href="/" className="Header-link f4 d-flex flex-items-center">
