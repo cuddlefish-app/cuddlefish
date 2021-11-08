@@ -18,8 +18,6 @@ async fn github_request<B: serde::ser::Serialize + ?Sized, T: serde::de::Deseria
   auth: Option<&GitHubAuth>,
   json_body: &B,
 ) -> anyhow::Result<T> {
-  // TODO: don't hardcode URL, header.
-
   // The GitHub API requires User-Agent to be set on every request
   // (https://developer.github.com/v3/#user-agent-required).
   let response = reqwest::Client::builder()
