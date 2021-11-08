@@ -16,9 +16,6 @@ services:
       POSTGRES_PASSWORD: postgrespassword
 
   graphql-engine:
-    # See https://hasura.io/docs/latest/graphql/core/migrations/advanced/auto-apply-migrations.html
-    # image: hasura/graphql-engine:v2.0.10.cli-migrations-v3
-
     # See https://github.com/hasura/graphql-engine/issues/7676#issuecomment-954439822
     build: .
     depends_on:
@@ -35,10 +32,6 @@ services:
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
 
-      # Never enable the console! Use `hasura console` instead. See https://hasura.io/docs/latest/graphql/core/migrations/migrations-setup.html#step-0-disable-the-console-on-the-server
-      # and https://github.com/hasura/graphql-engine/issues/7728.
-      HASURA_GRAPHQL_ENABLE_CONSOLE: "false"
-
       # Default logging minus websocket-log:
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: "startup, http-log, webhook-log"
 
@@ -52,11 +45,10 @@ services:
       # aware of a cross-platform solution.
       # See eg https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds.
 
-      # In prod, we use the cli-migrations-v3 version of the Docker image and
-      # these values are set in the Dockerfile.
-      HASURA_GRAPHQL_AUTH_HOOK: http://host.docker.internal:3001/hasura_auth_webhook
-      API_GRAPHQL_ENDPOINT: http://host.docker.internal:3001/graphql
-      INSERT_COMMENTS_WEBHOOK_URL: http://host.docker.internal:3002/api/insert_comments_webhook
+      API_HOST: host.docker.internal
+      API_PORT: 3001
+      NEXT_HOST: host.docker.internal
+      NEXT_PORT: 3002
 
 # See https://docs.docker.com/compose/compose-file/#volumes.
 volumes:

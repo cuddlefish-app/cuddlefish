@@ -1,6 +1,21 @@
 # Hasura and Postgres
 
-Public access is available and is given the role `anonymous`.
+Public access is available and is given the role `anonymous`. See https://hasura.io/docs/latest/graphql/core/auth/authentication/unauthenticated-access.html#webhooks for more information.
+
+## Env vars
+
+External:
+
+- `API_HOST`
+- `API_PORT`
+- `NEXT_HOST`
+- `NEXT_PORT`
+
+Internal (see `Dockerfile`):
+
+- `HASURA_GRAPHQL_AUTH_HOOK`: See https://hasura.io/docs/latest/graphql/core/auth/authentication/webhook.html#configuring-webhook-mode.
+- `API_GRAPHQL_ENDPOINT`: So that we get a remote schema into the rust api.
+- `INSERT_COMMENTS_WEBHOOK_URL`: Webhook whenever we insert a new comment.
 
 ## Development
 
