@@ -41,7 +41,7 @@ services:
           name: cf-hasura
           type: web
           property: host
-      # See See https://community.render.com/t/service-cannot-reach-itself-via-host-port-combo/755/4?u=samuela.
+      # See https://community.render.com/t/service-cannot-reach-itself-via-host-port-combo/755/4?u=samuela.
       - key: HASURA_PORT
         value: 10000
       - key: HASURA_GRAPHQL_ADMIN_SECRET
@@ -66,20 +66,6 @@ services:
         value: "full"
       - key: RUST_LOG
         value: "api=trace"
-
-  - name: cf-web
-    type: web
-    env: static
-    buildCommand: yarn --cwd web install --frozen-lockfile && yarn --cwd web relay && yarn --cwd web build
-    staticPublishPath: ./web/build
-    headers:
-      - path: /*
-        name: X-Frame-Options
-        value: sameorigin
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
 
 databases:
   # This is the Render name of the database, not the postgres name of the
