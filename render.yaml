@@ -36,6 +36,10 @@ services:
     startCommand: cargo run --release --manifest-path=./api/Cargo.toml --target-dir=./target
     healthCheckPath: /healthz
     envVars:
+      # See https://render.com/docs/rust-toolchain
+      - key: RUSTUP_TOOLCHAIN
+        value: 1.56.1
+
       - key: HASURA_HOST
         fromService:
           name: cf-hasura
