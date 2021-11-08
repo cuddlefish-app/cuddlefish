@@ -7,6 +7,7 @@ As much as possible we try to 1-index line number in the backend and hasura. VSC
 - 3000: CRA web frontend (legacy?)
 - 3001: rust api
 - 3002: next.js
+- 5432: postgres
 - 8080: hasura
 - 9695: hasura console
 
@@ -14,13 +15,12 @@ As much as possible we try to 1-index line number in the backend and hasura. VSC
 
 - Launch
 
-  - set up render postgres, hasura
-    - figure out how to do config as code
-  - set up next.js/vercel
-    - logging?
+  - set up render next.js
+    - set up health check
   - point sendgrid parse to prod
   - push vscode extension to the marketplace
-    - fix hardcoded dev urls
+    - fix hardcoded dev urls (how to know when in dev?)
+  - set up log alerting
 
 - VSCode extension
 
