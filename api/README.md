@@ -6,15 +6,6 @@ Run with `./dev.sh`.
 
 You can play with GitHub's graphql API here: https://developer.github.com/v4/explorer/.
 
-TODO:
-
-- implement email notifications when new comments are posted
-  - add a `commits` table that stores which repos contain a commit
-  - add a hasura event trigger to hit an endpoint when a new comment is posted. when a new comment is added, lookup the the thread it corresponds to, lookup which repos that commit belongs to. then hit up the github api to lookup associated PRs, author information, etc. send emails to all the relevant participants.
-  - there are multiple types of participants: auther, co-author, PR participant, committer, thread commenter, and possibly others.
-- allow users to respond to email communications with new comments
-- implement email unsubscribe
-
 ## Update GraphQL schemas in development
 
 ```
