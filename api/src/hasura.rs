@@ -211,9 +211,11 @@ pub async fn lookup_user_session(session_token: &str) -> anyhow::Result<Option<G
     .await
     .context("looking up session in hasura")?;
 
-  Ok(res.user_sessions_by_pk.map(|x| GitHubAuth {
-    github_node_id: GitHubUserId(GitHubNodeId(x.github_user.github_node_id)),
-    access_token: x.github_user.access_token.to_string(),
+  Ok(res.user_sessions_by_pk.and_then(|x| {
+    x.github_user.access_token.map(|token| GitHubAuth {
+      github_node_id: GitHubUserId(GitHubNodeId(x.github_user.github_node_id)),
+      access_token: token.to_string(),
+    })
   }))
 }
 

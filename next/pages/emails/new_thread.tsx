@@ -96,6 +96,14 @@ function NewThreadEmail({
 
         <p> -- {signature}</p>
 
+        {/* <p>
+          Here&apos;s the original{" "}
+          <a href={commitUrl} target="_blank" rel="noreferrer">
+            commit
+          </a>{" "}
+          for reference.
+        </p> */}
+
         <p>
           Respond by <b>replying to this email</b> or via the Cuddlefish{" "}
           <b>
@@ -103,11 +111,7 @@ function NewThreadEmail({
               VSCode extension
             </a>
           </b>
-          ! Here&apos;s the original{" "}
-          <a href={commitUrl} target="_blank" rel="noreferrer">
-            commit
-          </a>{" "}
-          for reference.
+          !
         </p>
       </main>
 

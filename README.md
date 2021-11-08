@@ -12,54 +12,43 @@ As much as possible we try to 1-index line number in the backend and hasura. VSC
 
 ## TODO:
 
-- Sending email
+- Launch
 
-  - sending basic email for new thread
-
-    - include code snippet syntax highlighting? (shiki? how is the line highlighting with hover accomplished here: https://fatihkalifa.com/typescript-twoslash)
-
-    - markdown syntax highlighting? (see https://github.com/antfu/markdown-it-shiki)
-
-  - sending basic email for new comment
-
-    - figure out how to set message-id, recipients, in-reply-to
-
-    - threading (https://stackoverflow.com/questions/35521459/send-email-as-reply-to-thread, https://github.com/sendgrid/sendgrid-nodejs/issues/690)
-
-- receive email
-
-  - use ngrok for easy development
-
-  - [sendgrid parse setup](https://docs.sendgrid.com/for-developers/parsing-email/setting-up-the-inbound-parse-webhook#additional-resources)
-
-  - parse email contents
-
-  - check for signed requests coming from sendgrid
-
-  - insert comment in the comments table
-
-- launch
-
-  - push vscode extension to the marketplace
-    - fix hardcoded dev urls
   - set up render postgres, hasura
     - figure out how to do config as code
   - set up next.js/vercel
-    - disable email, sendgrid, and github test routes
+    - logging?
+  - point sendgrid parse to prod
+  - push vscode extension to the marketplace
+    - fix hardcoded dev urls
 
-- set up test suite (jest?)
+- VSCode extension
 
-  - test github functions
+  - disallow commenting on empty lines
+  - disallow commenting on lines from commits that are not pushed yet
+  - speed up comment creation (seems like we are hitting github's auth endpoint every time?)
+  - Link in email that opens up straight to extension on the right file/line!
+  - subscribe for updates
 
-- Link in email that opens up straight to extension on the right file/line!
+- Sending email
 
-- disallow commenting on empty lines
-- comment reactions
+  - include code snippet syntax highlighting? (shiki? how is the line highlighting with hover accomplished here: https://fatihkalifa.com/typescript-twoslash)
+  - markdown syntax highlighting? (see https://github.com/antfu/markdown-it-shiki)
+
+- receive email
+
+  - lookup email address in hasura before github
+
 - email notifications for new user signups
-- subscribe for updates
-- migrate startthread to next.js
-- migrate hasura_auth_webhook to next.js
 - write an AddComment mutation, disallow empty comments
+- Comment reactions
+- disallow empty comments in startthread
+- Migrate away from rust api
+  - migrate hasura_auth_webhook to next.js
+  - migrate startthread to next.js
+- switch to mailgun
+- set up test suite (jest?)
+  - test github functions
 
 Hasura issues (non-blockers):
 

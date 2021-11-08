@@ -1,0 +1,1 @@
+alter table "public"."comments" add constraint "github_author_or_email_author" check (((author_github_node_id IS NOT NULL) AND (author_email IS NULL)) OR ((author_github_node_id IS NULL) AND (author_email IS NOT NULL)));

@@ -4,6 +4,11 @@
 import { gql } from "@apollo/client/core";
 import { Octokit } from "@octokit/rest";
 import { print } from "graphql/language/printer";
+import { assert, notNull } from "./common_utils";
+
+export function ADMIN_getOctokit() {
+  return new Octokit({ auth: notNull(process.env.GITHUB_API_TOKEN) });
+}
 
 export async function lookupRepoByNodeId(
   octokit: Octokit,
@@ -40,11 +45,12 @@ export async function lookupRepoByNodeId(
 
 // See https://stackoverflow.com/questions/44888187/get-github-username-through-primary-email
 export async function lookupUserByEmail(octokit: Octokit, email: string) {
+  // GitHub does not seem to support searching on partial emails/modifications
+  // of emails, which is exactly what we want.
   const res = await octokit.search.users({ q: email });
-  for (const user of res.data.items) {
-    if (user.email === email) {
-      return user;
-    }
-  }
-  return null;
+  assert(
+    res.data.items.length === 0 || res.data.items.length === 1,
+    "expected at most one user"
+  );
+  return res.data.items.length > 0 ? res.data.items[0] : null;
 }

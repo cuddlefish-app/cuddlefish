@@ -308,12 +308,13 @@ export type Blamelines_Variance_Fields = {
  */
 export type Comments = {
   __typename?: 'comments';
-  /** The GitHub node id of the user who authored this comment. */
-  author_github_node_id: Scalars['String'];
+  author_email?: Maybe<Scalars['String']>;
+  /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
+  author_github_node_id?: Maybe<Scalars['String']>;
   body: Scalars['String'];
   created_at: Scalars['timestamptz'];
   /** An object relationship */
-  github_user: Github_Users;
+  github_user?: Maybe<Github_Users>;
   id: Scalars['uuid'];
   /** An object relationship */
   thread: Threads;
@@ -361,6 +362,7 @@ export type Comments_Bool_Exp = {
   _and?: Maybe<Array<Comments_Bool_Exp>>;
   _not?: Maybe<Comments_Bool_Exp>;
   _or?: Maybe<Array<Comments_Bool_Exp>>;
+  author_email?: Maybe<String_Comparison_Exp>;
   author_github_node_id?: Maybe<String_Comparison_Exp>;
   body?: Maybe<String_Comparison_Exp>;
   created_at?: Maybe<Timestamptz_Comparison_Exp>;
@@ -378,7 +380,8 @@ export enum Comments_Constraint {
 
 /** input type for inserting data into table "comments" */
 export type Comments_Insert_Input = {
-  /** The GitHub node id of the user who authored this comment. */
+  author_email?: Maybe<Scalars['String']>;
+  /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
   author_github_node_id?: Maybe<Scalars['String']>;
   body?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
@@ -391,7 +394,8 @@ export type Comments_Insert_Input = {
 /** aggregate max on columns */
 export type Comments_Max_Fields = {
   __typename?: 'comments_max_fields';
-  /** The GitHub node id of the user who authored this comment. */
+  author_email?: Maybe<Scalars['String']>;
+  /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
   author_github_node_id?: Maybe<Scalars['String']>;
   body?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
@@ -401,7 +405,8 @@ export type Comments_Max_Fields = {
 
 /** order by max() on columns of table "comments" */
 export type Comments_Max_Order_By = {
-  /** The GitHub node id of the user who authored this comment. */
+  author_email?: Maybe<Order_By>;
+  /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
   author_github_node_id?: Maybe<Order_By>;
   body?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
@@ -412,7 +417,8 @@ export type Comments_Max_Order_By = {
 /** aggregate min on columns */
 export type Comments_Min_Fields = {
   __typename?: 'comments_min_fields';
-  /** The GitHub node id of the user who authored this comment. */
+  author_email?: Maybe<Scalars['String']>;
+  /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
   author_github_node_id?: Maybe<Scalars['String']>;
   body?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
@@ -422,7 +428,8 @@ export type Comments_Min_Fields = {
 
 /** order by min() on columns of table "comments" */
 export type Comments_Min_Order_By = {
-  /** The GitHub node id of the user who authored this comment. */
+  author_email?: Maybe<Order_By>;
+  /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
   author_github_node_id?: Maybe<Order_By>;
   body?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
@@ -448,6 +455,7 @@ export type Comments_On_Conflict = {
 
 /** Ordering options when selecting data from "comments". */
 export type Comments_Order_By = {
+  author_email?: Maybe<Order_By>;
   author_github_node_id?: Maybe<Order_By>;
   body?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
@@ -465,6 +473,8 @@ export type Comments_Pk_Columns_Input = {
 /** select columns of table "comments" */
 export enum Comments_Select_Column {
   /** column name */
+  AuthorEmail = 'author_email',
+  /** column name */
   AuthorGithubNodeId = 'author_github_node_id',
   /** column name */
   Body = 'body',
@@ -478,7 +488,8 @@ export enum Comments_Select_Column {
 
 /** input type for updating data in table "comments" */
 export type Comments_Set_Input = {
-  /** The GitHub node id of the user who authored this comment. */
+  author_email?: Maybe<Scalars['String']>;
+  /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
   author_github_node_id?: Maybe<Scalars['String']>;
   body?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
@@ -488,6 +499,8 @@ export type Comments_Set_Input = {
 
 /** update columns of table "comments" */
 export enum Comments_Update_Column {
+  /** column name */
+  AuthorEmail = 'author_email',
   /** column name */
   AuthorGithubNodeId = 'author_github_node_id',
   /** column name */
@@ -808,7 +821,8 @@ export enum Commits_Update_Column {
  */
 export type Github_Users = {
   __typename?: 'github_users';
-  access_token: Scalars['String'];
+  /** Can be null if a user emails us, but doesn't login via OAuth. */
+  access_token?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. */
   email: Scalars['String'];
@@ -898,6 +912,7 @@ export type Github_Users_Inc_Input = {
 
 /** input type for inserting data into table "github_users" */
 export type Github_Users_Insert_Input = {
+  /** Can be null if a user emails us, but doesn't login via OAuth. */
   access_token?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. */
@@ -915,6 +930,7 @@ export type Github_Users_Insert_Input = {
 /** aggregate max on columns */
 export type Github_Users_Max_Fields = {
   __typename?: 'github_users_max_fields';
+  /** Can be null if a user emails us, but doesn't login via OAuth. */
   access_token?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. */
@@ -932,6 +948,7 @@ export type Github_Users_Max_Fields = {
 /** aggregate min on columns */
 export type Github_Users_Min_Fields = {
   __typename?: 'github_users_min_fields';
+  /** Can be null if a user emails us, but doesn't login via OAuth. */
   access_token?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. */
@@ -1009,6 +1026,7 @@ export enum Github_Users_Select_Column {
 
 /** input type for updating data in table "github_users" */
 export type Github_Users_Set_Input = {
+  /** Can be null if a user emails us, but doesn't login via OAuth. */
   access_token?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. */
@@ -2845,14 +2863,38 @@ export type Unnamed_1_QueryVariables = Exact<{ [key: string]: never; }>;
 
 export type Unnamed_1_Query = { __typename: 'query_root' };
 
-export type Unnamed_2_QueryVariables = Exact<{ [key: string]: never; }>;
+export type ThreadContainingCommentQueryVariables = Exact<{
+  commentId: Scalars['uuid'];
+}>;
 
 
-export type Unnamed_2_Query = { __typename: 'query_root' };
+export type ThreadContainingCommentQuery = { __typename?: 'query_root', comments_by_pk?: { __typename?: 'comments', thread_id: string } | null | undefined };
+
+export type UserCommentMutationVariables = Exact<{
+  threadId: Scalars['uuid'];
+  body: Scalars['String'];
+  email: Scalars['String'];
+  github_database_id: Scalars['Int'];
+  github_name?: Maybe<Scalars['String']>;
+  github_node_id: Scalars['String'];
+  github_username: Scalars['String'];
+}>;
+
+
+export type UserCommentMutation = { __typename?: 'mutation_root', insert_comments_one?: { __typename?: 'comments', id: string } | null | undefined };
+
+export type EmailCommentMutationVariables = Exact<{
+  threadId: Scalars['uuid'];
+  body: Scalars['String'];
+  authorEmail: Scalars['String'];
+}>;
+
+
+export type EmailCommentMutation = { __typename?: 'mutation_root', insert_comments_one?: { __typename?: 'comments', id: string } | null | undefined };
 
 export type CommentContextQueryVariables = Exact<{
   commentId: Scalars['uuid'];
 }>;
 
 
-export type CommentContextQuery = { __typename?: 'query_root', comments: Array<{ __typename?: 'comments', github_user: { __typename?: 'github_users', email: string, github_name?: string | null | undefined, github_username: string, access_token: string }, thread: { __typename?: 'threads', id: string, original_commit_hash: string, original_file_path: string, original_line_number: number, github_repos: Array<{ __typename?: 'commit_github_repo', repo_github_node_id: string }>, comments: Array<{ __typename?: 'comments', id: string, created_at: any, github_user: { __typename?: 'github_users', email: string, github_name?: string | null | undefined, github_username: string, github_node_id: string } }> } }> };
+export type CommentContextQuery = { __typename?: 'query_root', comments_by_pk?: { __typename?: 'comments', github_user?: { __typename?: 'github_users', email: string, github_name?: string | null | undefined, github_username: string, access_token?: string | null | undefined } | null | undefined, thread: { __typename?: 'threads', id: string, original_commit_hash: string, original_file_path: string, original_line_number: number, github_repos: Array<{ __typename?: 'commit_github_repo', repo_github_node_id: string }>, comments: Array<{ __typename?: 'comments', id: string, created_at: any, author_email?: string | null | undefined, body: string, github_user?: { __typename?: 'github_users', email: string, github_name?: string | null | undefined, github_username: string, github_node_id: string } | null | undefined }> } } | null | undefined };

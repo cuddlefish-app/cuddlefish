@@ -16,10 +16,9 @@ export default logHandlerErrors(
     // Check that we have the requisite env vars
     notNull(process.env.HASURA_GRAPHQL_URL);
     notNull(process.env.HASURA_ADMIN_SECRET);
-    notNull(process.env.SENDGRID_API_KEY);
     notNull(process.env.API_SECRET);
-
-    console.log(process.env.SENDGRID_API_KEY);
+    notNull(process.env.SENDGRID_API_KEY);
+    notNull(process.env.GITHUB_API_TOKEN);
 
     // Confirm that our Sendgrid API key is valid. `setApiKey` sadly doesn't do this for us.
     // See https://stackoverflow.com/questions/61658558/how-to-test-sendgrid-api-key-is-valid-or-not-without-sending-emails

@@ -2563,17 +2563,25 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": "The GitHub node id of the user who authored this comment.",
+              "description": null,
+              "isDeprecated": false,
+              "name": "author_email",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "The GitHub node id of the user who authored this comment. May be null when author_email is instead present.",
               "isDeprecated": false,
               "name": "author_github_node_id",
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               }
             },
             {
@@ -2615,13 +2623,9 @@
               "isDeprecated": false,
               "name": "github_user",
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "github_users",
-                  "ofType": null
-                }
+                "kind": "OBJECT",
+                "name": "github_users",
+                "ofType": null
               }
             },
             {
@@ -2944,6 +2948,16 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "author_email",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "String_comparison_exp",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "author_github_node_id",
               "type": {
                 "kind": "INPUT_OBJECT",
@@ -3041,7 +3055,17 @@
           "inputFields": [
             {
               "defaultValue": null,
-              "description": "The GitHub node id of the user who authored this comment.",
+              "description": null,
+              "name": "author_email",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": "The GitHub node id of the user who authored this comment. May be null when author_email is instead present.",
               "name": "author_github_node_id",
               "type": {
                 "kind": "SCALAR",
@@ -3122,7 +3146,19 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": "The GitHub node id of the user who authored this comment.",
+              "description": null,
+              "isDeprecated": false,
+              "name": "author_email",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "The GitHub node id of the user who authored this comment. May be null when author_email is instead present.",
               "isDeprecated": false,
               "name": "author_github_node_id",
               "type": {
@@ -3193,7 +3229,17 @@
           "inputFields": [
             {
               "defaultValue": null,
-              "description": "The GitHub node id of the user who authored this comment.",
+              "description": null,
+              "name": "author_email",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": "The GitHub node id of the user who authored this comment. May be null when author_email is instead present.",
               "name": "author_github_node_id",
               "type": {
                 "kind": "ENUM",
@@ -3254,7 +3300,19 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": "The GitHub node id of the user who authored this comment.",
+              "description": null,
+              "isDeprecated": false,
+              "name": "author_email",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "The GitHub node id of the user who authored this comment. May be null when author_email is instead present.",
               "isDeprecated": false,
               "name": "author_github_node_id",
               "type": {
@@ -3325,7 +3383,17 @@
           "inputFields": [
             {
               "defaultValue": null,
-              "description": "The GitHub node id of the user who authored this comment.",
+              "description": null,
+              "name": "author_email",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": "The GitHub node id of the user who authored this comment. May be null when author_email is instead present.",
               "name": "author_github_node_id",
               "type": {
                 "kind": "ENUM",
@@ -3495,6 +3563,16 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "author_email",
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "author_github_node_id",
               "type": {
                 "kind": "ENUM",
@@ -3600,6 +3678,12 @@
               "deprecationReason": null,
               "description": "column name",
               "isDeprecated": false,
+              "name": "author_email"
+            },
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
               "name": "author_github_node_id"
             },
             {
@@ -3641,7 +3725,17 @@
           "inputFields": [
             {
               "defaultValue": null,
-              "description": "The GitHub node id of the user who authored this comment.",
+              "description": null,
+              "name": "author_email",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": "The GitHub node id of the user who authored this comment. May be null when author_email is instead present.",
               "name": "author_github_node_id",
               "type": {
                 "kind": "SCALAR",
@@ -3698,6 +3792,12 @@
         {
           "description": "update columns of table \"comments\"",
           "enumValues": [
+            {
+              "deprecationReason": null,
+              "description": "column name",
+              "isDeprecated": false,
+              "name": "author_email"
+            },
             {
               "deprecationReason": null,
               "description": "column name",
@@ -5426,17 +5526,13 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": null,
+              "description": "Can be null if a user emails us, but doesn't login via OAuth.",
               "isDeprecated": false,
               "name": "access_token",
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               }
             },
             {
@@ -6004,7 +6100,7 @@
           "inputFields": [
             {
               "defaultValue": null,
-              "description": null,
+              "description": "Can be null if a user emails us, but doesn't login via OAuth.",
               "name": "access_token",
               "type": {
                 "kind": "SCALAR",
@@ -6095,7 +6191,7 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": null,
+              "description": "Can be null if a user emails us, but doesn't login via OAuth.",
               "isDeprecated": false,
               "name": "access_token",
               "type": {
@@ -6202,7 +6298,7 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": null,
+              "description": "Can be null if a user emails us, but doesn't login via OAuth.",
               "isDeprecated": false,
               "name": "access_token",
               "type": {
@@ -6627,7 +6723,7 @@
           "inputFields": [
             {
               "defaultValue": null,
-              "description": null,
+              "description": "Can be null if a user emails us, but doesn't login via OAuth.",
               "name": "access_token",
               "type": {
                 "kind": "SCALAR",
