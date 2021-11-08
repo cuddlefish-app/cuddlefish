@@ -13,6 +13,14 @@ services:
           property: connectionString
       - key: HASURA_GRAPHQL_ADMIN_SECRET
         generateValue: true
+
+      # If we don't set this then render will incorrectly infer it as 9691 since
+      # the hasura/graphql-engine:vX.X.X.cli-migrations-v3 image first starts a
+      # temporary server to run the appropriate migrations and metadata updates.
+      - key: PORT
+        value: 8080
+
+      # Rust API stuff
       - key: API_HOST
         fromService:
           name: cf-api
@@ -22,11 +30,16 @@ services:
       - key: API_PORT
         value: 10000
 
-      # If we don't set this then render will incorrectly infer it as 9691 since
-      # the hasura/graphql-engine:vX.X.X.cli-migrations-v2 image first starts a
-      # temporary server to run the appropriate migrations and metadata updates.
-      - key: PORT
-        value: 8080
+      - key: NEXT_HOST
+        fromService:
+          name: cf-next
+          type: web
+          property: host
+      - key: NEXT_PORT
+        fromService:
+          name: cf-next
+          type: web
+          property: port
 
   - name: cf-api
     type: web
@@ -40,6 +53,7 @@ services:
       - key: RUSTUP_TOOLCHAIN
         value: 1.56.1
 
+      # Hasura stuff
       - key: HASURA_HOST
         fromService:
           name: cf-hasura
@@ -84,6 +98,27 @@ services:
     buildCommand: cd next/ && npm ci --include=dev && npm run build
     startCommand: cd next/ && npm run start
     healthCheckPath: /api/healthz
+    envVars:
+      # Hasura stuff
+      - key: HASURA_HOST
+        fromService:
+          name: cf-hasura
+          type: web
+          property: host
+      - key: HASURA_PORT
+        value: 10000
+      - key: HASURA_GRAPHQL_ADMIN_SECRET
+        fromService:
+          name: cf-hasura
+          type: web
+          envVarKey: HASURA_GRAPHQL_ADMIN_SECRET
+
+      - key: API_SECRET
+        generateValue: true
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: GITHUB_API_TOKEN
+        sync: false
 
 databases:
   # This is the Render name of the database, not the postgres name of the
