@@ -53,6 +53,12 @@ services:
           name: cf-hasura
           type: web
           envVarKey: HASURA_GRAPHQL_ADMIN_SECRET
+
+      # Necessary for looking up commits.
+      - key: GITHUB_API_TOKEN
+        sync: false
+
+      # Necessary for the GitHub OAuth signin flow.
       - key: GITHUB_OAUTH_CLIENT_ID
         sync: false
       - key: GITHUB_OAUTH_CLIENT_SECRET
