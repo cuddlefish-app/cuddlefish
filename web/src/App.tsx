@@ -54,6 +54,7 @@ function App() {
         <CustomRelayEnvProvider>
           <Header />
           <Switch>
+            {/* Note that this route also magically works for specific commits. */}
             <Route path="/:owner/:repo/blob/:branch/*">
               <BlobPage />
             </Route>

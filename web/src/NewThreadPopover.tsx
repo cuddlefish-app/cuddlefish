@@ -52,6 +52,7 @@ const NewThreadPopover: React.FC<{
     // Don't wipe hoverLine because that messes up the TextInput focusing.
     setFocusLine(null);
   });
+  // TODO this can fail if the user's access token has been revoked.
   const [submit, isInFlight] = useMutation(graphql`
     mutation NewThreadPopover_newthread_Mutation(
       $original_commit: String!
