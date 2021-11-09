@@ -13,6 +13,8 @@ As much as possible we try to 1-index line number in the backend and hasura. VSC
 
 ## TODO:
 
+- add optional message to notNull (maybe do some sweet.js metaprogramming?)
+
 - Launch
 
   - set up render next.js
@@ -38,6 +40,7 @@ As much as possible we try to 1-index line number in the backend and hasura. VSC
 - Hasura
 
   - Update description of the comments table, now that the TODO should be done there
+  - hasura console on doodoo doesn't work (https://github.com/hasura/graphql-engine/issues/4926 and https://github.com/hasura/graphql-engine/discussions/7789)
 
 - Sending email
 
