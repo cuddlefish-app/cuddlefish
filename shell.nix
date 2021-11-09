@@ -1,22 +1,31 @@
 let
-  # Last updated: 10/11/21. Check for new commits at status.nixos.org.
-  pkgs = import (fetchTarball ("https://github.com/NixOS/nixpkgs/archive/ee084c02040e864eeeb4cf4f8538d92f7c675671.tar.gz")) { };
+  # Last updated: 11/08/21
+  moz_overlay = import (fetchTarball "https://github.com/mozilla/nixpkgs-mozilla/archive/cf58c4c67b15b402e77a2665b9e7bad3e9293cb2.tar.gz");
+
+  # Last updated: 11/08/21. Check for new commits at status.nixos.org.
+  pkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/c11d08f02390aab49e7c22e6d0ea9b176394d961.tar.gz") { overlays = [ moz_overlay ]; };
 
   # Rolling updates, not deterministic.
   # pkgs = import (fetchTarball("channel:nixpkgs-unstable")) {};
 in
 pkgs.mkShell {
   buildInputs = with pkgs; [
-    cargo
+    pkgs.latest.rustChannels.stable.rust
+
+    # Necessary for api/dev.sh
     cargo-watch
+
+    # Necessary for hasura
     docker-compose
     hasura-cli
-    rustc
-    rustfmt
-    yarn
+
+    # Necessary for node and npm
+    nodejs-16_x
+
+    # yarn
 
     # Necessary for `yarn relay --watch`.
-    watchman
+    # watchman
 
     # Necessary for the openssl-sys crate:
     openssl
@@ -24,9 +33,5 @@ pkgs.mkShell {
   ];
 
   # See https://discourse.nixos.org/t/rust-src-not-found-and-other-misadventures-of-developing-rust-on-nixos/11570/3?u=samuela.
-  RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
-
-  # Development variables:
-  HASURA_GRAPHQL_ADMIN_SECRET = "hasurasecret";
-  API_GRAPHQL_ENDPOINT = "http://localhost:3001/graphql";
+  RUST_SRC_PATH = "${pkgs.latest.rustChannels.stable.rust-src}/lib/rustlib/src/rust/library/";
 }
