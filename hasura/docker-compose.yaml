@@ -10,9 +10,9 @@ services:
       - db_data:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: postgrespassword
+
   graphql-engine:
-    # See https://hasura.io/docs/latest/graphql/core/migrations/advanced/auto-apply-migrations.html
-    image: hasura/graphql-engine:v2.0.9.cli-migrations-v3
+    build: .
     depends_on:
       - "postgres"
     network_mode: host
@@ -25,19 +25,28 @@ services:
         target: /hasura-metadata
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@localhost:5432/postgres
-      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
 
       # Default logging minus websocket-log:
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: "startup, http-log, webhook-log"
+      # HASURA_GRAPHQL_LOG_LEVEL: "debug"
 
       # Don't enable DEV_MODE in prod!
       HASURA_GRAPHQL_DEV_MODE: "true"
-      HASURA_GRAPHQL_ADMIN_SECRET: hasurasecret
+      HASURA_GRAPHQL_ADMIN_SECRET: "hasurasecret"
 
-      # In prod, we use the cli-migrations-v2 version of the Docker image and
-      # these values are set in the Dockerfile.
-      HASURA_GRAPHQL_AUTH_HOOK: http://localhost:3001/hasura_auth_webhook
-      API_GRAPHQL_ENDPOINT: http://localhost:3001/graphql
+      API_HOST: localhost
+      API_PORT: 3001
+      NEXT_HOST: localhost
+      NEXT_PORT: 3002
+
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   network_mode: host
+  #   environment:
+  #     PGADMIN_LISTEN_PORT: 5050
+  #     PGADMIN_DEFAULT_EMAIL: admin@admin.com
+  #     PGADMIN_DEFAULT_PASSWORD: admin
+  #     GUNICORN_ACCESS_LOGFILE: /dev/null
 
 # See https://docs.docker.com/compose/compose-file/#volumes.
 volumes:

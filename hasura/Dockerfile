@@ -2,7 +2,7 @@
 # Dockerfile is here: https://github.com/hasura/graphql-engine/blob/master/scripts/cli-migrations/v3/Dockerfile
 FROM hasura/graphql-engine:v2.0.10.cli-migrations-v3
 
-# See https://github.com/hasura/graphql-engine/issues/7676
+# See https://github.com/hasura/graphql-engine/issues/7676#issuecomment-954439822
 RUN apt-get update \
   && apt-get install -y curl gnupg2 \
   && echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" > /etc/apt/sources.list.d/pgdg.list \

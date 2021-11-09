@@ -16,7 +16,6 @@ services:
       POSTGRES_PASSWORD: postgrespassword
 
   graphql-engine:
-    # See https://github.com/hasura/graphql-engine/issues/7676#issuecomment-954439822
     build: .
     depends_on:
       - "postgres"

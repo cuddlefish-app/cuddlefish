@@ -19,7 +19,7 @@ Internal (see `Dockerfile`):
 
 ## Development
 
-Run `docker compose up` or `docker compose --file docker-compose.macos.yaml up`. It will run hasura and postgres locally with persistence across runs. Note that the api server must be up and running before you can run the `docker compose up` command.
+Run `./dev.sh`. It will run hasura and postgres locally with persistence across runs. Note that the api server must be up and running before you can run the `./dev.sh`.
 
 If you get an error about the metadata status it's likely because the api server is not yet running. Start the api server and then try reloading metadata.
 
