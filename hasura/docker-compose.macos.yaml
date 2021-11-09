@@ -21,22 +21,15 @@ services:
       - "postgres"
     ports:
       - "8080:8080"
-    volumes:
-      - type: bind
-        source: ./migrations
-        target: /hasura-migrations
-      - type: bind
-        source: ./metadata
-        target: /hasura-metadata
     environment:
-      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
+      HASURA_GRAPHQL_DATABASE_URL: "postgres://postgres:postgrespassword@postgres:5432/postgres"
 
       # Default logging minus websocket-log:
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: "startup, http-log, webhook-log"
 
       # Don't enable DEV_MODE in prod! See https://hasura.io/docs/latest/graphql/core/deployment/graphql-engine-flags/config-examples.html#dev-mode
       HASURA_GRAPHQL_DEV_MODE: "true"
-      HASURA_GRAPHQL_ADMIN_SECRET: hasurasecret
+      HASURA_GRAPHQL_ADMIN_SECRET: "hasurasecret"
 
       # On macOS, there's this thing where you need to do `host.docker.internal`
       # to escape Docker networking. It doesn't work on Linux however. Much
@@ -44,9 +37,9 @@ services:
       # aware of a cross-platform solution.
       # See eg https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds.
 
-      API_HOST: host.docker.internal
+      API_HOST: "host.docker.internal"
       API_PORT: 3001
-      NEXT_HOST: host.docker.internal
+      NEXT_HOST: "host.docker.internal"
       NEXT_PORT: 3002
 
 # See https://docs.docker.com/compose/compose-file/#volumes.

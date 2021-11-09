@@ -18,3 +18,10 @@ RUN sed -i "2iexport HASURA_GRAPHQL_ENABLE_CONSOLE=false" /bin/docker-entrypoint
 RUN sed -i "2iexport HASURA_GRAPHQL_AUTH_HOOK=http://\$API_HOST:\$API_PORT/hasura_auth_webhook" /bin/docker-entrypoint.sh
 RUN sed -i "2iexport API_GRAPHQL_ENDPOINT=http://\$API_HOST:\$API_PORT/graphql" /bin/docker-entrypoint.sh
 RUN sed -i "2iexport INSERT_COMMENTS_WEBHOOK_URL=http://\$NEXT_HOST:\$NEXT_PORT/api/insert_comments_webhook" /bin/docker-entrypoint.sh
+RUN sed -i "2iexport API_SECRET=\$API_SECRET" /bin/docker-entrypoint.sh
+
+# We need to copy these into the image since render doesn't support mounting the
+# source code in at run-time. Do it at the end for minimal impact to layer
+# caching.
+COPY ./migrations /hasura-migrations
+COPY ./metadata /hasura-metadata

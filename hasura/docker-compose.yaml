@@ -16,15 +16,8 @@ services:
     depends_on:
       - "postgres"
     network_mode: host
-    volumes:
-      - type: bind
-        source: ./migrations
-        target: /hasura-migrations
-      - type: bind
-        source: ./metadata
-        target: /hasura-metadata
     environment:
-      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@localhost:5432/postgres
+      HASURA_GRAPHQL_DATABASE_URL: "postgres://postgres:postgrespassword@localhost:5432/postgres"
 
       # Default logging minus websocket-log:
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: "startup, http-log, webhook-log"
@@ -34,9 +27,11 @@ services:
       HASURA_GRAPHQL_DEV_MODE: "true"
       HASURA_GRAPHQL_ADMIN_SECRET: "hasurasecret"
 
-      API_HOST: localhost
+      API_SECRET: "apisecret"
+
+      API_HOST: "localhost"
       API_PORT: 3001
-      NEXT_HOST: localhost
+      NEXT_HOST: "localhost"
       NEXT_PORT: 3002
 
   # pgadmin:
