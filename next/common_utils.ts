@@ -65,12 +65,13 @@ export function assert400(
 
 function _assertNotNull<T>(
   errorType: ErrorT,
-  v: T | null | undefined
+  v: T | null | undefined,
+  message?: string
 ): asserts v is T {
   _assert(
     errorType,
     !(v === null || v === undefined),
-    "Expected non-null, non-undefined"
+    message || "Expected non-null, non-undefined"
   );
 }
 
@@ -82,13 +83,21 @@ export function assertNotNull400<T>(v: T | null | undefined): asserts v is T {
 }
 
 // Note that currently it is not possible to combine this with `assertNotNull` due to https://github.com/microsoft/TypeScript/issues/40562.
-function _notNull<T>(errorType: ErrorT, v: T | null | undefined): T {
-  _assertNotNull(errorType, v);
+function _notNull<T>(
+  errorType: ErrorT,
+  v: T | null | undefined,
+  message?: string
+): T {
+  _assertNotNull(errorType, v, message);
   return v;
 }
 
-const notNull = <T>(v: T | null | undefined) => _notNull(Error, v);
-const notNull400 = <T>(v: T | null | undefined) => _notNull(Error400, v);
+function notNull<T>(v: T | null | undefined, message?: string) {
+  return _notNull(Error, v, message);
+}
+function notNull400<T>(v: T | null | undefined, message?: string) {
+  return _notNull(Error400, v, message);
+}
 
 // See https://stackoverflow.com/questions/4059147/check-if-a-variable-is-a-string-in-javascript
 export const isString = (x: any) =>

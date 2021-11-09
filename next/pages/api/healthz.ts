@@ -14,12 +14,15 @@ export default logHandlerErrors(
     assert400(req.method === "GET", "GET only");
 
     // Check that we have the requisite env vars
-    notNull(process.env.HASURA_HOST);
-    notNull(process.env.HASURA_PORT);
-    notNull(process.env.HASURA_GRAPHQL_ADMIN_SECRET);
-    notNull(process.env.API_SECRET);
-    notNull(process.env.SENDGRID_API_KEY);
-    notNull(process.env.GITHUB_API_TOKEN);
+    notNull(process.env.HASURA_HOST, "expected HASURA_HOST");
+    notNull(process.env.HASURA_PORT, "expected HASURA_PORT");
+    notNull(
+      process.env.HASURA_GRAPHQL_ADMIN_SECRET,
+      "expected HASURA_GRAPHQL_ADMIN_SECRET"
+    );
+    notNull(process.env.API_SECRET, "expected API_SECRET");
+    notNull(process.env.SENDGRID_API_KEY, "expected SENDGRID_API_KEY");
+    notNull(process.env.GITHUB_API_TOKEN, "expected GITHUB_API_TOKEN");
 
     // Confirm that our Sendgrid API key is valid. `setApiKey` sadly doesn't do this for us.
     // See https://stackoverflow.com/questions/61658558/how-to-test-sendgrid-api-key-is-valid-or-not-without-sending-emails
