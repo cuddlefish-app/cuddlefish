@@ -57,7 +57,11 @@ function NewCommentEmail({ newComment, newCommentAuthor }: Props) {
         <p>
           Respond by <b>replying to this email</b> or via the Cuddlefish{" "}
           <b>
-            <a href="TODO" target="_blank" rel="noreferrer">
+            <a
+              href="https://marketplace.visualstudio.com/items?itemName=cuddlefish-app.cuddlefish-comments"
+              target="_blank"
+              rel="noreferrer"
+            >
               VSCode extension
             </a>
           </b>
