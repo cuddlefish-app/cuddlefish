@@ -2,7 +2,8 @@
 	"name": "cuddlefish-comments",
 	"displayName": "Cuddlefish Comments",
 	"description": "Google Docs-style comments for code.",
-	"version": "0.0.0",
+	"version": "0.0.1",
+	"publisher": "cuddlefish-app",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -20,7 +21,6 @@
 		"onCommand:cuddlefish-comments.login"
 	],
 	"main": "./out/extension.js",
-	"enableProposedApi": true,
 	"contributes": {
 		"commands": [
 			{
@@ -66,7 +66,7 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run esbuild-base --minify",
-		"esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+		"esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=./out/extension.js --external:vscode --format=cjs --platform=node",
 		"esbuild": "yarn run esbuild-base --sourcemap",
 		"esbuild-watch": "yarn run esbuild-base --sourcemap --watch",
 		"test-compile": "tsc -p ./",
