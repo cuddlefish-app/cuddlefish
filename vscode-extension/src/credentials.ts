@@ -139,8 +139,11 @@ export function eraseCuddlefishSessionToken(context: vscode.ExtensionContext) {
 }
 
 function buildApolloClient(token: string | undefined) {
-  // TODO switch between dev and prod urls
-  const uri = "http://localhost:8080/v1/graphql";
+  // See https://stackoverflow.com/questions/42397699/detect-debug-mode-in-vscode-extension
+  const uri =
+    vscode.debug.activeDebugSession === undefined
+      ? "https://hasura.cuddlefish.app/v1/graphql"
+      : "http://localhost:8080/v1/graphql";
 
   if (token === undefined) {
     return {
