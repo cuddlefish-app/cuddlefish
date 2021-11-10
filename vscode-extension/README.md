@@ -14,12 +14,6 @@ TODO:
 - make it work as a ["Web Extension"](https://code.visualstudio.com/api/extension-guides/web-extensions)
   - wasm can be used in web extensions according to this quote: "The browser runtime environment only supports the execution of JavaScript and WebAssembly. Libraries written in other programming languages need to be cross-compiled, for instance there is tooling to compile C/C++ and Rust to WebAssembly. The vscode-anycode extension, for example, uses tree-sitter, which is C/C++ code compiled to WebAssembly." could we cross-compile libgit2 to wasm?
 
-Download the hasura schema definition with apollo:
-
-```
-"gql:download": "npx rover graph introspect http://localhost:8080/v1/graphql --header x-hasura-admin-secret:hasurasecret --header x-hasura-role:user > hasura-schema.gql",
-```
-
 Run `npm run gql:codegen -- --watch` to download the schema and generate TS types in development.
 
 ## Features
