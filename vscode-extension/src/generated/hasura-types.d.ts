@@ -128,6 +128,7 @@ export enum Blamelines_Select_Column {
  */
 export type Comments = {
   __typename?: 'comments';
+  author_email?: Maybe<Scalars['String']>;
   /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
   author_github_node_id?: Maybe<Scalars['String']>;
   body: Scalars['String'];
@@ -152,6 +153,7 @@ export type Comments_Bool_Exp = {
   _and?: Maybe<Array<Comments_Bool_Exp>>;
   _not?: Maybe<Comments_Bool_Exp>;
   _or?: Maybe<Array<Comments_Bool_Exp>>;
+  author_email?: Maybe<String_Comparison_Exp>;
   author_github_node_id?: Maybe<String_Comparison_Exp>;
   body?: Maybe<String_Comparison_Exp>;
   created_at?: Maybe<Timestamptz_Comparison_Exp>;
@@ -169,6 +171,7 @@ export type Comments_Insert_Input = {
 
 /** order by max() on columns of table "comments" */
 export type Comments_Max_Order_By = {
+  author_email?: Maybe<Order_By>;
   /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
   author_github_node_id?: Maybe<Order_By>;
   body?: Maybe<Order_By>;
@@ -179,6 +182,7 @@ export type Comments_Max_Order_By = {
 
 /** order by min() on columns of table "comments" */
 export type Comments_Min_Order_By = {
+  author_email?: Maybe<Order_By>;
   /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
   author_github_node_id?: Maybe<Order_By>;
   body?: Maybe<Order_By>;
@@ -198,6 +202,7 @@ export type Comments_Mutation_Response = {
 
 /** Ordering options when selecting data from "comments". */
 export type Comments_Order_By = {
+  author_email?: Maybe<Order_By>;
   author_github_node_id?: Maybe<Order_By>;
   body?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
@@ -209,6 +214,8 @@ export type Comments_Order_By = {
 
 /** select columns of table "comments" */
 export enum Comments_Select_Column {
+  /** column name */
+  AuthorEmail = 'author_email',
   /** column name */
   AuthorGithubNodeId = 'author_github_node_id',
   /** column name */
@@ -764,7 +771,7 @@ export type AllThreadsQueryVariables = Exact<{
 }>;
 
 
-export type AllThreadsQuery = { __typename?: 'query_root', lines: Array<{ __typename?: 'lines', commit_hash: string, file_path: string, line_number: number, threads: Array<{ __typename?: 'threads', id: string, comments: Array<{ __typename?: 'comments', id: string, body: string, author_github_node_id?: string | null | undefined, github_user?: { __typename?: 'github_users', github_username: string, github_name?: string | null | undefined } | null | undefined }> }> }> };
+export type AllThreadsQuery = { __typename?: 'query_root', lines: Array<{ __typename?: 'lines', commit_hash: string, file_path: string, line_number: number, threads: Array<{ __typename?: 'threads', id: string, comments: Array<{ __typename?: 'comments', id: string, body: string, author_github_node_id?: string | null | undefined, author_email?: string | null | undefined, github_user?: { __typename?: 'github_users', github_username: string, github_name?: string | null | undefined } | null | undefined }> }> }> };
 
 export type StartThreadMutationVariables = Exact<{
   repoIds: Array<Scalars['String']> | Scalars['String'];

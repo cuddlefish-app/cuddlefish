@@ -22,7 +22,7 @@ import {
 } from "./git";
 import { assert, notNull } from "./utils";
 
-function getAuthor(
+function gitHubAuthor(
   username: string,
   name: string | null | undefined
 ): vscode.CommentAuthorInformation {
@@ -34,6 +34,10 @@ function getAuthor(
         ? `${name} (@${username})`
         : `@${username}`,
   };
+}
+function emailAuthor(email: string): vscode.CommentAuthorInformation {
+  // TODO set up icon for email authors?
+  return { name: email };
 }
 
 interface CFComment extends vscode.Comment {
@@ -83,6 +87,7 @@ export class CommentJefe {
                 id
                 body
                 author_github_node_id
+                author_email
                 github_user {
                   github_username
                   github_name
@@ -139,10 +144,15 @@ export class CommentJefe {
 
       // TODO: Use the `label` field for "code author", "contributor", etc.
       const comments: vscode.Comment[] = thread.comments.map((comment) => {
-        const username = comment.github_user.github_username;
-        const name = comment.github_user.github_name;
+        const author = comment.github_user
+          ? gitHubAuthor(
+              comment.github_user.github_username,
+              comment.github_user.github_name
+            )
+          : emailAuthor(notNull(comment.author_email));
+
         const newComment: CFComment = {
-          author: getAuthor(username, name),
+          author,
           // body: `id:${thread.id} ${comment.body}`,
           body: comment.body,
           mode: vscode.CommentMode.Preview,
@@ -186,7 +196,7 @@ export class CommentJefe {
       const userInfo = await this._getOctokitUserInfo();
       reply.thread.comments = [
         {
-          author: getAuthor(userInfo.data.login, userInfo.data.name),
+          author: gitHubAuthor(userInfo.data.login, userInfo.data.name),
           body: reply.text,
           mode: vscode.CommentMode.Preview,
         },
@@ -236,7 +246,7 @@ export class CommentJefe {
       // have this document in our subscriptions, so it should also be taken care
       // of that way.
       const newComment: CFComment = {
-        author: getAuthor(userInfo.data.login, userInfo.data.name),
+        author: gitHubAuthor(userInfo.data.login, userInfo.data.name),
         body: reply.text,
         mode: vscode.CommentMode.Preview,
         cfThreadId: newCFThreadId,
@@ -259,7 +269,7 @@ export class CommentJefe {
     // Preemptively update the UI.
     const userInfo = await this._getOctokitUserInfo();
     const newComment: CFComment = {
-      author: getAuthor(userInfo.data.login, userInfo.data.name),
+      author: gitHubAuthor(userInfo.data.login, userInfo.data.name),
       body: reply.text,
       mode: vscode.CommentMode.Preview,
       cfThreadId,
