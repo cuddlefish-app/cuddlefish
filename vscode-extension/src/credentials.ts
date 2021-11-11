@@ -218,7 +218,6 @@ export async function getApolloClientWithAuth(
 ) {
   console.log("getApolloClientWithAuth");
   const token = notNull(await getCuddlefishSessionTokenModal(context, creds));
-  console.log(token);
   if (
     apolloClient !== undefined &&
     apolloClient.cuddlefishSessionToken === token
