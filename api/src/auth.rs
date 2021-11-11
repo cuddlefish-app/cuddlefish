@@ -383,7 +383,7 @@ async fn hasura_auth_webhook_inner(req: Request<Body>) -> anyhow::Result<GitHubU
 
   let auth = hasura::lookup_user_session(session_token)
     .await?
-    .ok_or_else(|| anyhow!("couldn't find that session token in hasura"))?;
+    .ok_or_else(|| anyhow!("couldn't find session token {:?} in hasura", session_token))?;
   Ok(auth.github_node_id)
 }
 pub async fn hasura_auth_webhook(req: Request<Body>) -> Result<Response<Body>, hyper::Error> {
