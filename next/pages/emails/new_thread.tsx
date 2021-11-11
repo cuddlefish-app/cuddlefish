@@ -150,20 +150,14 @@ function NewThreadEmail({
             Check us out on GitHub
           </a>
           ! Feedback?{" "}
-          <a
-            href="mailto:skainsworth+cuddlefish@gmail.com"
-            style={{ color: "inherit" }}
-          >
+          <a href="mailto:sam@cuddlefish.app" style={{ color: "inherit" }}>
             Let us know!
           </a>
         </p>
         <p>
           <small>
             Too many emails?{" "}
-            <a
-              href="mailto:skainsworth+cuddlefish@gmail.com"
-              style={{ color: "inherit" }}
-            >
+            <a href="mailto:sam@cuddlefish.app" style={{ color: "inherit" }}>
               unsubscribe
             </a>
           </small>

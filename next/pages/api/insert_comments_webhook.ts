@@ -11,13 +11,13 @@ import {
   assert400,
   isString,
   logHandlerErrors,
-  notNull,
+  notNull
 } from "../../common_utils";
 import { ADMIN_getOctokit, lookupRepoByNodeId } from "../../github";
 import { getSendgrid } from "../../server_utils";
 import {
   CommentContextQuery,
-  CommentContextQueryVariables,
+  CommentContextQueryVariables
 } from "../../src/generated/admin-hasura-types";
 import NewCommentEmail from "../emails/new_comment";
 import NewThreadEmail from "../emails/new_thread";
@@ -376,7 +376,7 @@ async function sendNewThreadEmails(
 ) {
   // Send an email to me
   await sendNewThreadEmail(
-    { email: "skainsworth+cuddlefish@gmail.com", name: "Samuel Ainsworth" },
+    { email: "sam@cuddlefish.app", name: "Samuel Ainsworth" },
     "admin",
     repo,
     thread,

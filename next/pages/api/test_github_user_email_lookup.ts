@@ -11,7 +11,7 @@ export default logHandlerErrors(
     );
 
     await getSendgrid().send({
-      to: { name: "Samuel Ainsworth", email: "skainsworth@gmail.com" },
+      to: { name: "Samuel Ainsworth", email: "sam@cuddlefish.app" },
       from: {
         name: `Poopyface via Cuddlefish Comments`,
         email: CF_APP_EMAIL,
