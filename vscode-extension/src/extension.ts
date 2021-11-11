@@ -6,7 +6,7 @@ import { CommentJefe } from "./comments";
 import {
   eraseCuddlefishSessionToken,
   getCuddlefishSessionTokenModal,
-  getOctokitModal,
+  getOctokitUserInfo,
   GitHubCredentials,
   hasuraEndpoint,
 } from "./credentials";
@@ -125,10 +125,14 @@ export async function activate(context: vscode.ExtensionContext) {
       logErrors0(async () => {
         // Scrap our current cuddlefish session token and get a new one.
         eraseCuddlefishSessionToken(context);
+
+        // Unfortunately, we're stuck with some mutation here. We don't need the
+        // session token itself here, but we do need to login the user and store
+        // that token in globalStorage which happens inside of
+        // `getCuddlefishSessionTokenModal`.
         await getCuddlefishSessionTokenModal(context, credentials);
 
-        const octokit = await getOctokitModal(credentials);
-        const userInfo = await octokit.users.getAuthenticated();
+        const userInfo = await getOctokitUserInfo(credentials);
         vscode.window.showInformationMessage(
           `Logged in to Cuddlefish Comments via GitHub as @${userInfo.data.login}!`
         );
@@ -298,6 +302,10 @@ export async function activate(context: vscode.ExtensionContext) {
       commentController.dispose();
     })
   );
+
+  // Seed the cache with the user's GitHub info. This helps us avoid a
+  // first-time latency when starting threads and commenting.
+  await getOctokitUserInfo(credentials);
 }
 
 // this method is called when your extension is deactivated

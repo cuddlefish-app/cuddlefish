@@ -14,7 +14,7 @@ import {
   StartCuddlefishSessionMutation,
   StartCuddlefishSessionMutationVariables,
 } from "./generated/hasura-types";
-import { notNull } from "./utils";
+import { asyncMemo1, notNull } from "./utils";
 
 const GITHUB_AUTH_PROVIDER_ID = "github";
 const CUDDLEFISH_SESSION_TOKEN = "cuddlefish-session-token";
@@ -232,3 +232,10 @@ export async function getApolloClientWithAuth(
     return apolloClient.client;
   }
 }
+
+export const getOctokitUserInfo = asyncMemo1(async function getOctokitUserInfo(
+  credentials: GitHubCredentials
+) {
+  const octokit = await getOctokitModal(credentials);
+  return await octokit.users.getAuthenticated();
+});

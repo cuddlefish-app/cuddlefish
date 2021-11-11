@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import { CommentController } from "vscode";
 import {
   getApolloClientWithAuth,
-  getOctokitModal,
+  getOctokitUserInfo,
   GitHubCredentials,
 } from "./credentials";
 import {
@@ -193,7 +193,7 @@ export class CommentJefe {
   ) {
     try {
       // Preemptively update the UI, then fix after completing the request.
-      const userInfo = await this._getOctokitUserInfo();
+      const userInfo = await getOctokitUserInfo(this.credentials);
       reply.thread.comments = [
         {
           author: gitHubAuthor(userInfo.data.login, userInfo.data.name),
@@ -267,7 +267,7 @@ export class CommentJefe {
     const cfThreadId = (reply.thread.comments[0] as CFComment).cfThreadId;
 
     // Preemptively update the UI.
-    const userInfo = await this._getOctokitUserInfo();
+    const userInfo = await getOctokitUserInfo(this.credentials);
     const newComment: CFComment = {
       author: gitHubAuthor(userInfo.data.login, userInfo.data.name),
       body: reply.text,
@@ -299,11 +299,5 @@ export class CommentJefe {
 
   private async _getApolloClient() {
     return await getApolloClientWithAuth(this.context, this.credentials);
-  }
-
-  private async _getOctokitUserInfo() {
-    // TODO cache this for super responsiveness
-    const octokit = await getOctokitModal(this.credentials);
-    return await octokit.users.getAuthenticated();
   }
 }

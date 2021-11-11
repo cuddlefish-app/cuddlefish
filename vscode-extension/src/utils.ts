@@ -122,3 +122,18 @@ export function logErrors2<A1, A2, T>(
 // See https://stackoverflow.com/questions/4059147/check-if-a-variable-is-a-string-in-javascript
 export const isString = (x: any) =>
   typeof x === "string" || x instanceof String;
+
+// Memoization that doesn't require toString'ing the key.
+export function asyncMemo1<T, U>(
+  f: (x: T) => Promise<U>
+): (x: T) => Promise<U> {
+  let prev: [T, U] | undefined = undefined;
+  return async function (x: T) {
+    if (prev !== undefined && x === prev[0]) {
+      return prev[1];
+    }
+    const y = await f(x);
+    prev = [x, y];
+    return y;
+  };
+}
