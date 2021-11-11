@@ -34,6 +34,9 @@ event_triggers:
     enable_manual: false
     insert:
       columns: "*"
+  headers:
+  - name: x-api-secret
+    value_from_env: API_SECRET
   name: insert_comments
   retry_conf:
     interval_sec: 60

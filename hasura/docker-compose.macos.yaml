@@ -31,6 +31,8 @@ services:
       HASURA_GRAPHQL_DEV_MODE: "true"
       HASURA_GRAPHQL_ADMIN_SECRET: "hasurasecret"
 
+      API_SECRET: "apisecret"
+
       # On macOS, there's this thing where you need to do `host.docker.internal`
       # to escape Docker networking. It doesn't work on Linux however. Much
       # easier to use `network_mode: host` on Linux. Unfortunately I am not

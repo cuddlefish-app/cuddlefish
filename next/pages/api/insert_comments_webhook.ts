@@ -11,13 +11,13 @@ import {
   assert400,
   isString,
   logHandlerErrors,
-  notNull
+  notNull,
 } from "../../common_utils";
 import { ADMIN_getOctokit, lookupRepoByNodeId } from "../../github";
 import { getSendgrid } from "../../server_utils";
 import {
   CommentContextQuery,
-  CommentContextQueryVariables
+  CommentContextQueryVariables,
 } from "../../src/generated/admin-hasura-types";
 import NewCommentEmail from "../emails/new_comment";
 import NewThreadEmail from "../emails/new_thread";
@@ -57,11 +57,10 @@ export default logHandlerErrors(async function (
   res: NextApiResponse<{}>
 ) {
   // Verify request is coming from hasura or some other trusted source
-  // TODO set this up on the hasura side and then turn this on
-  // assert400(
-  //   req.headers["x-api-secret"] === notNull(process.env.API_SECRET),
-  //   "incorrect api secret"
-  // );
+  assert400(
+    req.headers["x-api-secret"] === notNull(process.env.API_SECRET),
+    "incorrect api secret"
+  );
 
   assert400(req.method === "POST", "expected POST request");
   const decoded = RequestData.decode(req.body);
