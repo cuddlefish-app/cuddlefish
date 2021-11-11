@@ -29,7 +29,7 @@ let apolloClient:
       cuddlefishSessionToken: string | undefined;
       client: ApolloClient<NormalizedCacheObject>;
     }
-  | undefined;
+  | undefined = undefined;
 
 export class GitHubCredentials {
   private session: vscode.AuthenticationSession | undefined;
@@ -97,15 +97,15 @@ export async function getOctokitModal(
 function getCuddlefishSessionTokenQuiet(
   context: vscode.ExtensionContext
 ): string | undefined {
-  return context.globalState.get(CUDDLEFISH_SESSION_TOKEN) as
-    | string
-    | undefined;
+  return context.globalState.get(CUDDLEFISH_SESSION_TOKEN);
 }
 
 export async function getCuddlefishSessionTokenModal(
   context: vscode.ExtensionContext,
   creds: GitHubCredentials
 ): Promise<string> {
+  console.log("getCuddlefishSessionTokenModal");
+
   const existing = getCuddlefishSessionTokenQuiet(context);
   if (existing !== undefined) {
     return existing;
@@ -113,6 +113,9 @@ export async function getCuddlefishSessionTokenModal(
     // Hit up our api with vscodeSession.accessToken to get a CF session token
     // and store it in global state.
 
+    console.log(
+      "getCuddlefishSessionTokenModal: acquiring a new Cuddlefish session token..."
+    );
     const vscodeSession = await creds.getSessionModal();
 
     // Get a potentially anonymous client.
@@ -138,12 +141,25 @@ export function eraseCuddlefishSessionToken(context: vscode.ExtensionContext) {
   context.globalState.update(CUDDLEFISH_SESSION_TOKEN, undefined);
 }
 
-function buildApolloClient(token: string | undefined) {
+export function hasuraEndpoint() {
   // See https://stackoverflow.com/questions/42397699/detect-debug-mode-in-vscode-extension
-  const uri =
-    vscode.debug.activeDebugSession === undefined
-      ? "https://hasura.cuddlefish.app/v1/graphql"
-      : "http://localhost:8080/v1/graphql";
+  // This doesn't seem to work:
+  // return vscode.debug.activeDebugSession === undefined
+  //   ? "https://hasura.cuddlefish.app/v1/graphql"
+  //   : "http://localhost:8080/v1/graphql";
+  return (
+    process.env.HASURA_GRAPHQL_ENDPOINT ||
+    "https://hasura.cuddlefish.app/v1/graphql"
+  );
+}
+function buildApolloClient(token: string | undefined) {
+  console.log(
+    token === undefined
+      ? "buildApolloClient without a token"
+      : "buildApolloClient with a token"
+  );
+
+  const uri = hasuraEndpoint();
 
   if (token === undefined) {
     return {
@@ -178,13 +194,21 @@ function buildApolloClient(token: string | undefined) {
 export function getApolloClientQuiet(
   context: vscode.ExtensionContext
 ): ApolloClient<NormalizedCacheObject> {
+  console.log("getApolloClientQuiet");
+
   if (apolloClient !== undefined) {
+    console.log("getApolloClientQuiet: Returning existing apolloClient");
+    return apolloClient.client;
+  } else {
+    const token = getCuddlefishSessionTokenQuiet(context);
+    apolloClient = buildApolloClient(token);
+    console.log(
+      token === undefined
+        ? "getApolloClientQuiet: Returning new apolloClient without token"
+        : "getApolloClientQuiet: Returning new apolloClient with token"
+    );
     return apolloClient.client;
   }
-
-  const token = getCuddlefishSessionTokenQuiet(context);
-  apolloClient = buildApolloClient(token);
-  return apolloClient.client;
 }
 
 // Return a cached Apollo client which includes authentication.
@@ -192,15 +216,20 @@ export async function getApolloClientWithAuth(
   context: vscode.ExtensionContext,
   creds: GitHubCredentials
 ) {
+  console.log("getApolloClientWithAuth");
   const token = notNull(await getCuddlefishSessionTokenModal(context, creds));
+  console.log(token);
   if (
     apolloClient !== undefined &&
-    apolloClient.cuddlefishSessionToken !== token
+    apolloClient.cuddlefishSessionToken === token
   ) {
+    console.log("getApolloClientWithAuth: Returning cached apolloClient");
+    return apolloClient.client;
+  } else {
+    console.log(
+      "getApolloClientWithAuth: Cached apolloClient is either non-existent or stale"
+    );
+    apolloClient = buildApolloClient(token);
     return apolloClient.client;
   }
-
-  // See https://www.apollographql.com/docs/react/networking/authentication/#header
-  apolloClient = buildApolloClient(token);
-  return apolloClient.client;
 }
