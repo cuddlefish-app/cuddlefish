@@ -66,7 +66,7 @@ export default logHandlerErrors(async function (
   const decoded = RequestData.decode(req.body);
   assert400(isRight(decoded), "parse fail");
   const payload = decoded.right;
-  console.log(payload.event.data.new);
+  // console.log(payload.event.data.new);
 
   const newCommentId = payload.event.data.new.id;
   const apolloClient = ADMIN_buildApolloClient();
@@ -237,6 +237,14 @@ async function sendNewCommentEmails(
 
   const emailsSent = new Set<string>();
 
+  // Send an email to me
+  await sendNewCommentEmail(
+    { email: "sam@cuddlefish.app", name: "Sam ADMIN" },
+    precedingComments,
+    newComment,
+    newCommentAuthor
+  );
+
   // Don't send any email to the author of the comment
   emailsSent.add(commentAuthorEmail);
 
@@ -375,7 +383,7 @@ async function sendNewThreadEmails(
 ) {
   // Send an email to me
   await sendNewThreadEmail(
-    { email: "sam@cuddlefish.app", name: "Samuel Ainsworth" },
+    { email: "sam@cuddlefish.app", name: "Sam ADMIN" },
     "admin",
     repo,
     thread,
