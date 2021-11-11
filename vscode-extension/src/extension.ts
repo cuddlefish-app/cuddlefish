@@ -1,14 +1,3 @@
-// TODO
-// - send feedback
-// - subscribing to thread updates (on file close, unsubscribe)
-// - open line in github
-// - email link -> open vscode -> show readonly file with comment thread
-// - reactions
-// - private repo -> interest form
-// - show "code author", "contributor", etc labels to comments.
-// - lowprio: what's up with that collapse button?
-// - lowprio: auto link @-links
-
 import { Mutex } from "async-mutex";
 import * as child_process from "child_process";
 import * as util from "util";
@@ -29,6 +18,47 @@ const exec = util.promisify(child_process.exec);
 // An ugly hack to work around https://github.com/microsoft/vscode/issues/135712
 // Using vscode.Uri's as keys doesn't work, so we use `uri.toString()` instead.
 const uriToDocument = new Map<string, vscode.TextDocument>();
+
+function filterOutEmptyLines(
+  document: vscode.TextDocument,
+  ranges: Array<[number, number]>
+): Array<[number, number]> {
+  // Incoming ranges are inclusive on both ends and 0-indexed. `emptyLines` also
+  // contains 0-indexed line numbers, so it works out.
+  const emptyLines = new Set<number>();
+  for (const [ix, line] of document.getText().split(/\r?\n/).entries()) {
+    if (line.trim() === "") {
+      emptyLines.add(ix);
+    }
+  }
+
+  const ret = new Array<[number, number]>();
+  for (const [start, end] of ranges) {
+    let currentIntervalStart = null;
+    for (let i = start; i <= end; i++) {
+      if (emptyLines.has(i)) {
+        // i is an empty line, so if we've just completed an interval, add that
+        // to `ret`.
+        if (currentIntervalStart !== null) {
+          // Intervals are inclusive on both ends!
+          ret.push([currentIntervalStart, i - 1]);
+          currentIntervalStart = null;
+        }
+      } else {
+        // i is not an empty line, so if we haven't started an interval, start
+        // one. Otherwise, keep extending the current interval.
+        if (currentIntervalStart === null) {
+          currentIntervalStart = i;
+        }
+      }
+    }
+    // If we haven't finished the last interval, add it to `ret`.
+    if (currentIntervalStart !== null) {
+      ret.push([currentIntervalStart, end]);
+    }
+  }
+  return ret;
+}
 
 // Check whether or not to allow commenting on a given document. Returns the
 // repo root if commenting is allowed, and undefined if not.
@@ -180,7 +210,6 @@ export async function activate(context: vscode.ExtensionContext) {
           // Load the existing comments and subscribe to updates.
           await commentJefe.trackDocument(document.uri, blameinfo.blamehunks);
 
-          // TODO don't allow commenting on lines that contain only whitespace
           // TODO also check that we don't allow commenting on commits that haven't been pushed yet. See https://stackoverflow.com/questions/2016901/viewing-unpushed-git-commits
           // TODO how to identify remote name and remote branch for the current branch?
           // git log origin/main..HEAD --format=format:"%H"
@@ -191,7 +220,7 @@ export async function activate(context: vscode.ExtensionContext) {
           // Subtract another one from the end of the interval to account for
           // the fact that hunksize 1 implies the range [17, 17], not [17, 18].
           // Ranges are inclusive on both ends.
-          const ranges = blameinfo.blamehunks
+          const ranges: Array<[number, number]> = blameinfo.blamehunks
             .filter((hunk) => hunk.origCommitHash !== git.ZERO_HASH)
             .map(({ currStartLine, hunksize }) => [
               currStartLine - 1,
@@ -200,7 +229,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
           // TODO unclear from the docs if Range is inclusive or exclusive.
           // Either way this seems to do the right thing for now.
-          return ranges.map(([a, b]) => new vscode.Range(a, 0, b, 0));
+          return filterOutEmptyLines(document, ranges).map(
+            ([a, b]) => new vscode.Range(a, 0, b, 0)
+          );
         })
     ),
   };
