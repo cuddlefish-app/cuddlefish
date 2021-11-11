@@ -369,10 +369,12 @@ fn parse_cookies(req: &Request<Body>) -> anyhow::Result<HashMap<&str, &str>> {
 async fn hasura_auth_webhook_inner(req: Request<Body>) -> anyhow::Result<GitHubUserId> {
   // Note: there's some redundancy here with `main::lookup_github_auth_from_header`.
   let session_token = if let Some(header_value) = req.headers().get(header::AUTHORIZATION) {
+    trace!("found authorization header");
     let value = header_value.to_str()?;
     ensure!(value.starts_with("Bearer "));
     &value[7..]
   } else {
+    trace!("no authorization header, looking for cookies");
     parse_cookies(&req)?
       .get(SESSION_TOKEN_COOKIE_NAME)
       .ok_or_else(|| anyhow!("couldn't get session token cookie"))?
