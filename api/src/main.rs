@@ -246,6 +246,7 @@ async fn gql_start_thread_inner(
   // Line numbers are 1-indexed! juniper does not support unsigned integers.
   ensure!(line_number > 0);
   ensure!(repo_ids.len() > 0);
+  ensure!(body.trim().len() > 0);
 
   // Find a public GitHub repo that contains the commit we're looking for. Don't let people add threads on commits
   // that don't exist/are private.
