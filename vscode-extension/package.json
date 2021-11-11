@@ -29,6 +29,18 @@
 				"title": "Login"
 			},
 			{
+				"command": "cuddlefish-comments.logout",
+				"category": "Cuddlefish Comments DEV",
+				"title": "Logout",
+				"enablement": "extensionStatus != installed"
+			},
+			{
+				"command": "cuddlefish-comments.hasuraEndpoint",
+				"category": "Cuddlefish Comments DEV",
+				"title": "Hasura Endpoint",
+				"enablement": "extensionStatus != installed"
+			},
+			{
 				"command": "cuddlefish-comments.startThread",
 				"title": "Start thread",
 				"enablement": "!commentIsEmpty && !activeEditorIsDirty"

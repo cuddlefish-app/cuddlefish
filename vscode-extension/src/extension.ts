@@ -19,6 +19,7 @@ import {
   getCuddlefishSessionTokenModal,
   getOctokitModal,
   GitHubCredentials,
+  hasuraEndpoint,
 } from "./credentials";
 import * as git from "./git";
 import { assert, logErrors0, logErrors1, logErrors2, notNull } from "./utils";
@@ -101,6 +102,25 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage(
           `Logged in to Cuddlefish Comments via GitHub as @${userInfo.data.login}!`
         );
+      })
+    )
+  );
+
+  // The enablement on this should specify that it's only in dev mode.
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "cuddlefish-comments.logout",
+      logErrors0(async () => {
+        eraseCuddlefishSessionToken(context);
+        vscode.window.showInformationMessage("Logged out");
+      })
+    )
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "cuddlefish-comments.hasuraEndpoint",
+      logErrors0(async () => {
+        vscode.window.showInformationMessage(hasuraEndpoint());
       })
     )
   );
