@@ -12,7 +12,12 @@
       "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
       "outFiles": ["${workspaceFolder}/out/**/*.js"],
       "preLaunchTask": "${defaultBuildTask}",
-      "env": { "HASURA_GRAPHQL_ENDPOINT": "http://localhost:8080/v1/graphql" }
+      "env": {
+        "HASURA_GRAPHQL_ENDPOINT": "http://localhost:8080/v1/graphql",
+        // It's important to separate this from the prod version otherwise we
+        // can get auth errors when switching back and forth.
+        "CUDDLEFISH_SESSION_TOKEN_STORAGE_KEY": "cuddlefish-session-token-dev"
+      }
     },
     {
       "name": "Extension Tests",

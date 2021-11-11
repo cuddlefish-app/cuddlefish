@@ -17,7 +17,9 @@ import {
 import { asyncMemo1, notNull } from "./utils";
 
 const GITHUB_AUTH_PROVIDER_ID = "github";
-const CUDDLEFISH_SESSION_TOKEN = "cuddlefish-session-token";
+const CUDDLEFISH_SESSION_TOKEN =
+  process.env.CUDDLEFISH_SESSION_TOKEN_STORAGE_KEY ||
+  "cuddlefish-session-token";
 // The GitHub Authentication Provider accepts the scopes described here:
 // https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
 const SCOPES = ["user:email"];
