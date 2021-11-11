@@ -119,13 +119,7 @@ export enum Blamelines_Select_Column {
   XLineNumber = 'x_line_number'
 }
 
-/**
- * TODO: make author_github_id nullable and add author_email. Add constraint that exactly one of them is present.
- *
- *
- * columns and relationships of "comments"
- *
- */
+/** columns and relationships of "comments" */
 export type Comments = {
   __typename?: 'comments';
   author_email?: Maybe<Scalars['String']>;
