@@ -78,7 +78,7 @@ export function logErrors0<T>(f: () => Promise<T>): () => Promise<T> {
     } catch (e) {
       console.error(e);
       vscode.window.showErrorMessage(
-        "Cuddlefish Comments experienced an error. Check the extension logs for more info!"
+        "Cuddlefish Comments experienced an error. Check the logs (Developer: Toggle Developer Tools) for more info!"
       );
 
       // This bit is kind of an ugly hack to make this wrapper easy to use.
