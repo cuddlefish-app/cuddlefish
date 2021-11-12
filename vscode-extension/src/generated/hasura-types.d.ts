@@ -26,6 +26,11 @@ export type Int_Comparison_Exp = {
   _nin?: Maybe<Array<Scalars['Int']>>;
 };
 
+export type StartCuddlefishSessionResponse = {
+  __typename?: 'StartCuddlefishSessionResponse';
+  session_token: Scalars['String'];
+};
+
 /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
 export type String_Comparison_Exp = {
   _eq?: Maybe<Scalars['String']>;
@@ -337,6 +342,7 @@ export type Mutation_Root = {
   __typename?: 'mutation_root';
   CalculateBlameLines: Scalars['Boolean'];
   StartCuddlefishSession: Scalars['String'];
+  StartCuddlefishSession2: StartCuddlefishSessionResponse;
   StartThread: Scalars['String'];
   /** insert data into the table: "comments" */
   insert_comments?: Maybe<Comments_Mutation_Response>;
@@ -356,6 +362,12 @@ export type Mutation_RootCalculateBlameLinesArgs = {
 /** mutation root */
 export type Mutation_RootStartCuddlefishSessionArgs = {
   githubAccessToken: Scalars['String'];
+};
+
+
+/** mutation root */
+export type Mutation_RootStartCuddlefishSession2Args = {
+  github_access_token: Scalars['String'];
 };
 
 
@@ -791,4 +803,4 @@ export type StartCuddlefishSessionMutationVariables = Exact<{
 }>;
 
 
-export type StartCuddlefishSessionMutation = { __typename?: 'mutation_root', StartCuddlefishSession: string };
+export type StartCuddlefishSessionMutation = { __typename?: 'mutation_root', StartCuddlefishSession2: { __typename?: 'StartCuddlefishSessionResponse', session_token: string } };

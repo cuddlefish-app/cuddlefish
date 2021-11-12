@@ -128,12 +128,14 @@ export async function getCuddlefishSessionTokenModal(
     >({
       mutation: gql`
         mutation StartCuddlefishSession($githubAccessToken: String!) {
-          StartCuddlefishSession(githubAccessToken: $githubAccessToken)
+          StartCuddlefishSession2(github_access_token: $githubAccessToken) {
+            session_token
+          }
         }
       `,
       variables: { githubAccessToken: vscodeSession.accessToken },
     });
-    const token = notNull(res.data).StartCuddlefishSession;
+    const token = notNull(res.data).StartCuddlefishSession2.session_token;
     context.globalState.update(CUDDLEFISH_SESSION_TOKEN, token);
     return token;
   }
