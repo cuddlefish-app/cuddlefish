@@ -106,7 +106,7 @@ pub struct GitHubUserInfoResp {
 }
 
 pub async fn get_github_user_info(github_access_token: &str) -> anyhow::Result<GitHubUserInfoResp> {
-  // TODO: maybe use the gql way?
+  // TODO: use the gql way
   let user_info_response = reqwest::Client::new()
     .get("https://api.github.com/user")
     .header(
@@ -122,7 +122,13 @@ pub async fn get_github_user_info(github_access_token: &str) -> anyhow::Result<G
   trace!("user_info_response = {:?}", user_info_response);
 
   // Deserialize the user info response.
-  let user_info: GitHubUserInfoResp = user_info_response.json().await?;
+  let response_body = user_info_response.text().await?;
+  trace!("response body = {:?}", response_body);
+  let user_info: GitHubUserInfoResp = serde_json::from_str(&response_body)?;
+
+  // Slightly more efficient, harder to debug with:
+  // let user_info: GitHubUserInfoResp = user_info_response.json().await?;
+
   trace!("user_info = {:?}", user_info);
 
   Ok(user_info)
