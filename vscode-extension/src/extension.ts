@@ -302,10 +302,6 @@ export async function activate(context: vscode.ExtensionContext) {
       commentController.dispose();
     })
   );
-
-  // Seed the cache with the user's GitHub info. This helps us avoid a
-  // first-time latency when starting threads and commenting.
-  await getOctokitUserInfo(credentials);
 }
 
 // this method is called when your extension is deactivated
