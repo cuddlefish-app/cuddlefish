@@ -101,7 +101,7 @@ pub struct GitHubUserInfoResp {
   pub location: Option<String>,
   pub email: Option<String>,
   pub hireable: bool,
-  pub bio: String,
+  pub bio: Option<String>,
   pub twitter_username: Option<String>,
 }
 
