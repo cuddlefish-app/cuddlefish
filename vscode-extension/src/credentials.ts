@@ -82,7 +82,7 @@ export class GitHubCredentials {
     );
 
     if (this.session === undefined) {
-      vscode.window.showInformationMessage("Could not get GitHub credentials.");
+      vscode.window.showErrorMessage("Could not get GitHub credentials.");
     }
 
     return this.session;
