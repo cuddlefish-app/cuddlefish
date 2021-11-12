@@ -1,0 +1,10 @@
+type Mutation {
+  StartCuddlefishSession2 (
+    github_access_token: String!
+  ): StartCuddlefishSessionResponse!
+}
+
+type StartCuddlefishSessionResponse {
+  session_token : String!
+}
+

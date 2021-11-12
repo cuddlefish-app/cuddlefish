@@ -1,6 +1,16 @@
-actions: []
+actions:
+- name: StartCuddlefishSession2
+  definition:
+    kind: synchronous
+    handler: http://{{NEXT_HOST}}:{{NEXT_PORT}}/api/start_cuddlefish_session
+    headers:
+    - name: x-api-secret
+      value_from_env: API_SECRET
+  permissions:
+  - role: anonymous
 custom_types:
   enums: []
   input_objects: []
-  objects: []
+  objects:
+  - name: StartCuddlefishSessionResponse
   scalars: []

@@ -26,6 +26,11 @@ export type Int_Comparison_Exp = {
   _nin?: Maybe<Array<Scalars['Int']>>;
 };
 
+export type StartCuddlefishSessionResponse = {
+  __typename?: 'StartCuddlefishSessionResponse';
+  session_token: Scalars['String'];
+};
+
 /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
 export type String_Comparison_Exp = {
   _eq?: Maybe<Scalars['String']>;
@@ -299,13 +304,7 @@ export type Blamelines_Variance_Fields = {
   x_line_number?: Maybe<Scalars['Float']>;
 };
 
-/**
- * TODO: make author_github_id nullable and add author_email. Add constraint that exactly one of them is present.
- *
- *
- * columns and relationships of "comments"
- *
- */
+/** columns and relationships of "comments" */
 export type Comments = {
   __typename?: 'comments';
   author_email?: Maybe<Scalars['String']>;
@@ -1359,6 +1358,7 @@ export type Mutation_Root = {
   __typename?: 'mutation_root';
   CalculateBlameLines: Scalars['Boolean'];
   StartCuddlefishSession: Scalars['String'];
+  StartCuddlefishSession2: StartCuddlefishSessionResponse;
   StartThread: Scalars['String'];
   /** delete data from the table: "blamelines" */
   delete_blamelines?: Maybe<Blamelines_Mutation_Response>;
@@ -1470,6 +1470,12 @@ export type Mutation_RootCalculateBlameLinesArgs = {
 /** mutation root */
 export type Mutation_RootStartCuddlefishSessionArgs = {
   githubAccessToken: Scalars['String'];
+};
+
+
+/** mutation root */
+export type Mutation_RootStartCuddlefishSession2Args = {
+  github_access_token: Scalars['String'];
 };
 
 
@@ -2898,3 +2904,15 @@ export type CommentContextQueryVariables = Exact<{
 
 
 export type CommentContextQuery = { __typename?: 'query_root', comments_by_pk?: { __typename?: 'comments', github_user?: { __typename?: 'github_users', email: string, github_name?: string | null | undefined, github_username: string, access_token?: string | null | undefined } | null | undefined, thread: { __typename?: 'threads', id: string, original_commit_hash: string, original_file_path: string, original_line_number: number, github_repos: Array<{ __typename?: 'commit_github_repo', repo_github_node_id: string }>, comments: Array<{ __typename?: 'comments', id: string, created_at: any, author_email?: string | null | undefined, body: string, github_user?: { __typename?: 'github_users', email: string, github_name?: string | null | undefined, github_username: string, github_node_id: string } | null | undefined }> } } | null | undefined };
+
+export type UpsertUserStartSessionMutationVariables = Exact<{
+  githubNodeId: Scalars['String'];
+  githubDatabaseId: Scalars['Int'];
+  githubName?: Maybe<Scalars['String']>;
+  githubUsername: Scalars['String'];
+  email?: Maybe<Scalars['String']>;
+  accessToken: Scalars['String'];
+}>;
+
+
+export type UpsertUserStartSessionMutation = { __typename?: 'mutation_root', insert_github_users_one?: { __typename?: 'github_users', github_node_id: string } | null | undefined, insert_user_sessions_one?: { __typename?: 'user_sessions', id: string } | null | undefined };
