@@ -86,26 +86,26 @@ where
 }
 
 #[derive(Deserialize, Debug)]
-pub struct GitHubUserInfoResp {
+struct GitHubUserInfoResp {
   /// The user's GitHub username, eg. "samuela".
-  pub login: String,
+  login: String,
   /// The "databaseId" in GitHub API speak.
-  pub id: u32,
+  id: u32,
   /// The "node id" in GitHub API speak.
-  pub node_id: String,
+  node_id: String,
   // TODO what happens with users that don't have a name set?
-  pub name: String,
+  name: String,
   // This comes in as null sometimes. Serde seems to handle correctly.
-  pub company: Option<String>,
-  pub blog: Option<String>,
-  pub location: Option<String>,
-  pub email: Option<String>,
-  pub hireable: bool,
-  pub bio: Option<String>,
-  pub twitter_username: Option<String>,
+  company: Option<String>,
+  blog: Option<String>,
+  location: Option<String>,
+  email: Option<String>,
+  hireable: bool,
+  bio: Option<String>,
+  twitter_username: Option<String>,
 }
 
-pub async fn get_github_user_info(github_access_token: &str) -> anyhow::Result<GitHubUserInfoResp> {
+async fn get_github_user_info(github_access_token: &str) -> anyhow::Result<GitHubUserInfoResp> {
   // TODO: use the gql way
   let user_info_response = reqwest::Client::new()
     .get("https://api.github.com/user")
@@ -136,11 +136,11 @@ pub async fn get_github_user_info(github_access_token: &str) -> anyhow::Result<G
 
 // We generally pass these around once we have verified this user is legit.
 #[derive(Deserialize, Debug)]
-pub struct CuddlefishSessionToken {
-  pub session_token: String,
+struct CuddlefishSessionToken {
+  session_token: String,
 }
 
-pub async fn start_session_from_github(
+async fn start_session_from_github(
   user_info: &GitHubUserInfoResp,
   github_access_token: &str,
 ) -> anyhow::Result<CuddlefishSessionToken> {

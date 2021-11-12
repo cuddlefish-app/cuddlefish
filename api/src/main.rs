@@ -289,19 +289,6 @@ async fn gql_start_thread_inner(
   Ok(new_thread_id)
 }
 
-async fn gql_start_cuddlefish_session_inner(github_access_token: String) -> anyhow::Result<String> {
-  // TODO log hash of github_access_token?
-  log::trace!("StartCuddlefishSession");
-  let user_info = auth::get_github_user_info(&github_access_token).await?;
-  let cf_session_token = auth::start_session_from_github(&user_info, &github_access_token).await?;
-  // TODO log hash of session token?
-  log::trace!(
-    "successfully started session for GitHub user {}",
-    user_info.login
-  );
-  Ok(cf_session_token.session_token.to_string())
-}
-
 /// Convert anyhow::Result types into `juniper::FieldResult`s with logging for when things go wrong.
 fn juniperify<T>(res: anyhow::Result<T>) -> juniper::FieldResult<T> {
   match res {
@@ -357,10 +344,6 @@ impl Mutation {
       )
       .await,
     )
-  }
-
-  async fn StartCuddlefishSession(github_access_token: String) -> FieldResult<String> {
-    juniperify(gql_start_cuddlefish_session_inner(github_access_token).await)
   }
 }
 
