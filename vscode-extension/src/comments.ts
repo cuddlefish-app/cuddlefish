@@ -13,7 +13,7 @@ import {
   AllThreadsQueryVariables,
   StartThreadMutation,
   StartThreadMutationVariables,
-} from "./generated/hasura-types";
+} from "./generated/user-hasura-types";
 import {
   BlameHunk,
   blamehunksToBlamelines,

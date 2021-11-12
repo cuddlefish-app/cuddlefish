@@ -1,7 +1,6 @@
 import {
   ApolloClient,
   ApolloLink,
-  gql,
   HttpLink,
   InMemoryCache,
   NormalizedCacheObject,
@@ -10,10 +9,7 @@ import { setContext } from "@apollo/client/link/context";
 import * as Octokit from "@octokit/rest";
 import { fetch } from "cross-fetch";
 import * as vscode from "vscode";
-import {
-  StartCuddlefishSessionMutation,
-  StartCuddlefishSessionMutationVariables,
-} from "./generated/hasura-types";
+import { startCuddlefishSession } from "./anonymous-hasura-queries";
 import { asyncMemo1, notNull } from "./utils";
 
 const GITHUB_AUTH_PROVIDER_ID = "github";
@@ -120,22 +116,11 @@ export async function getCuddlefishSessionTokenModal(
     );
     const vscodeSession = await creds.getSessionModal();
 
-    // Get a potentially anonymous client.
-    const client = getApolloClientQuiet(context);
-    const res = await client.mutate<
-      StartCuddlefishSessionMutation,
-      StartCuddlefishSessionMutationVariables
-    >({
-      mutation: gql`
-        mutation StartCuddlefishSession($githubAccessToken: String!) {
-          StartCuddlefishSession2(github_access_token: $githubAccessToken) {
-            session_token
-          }
-        }
-      `,
-      variables: { githubAccessToken: vscodeSession.accessToken },
-    });
-    const token = notNull(res.data).StartCuddlefishSession2.session_token;
+    // Note we intentionally use an anonymous client.
+    const token = await startCuddlefishSession(
+      buildApolloClient(undefined).client,
+      vscodeSession.accessToken
+    );
     context.globalState.update(CUDDLEFISH_SESSION_TOKEN, token);
     return token;
   }

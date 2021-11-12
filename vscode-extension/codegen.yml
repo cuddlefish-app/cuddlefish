@@ -1,12 +1,28 @@
 overwrite: true
-schema:
-  - "http://localhost:8080/v1/graphql":
-      headers:
-        x-hasura-role: user
-        x-hasura-admin-secret: "hasurasecret"
-documents: "src/**/*.ts"
 generates:
-  src/generated/hasura-types.d.ts:
+  src/generated/user-hasura-types.d.ts:
+    documents:
+      - "src/**/*.ts"
+      - "!src/anonymous-hasura-queries.ts"
+    schema:
+      - "http://localhost:8080/v1/graphql":
+          headers:
+            x-hasura-role: user
+            x-hasura-admin-secret: "hasurasecret"
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+    config:
+      scalars:
+        uuid: string
+  src/generated/anonymous-hasura-types.d.ts:
+    documents:
+      - "src/anonymous-hasura-queries.ts"
+    schema:
+      - "http://localhost:8080/v1/graphql":
+          headers:
+            x-hasura-role: anonymous
+            x-hasura-admin-secret: "hasurasecret"
     plugins:
       - "typescript"
       - "typescript-operations"
