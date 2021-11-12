@@ -18,9 +18,14 @@ import {
 
 const RequestData = t.strict({
   session_variables: t.type({
-    // No need for the user role here, since they already have a session if
-    // they're logged in.
-    "x-hasura-role": t.union([t.literal("admin"), t.literal("anonymous")]),
+    // It's just more convenient to allow the `user` role to access this
+    // endpoint, since the GQL codegen in the vscode extension is based on being
+    // in the `user` role. So this just makes everything a little easier.
+    "x-hasura-role": t.union([
+      t.literal("admin"),
+      t.literal("user"),
+      t.literal("anonymous"),
+    ]),
   }),
   input: t.strict({ github_access_token: t.string }),
   action: t.strict({
