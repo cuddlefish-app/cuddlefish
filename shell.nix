@@ -12,9 +12,6 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     pkgs.latest.rustChannels.stable.rust
 
-    # Necessary for api/dev.sh
-    cargo-watch
-
     # Necessary for hasura
     docker-compose
     hasura-cli
@@ -22,7 +19,7 @@ pkgs.mkShell {
     # Necessary for node and npm
     nodejs-16_x
 
-    # yarn
+    yarn
 
     # Necessary for `yarn relay --watch`.
     # watchman
@@ -30,6 +27,15 @@ pkgs.mkShell {
     # Necessary for the openssl-sys crate:
     openssl
     pkg-config
+  ] ++ lib.optionals stdenv.isDarwin [
+    libiconv
+    # See https://github.com/rust-lang/git2-rs/issues/768
+    pkgs.darwin.apple_sdk.frameworks.Security
+  ] ++ lib.optionals stdenv.isLinux [
+    # Necessary for api/dev.sh
+    # See https://github.com/NixOS/nixpkgs/issues/146349 as to why we can't do
+    # this on macOS yet.
+    cargo-watch
   ];
 
   # See https://discourse.nixos.org/t/rust-src-not-found-and-other-misadventures-of-developing-rust-on-nixos/11570/3?u=samuela.
