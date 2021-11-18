@@ -7,7 +7,7 @@ import {
   assert400,
   logHandlerErrors,
   notNull,
-} from "../../common_utils";
+} from "../../src/common_utils";
 
 export default logHandlerErrors(
   async (req: NextApiRequest, res: NextApiResponse<{}>) => {
@@ -23,6 +23,8 @@ export default logHandlerErrors(
     notNull(process.env.API_SECRET, "expected API_SECRET");
     notNull(process.env.SENDGRID_API_KEY, "expected SENDGRID_API_KEY");
     notNull(process.env.GITHUB_API_TOKEN, "expected GITHUB_API_TOKEN");
+
+    // TODO check that GITHUB_API_TOKEN is still valid.
 
     // Confirm that our Sendgrid API key is valid. `setApiKey` sadly doesn't do this for us.
     // See https://stackoverflow.com/questions/61658558/how-to-test-sendgrid-api-key-is-valid-or-not-without-sending-emails

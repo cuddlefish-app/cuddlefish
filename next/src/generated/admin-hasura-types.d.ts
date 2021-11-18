@@ -823,7 +823,7 @@ export type Github_Users = {
   /** Can be null if a user emails us, but doesn't login via OAuth. */
   access_token?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
-  /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. */
+  /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. Note that GitHub does not enforce that emails must be unique, eg. @drshrey and @shreyasjag have the same email. */
   email: Scalars['String'];
   /** An integer id that GitHub gives every user. Use github_node_id instead whenever possible. */
   github_database_id: Scalars['Int'];
@@ -892,8 +892,6 @@ export enum Github_Users_Constraint {
   /** unique or primary key constraint */
   GithubUsersAccessTokenKey = 'github_users_access_token_key',
   /** unique or primary key constraint */
-  UsersGithubEmailKey = 'users_github_email_key',
-  /** unique or primary key constraint */
   UsersGithubIdKey = 'users_github_id_key',
   /** unique or primary key constraint */
   UsersGithubNodeIdKey = 'users_github_node_id_key',
@@ -914,7 +912,7 @@ export type Github_Users_Insert_Input = {
   /** Can be null if a user emails us, but doesn't login via OAuth. */
   access_token?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
-  /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. */
+  /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. Note that GitHub does not enforce that emails must be unique, eg. @drshrey and @shreyasjag have the same email. */
   email?: Maybe<Scalars['String']>;
   /** An integer id that GitHub gives every user. Use github_node_id instead whenever possible. */
   github_database_id?: Maybe<Scalars['Int']>;
@@ -932,7 +930,7 @@ export type Github_Users_Max_Fields = {
   /** Can be null if a user emails us, but doesn't login via OAuth. */
   access_token?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
-  /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. */
+  /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. Note that GitHub does not enforce that emails must be unique, eg. @drshrey and @shreyasjag have the same email. */
   email?: Maybe<Scalars['String']>;
   /** An integer id that GitHub gives every user. Use github_node_id instead whenever possible. */
   github_database_id?: Maybe<Scalars['Int']>;
@@ -950,7 +948,7 @@ export type Github_Users_Min_Fields = {
   /** Can be null if a user emails us, but doesn't login via OAuth. */
   access_token?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
-  /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. */
+  /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. Note that GitHub does not enforce that emails must be unique, eg. @drshrey and @shreyasjag have the same email. */
   email?: Maybe<Scalars['String']>;
   /** An integer id that GitHub gives every user. Use github_node_id instead whenever possible. */
   github_database_id?: Maybe<Scalars['Int']>;
@@ -1028,7 +1026,7 @@ export type Github_Users_Set_Input = {
   /** Can be null if a user emails us, but doesn't login via OAuth. */
   access_token?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
-  /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. */
+  /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. Note that GitHub does not enforce that emails must be unique, eg. @drshrey and @shreyasjag have the same email. */
   email?: Maybe<Scalars['String']>;
   /** An integer id that GitHub gives every user. Use github_node_id instead whenever possible. */
   github_database_id?: Maybe<Scalars['Int']>;
@@ -1357,7 +1355,6 @@ export type Lines_Variance_Fields = {
 export type Mutation_Root = {
   __typename?: 'mutation_root';
   CalculateBlameLines: Scalars['Boolean'];
-  StartCuddlefishSession: Scalars['String'];
   StartCuddlefishSession2: StartCuddlefishSessionResponse;
   StartThread: Scalars['String'];
   /** delete data from the table: "blamelines" */
@@ -1464,12 +1461,6 @@ export type Mutation_RootCalculateBlameLinesArgs = {
   filePath: Scalars['String'];
   lastCommit: Scalars['String'];
   repoId: Scalars['String'];
-};
-
-
-/** mutation root */
-export type Mutation_RootStartCuddlefishSessionArgs = {
-  githubAccessToken: Scalars['String'];
 };
 
 
@@ -2879,11 +2870,7 @@ export type ThreadContainingCommentQuery = { __typename?: 'query_root', comments
 export type UserCommentMutationVariables = Exact<{
   threadId: Scalars['uuid'];
   body: Scalars['String'];
-  email: Scalars['String'];
-  github_database_id: Scalars['Int'];
-  github_name?: Maybe<Scalars['String']>;
-  github_node_id: Scalars['String'];
-  github_username: Scalars['String'];
+  author_github_node_id: Scalars['String'];
 }>;
 
 
@@ -2916,3 +2903,17 @@ export type UpsertUserStartSessionMutationVariables = Exact<{
 
 
 export type UpsertUserStartSessionMutation = { __typename?: 'mutation_root', insert_github_users_one?: { __typename?: 'github_users', github_node_id: string } | null | undefined, insert_user_sessions_one?: { __typename?: 'user_sessions', id: string } | null | undefined };
+
+export type LookupUsersByEmailQueryVariables = Exact<{
+  email: Scalars['String'];
+}>;
+
+
+export type LookupUsersByEmailQuery = { __typename?: 'query_root', github_users: Array<{ __typename?: 'github_users', github_node_id: string, github_database_id: number, github_username: string }> };
+
+export type UpsertUsersMutationVariables = Exact<{
+  users: Array<Github_Users_Insert_Input> | Github_Users_Insert_Input;
+}>;
+
+
+export type UpsertUsersMutation = { __typename?: 'mutation_root', insert_github_users?: { __typename?: 'github_users_mutation_response', affected_rows: number } | null | undefined };

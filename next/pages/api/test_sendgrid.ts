@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { assert400, logHandlerErrors } from "../../common_utils";
-import { getSendgrid } from "../../server_utils";
+import { assert400, logHandlerErrors } from "../../src/common_utils";
+import { getSendgrid } from "../../src/server_utils";
 import { CF_APP_EMAIL } from "./config";
 
 export default logHandlerErrors(

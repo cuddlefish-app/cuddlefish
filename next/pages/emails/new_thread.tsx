@@ -1,5 +1,5 @@
 import MarkdownIt from "markdown-it";
-import { isString, notNull } from "../../common_utils";
+import { isString, notNull } from "../../src/common_utils";
 
 type Props = {
   repo: { owner: string; repo: string };

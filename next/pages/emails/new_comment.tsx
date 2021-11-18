@@ -1,5 +1,5 @@
 import MarkdownIt from "markdown-it";
-import { notNull } from "../../common_utils";
+import { notNull } from "../../src/common_utils";
 
 type Props = {
   newComment: { body: string };

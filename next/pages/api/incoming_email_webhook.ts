@@ -7,12 +7,10 @@ import {
   ADMIN_buildApolloClient,
   assert,
   assert400,
-  isString,
   logHandlerErrors,
   notNull,
   notNull400,
-} from "../../common_utils";
-import { ADMIN_getOctokit, lookupUserByEmail } from "../../github";
+} from "../../src/common_utils";
 import {
   EmailCommentMutation,
   EmailCommentMutationVariables,
@@ -21,16 +19,17 @@ import {
   UserCommentMutation,
   UserCommentMutationVariables,
 } from "../../src/generated/admin-hasura-types";
+import { ADMIN_lookupsertSingleUserByEmail } from "../../src/users";
 import { CF_APP_EMAIL } from "./config";
 
 export const config = { api: { bodyParser: false } };
 
-function parseCuddlefishMessageId(s: string) {
+function parseCuddlefishMessageId(s: string): string | null {
   const parsed = /<comment_([^\s@]+)@email\.cuddlefish\.app>/.exec(s);
   return parsed !== null ? parsed[1] : null;
 }
 
-function parseEmail(s: string) {
+function parseEmail(s: string): string | null {
   const parsed = /.*<([^\s@]+@[^\s@]+\.[^\s@]+)>/.exec(s);
   return parsed !== null ? parsed[1] : null;
 }
@@ -49,7 +48,7 @@ const handler = nc()
       const fromEmail = notNull400(parseEmail(fromEmailRaw));
       console.log(`Received email from ${fromEmail}`);
 
-      // For example: <a8502bb8-6b65-4290-a2b0-144e65775682@email.cuddlefish.app>
+      // For example: <comment_a8502bb8-6b65-4290-a2b0-144e65775682@email.cuddlefish.app>
       const inReplyToRaw = notNull400(email.inReplyTo);
       const inReplyTo = notNull400(parseCuddlefishMessageId(inReplyToRaw));
       console.log(`... in response to comment ${inReplyTo}`);
@@ -59,9 +58,8 @@ const handler = nc()
         .split("---------- Forwarded message ---------")[0]
         .trim();
 
-      // TODO lookup user in hasura first, since they may have OAuth logged in with us but set their email to be private on GitHub.
-      // Lookup GitHub user for email address
-      const githubUser = await lookupUserByEmail(ADMIN_getOctokit(), fromEmail);
+      // Note: this returns null if we can't find anyone with that email.
+      const githubUser = await ADMIN_lookupsertSingleUserByEmail(fromEmail);
       console.log(`... from GitHub user ${githubUser?.login}`);
 
       // Lookup inReplyTo comment id in hasura
@@ -86,17 +84,10 @@ const handler = nc()
       const threadId = notNull(q1.data.comments_by_pk).thread_id;
       console.log(`... regarding thread ${threadId}`);
 
-      // Insert comment in hasura for the thread corresponding to the comment id
+      // Insert comment in hasura for the thread corresponding to the comment
+      // id. Note that the author is guaranteed to exist in `github_users` since
+      // `ADMIN_lookupsertSingleUserByEmail` does an upsert for us.
       if (githubUser !== null) {
-        assert(
-          !isString(githubUser.email),
-          "GitHub API seems to never return user emails for this query"
-        );
-
-        // Note that there are multiple constraints that could be violated when
-        // upserting a user. Hasura only supports setting on_conflict.constraint
-        // to a single constraint. It seem the constraint that actually gets hit
-        // is users_github_email_key.
         const m = await apolloClient.mutate<
           UserCommentMutation,
           UserCommentMutationVariables
@@ -105,35 +96,13 @@ const handler = nc()
             mutation UserComment(
               $threadId: uuid!
               $body: String!
-              $email: String!
-              $github_database_id: Int!
-              $github_name: String
-              $github_node_id: String!
-              $github_username: String!
+              $author_github_node_id: String!
             ) {
               insert_comments_one(
                 object: {
                   thread_id: $threadId
                   body: $body
-                  github_user: {
-                    data: {
-                      email: $email
-                      github_database_id: $github_database_id
-                      github_name: $github_name
-                      github_node_id: $github_node_id
-                      github_username: $github_username
-                    }
-                    on_conflict: {
-                      constraint: users_github_email_key
-                      update_columns: [
-                        email
-                        github_database_id
-                        github_name
-                        github_node_id
-                        github_username
-                      ]
-                    }
-                  }
+                  author_github_node_id: $author_github_node_id
                 }
               ) {
                 id
@@ -143,11 +112,7 @@ const handler = nc()
           variables: {
             threadId,
             body: emailText,
-            email: fromEmail,
-            github_database_id: githubUser.id,
-            github_name: githubUser.name,
-            github_node_id: githubUser.node_id,
-            github_username: githubUser.login,
+            author_github_node_id: githubUser.nodeId,
           },
         });
         assert(m.errors === undefined, "hasura returned errors");

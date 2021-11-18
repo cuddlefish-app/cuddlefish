@@ -9,7 +9,7 @@ import {
   assert400,
   logHandlerErrors,
   notNull,
-} from "../../common_utils";
+} from "../../src/common_utils";
 import {
   StartCuddlefishSessionResponse,
   UpsertUserStartSessionMutation,

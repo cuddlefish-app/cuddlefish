@@ -12,13 +12,13 @@ import {
   isString,
   logHandlerErrors,
   notNull,
-} from "../../common_utils";
-import { ADMIN_getOctokit, lookupRepoByNodeId } from "../../github";
-import { getSendgrid } from "../../server_utils";
+} from "../../src/common_utils";
 import {
   CommentContextQuery,
   CommentContextQueryVariables,
 } from "../../src/generated/admin-hasura-types";
+import { ADMIN_getOctokit, lookupRepoByNodeId } from "../../src/github";
+import { getSendgrid } from "../../src/server_utils";
 import NewCommentEmail from "../emails/new_comment";
 import NewThreadEmail from "../emails/new_thread";
 import { CF_APP_EMAIL } from "./config";
