@@ -59,7 +59,6 @@ export default logHandlerErrors(async function (req: NextApiRequest) {
   const decoded = RequestData.decode(req.body);
   assert400(isRight(decoded), "parse fail");
   const payload = decoded.right;
-  // console.log(payload.event.data.new);
 
   const newCommentId = payload.event.data.new.id;
   const apolloClient = ADMIN_buildApolloClient();
