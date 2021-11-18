@@ -1356,7 +1356,7 @@ export type Lines_Variance_Fields = {
 export type Mutation_Root = {
   __typename?: 'mutation_root';
   CalculateBlameLines: Scalars['Boolean'];
-  StartCuddlefishSession2: StartCuddlefishSessionResponse;
+  StartCuddlefishSession: StartCuddlefishSessionResponse;
   StartThread: Scalars['String'];
   /** delete data from the table: "blamelines" */
   delete_blamelines?: Maybe<Blamelines_Mutation_Response>;
@@ -1466,7 +1466,7 @@ export type Mutation_RootCalculateBlameLinesArgs = {
 
 
 /** mutation root */
-export type Mutation_RootStartCuddlefishSession2Args = {
+export type Mutation_RootStartCuddlefishSessionArgs = {
   github_access_token: Scalars['String'];
 };
 

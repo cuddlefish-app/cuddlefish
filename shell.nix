@@ -14,7 +14,6 @@ pkgs.mkShell {
 
     # Necessary for hasura
     docker-compose
-    hasura-cli
 
     # Necessary for node and npm
     nodejs-16_x
@@ -36,6 +35,9 @@ pkgs.mkShell {
     # See https://github.com/NixOS/nixpkgs/issues/146349 as to why we can't do
     # this on macOS yet.
     cargo-watch
+
+    # See https://github.com/hasura/graphql-engine/issues/7820
+    hasura-cli
   ];
 
   # See https://discourse.nixos.org/t/rust-src-not-found-and-other-misadventures-of-developing-rust-on-nixos/11570/3?u=samuela.

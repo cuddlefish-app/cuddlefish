@@ -19,7 +19,7 @@ export async function startCuddlefishSession<Cache>(
   >({
     mutation: gql`
       mutation StartCuddlefishSession($githubAccessToken: String!) {
-        StartCuddlefishSession2(github_access_token: $githubAccessToken) {
+        StartCuddlefishSession(github_access_token: $githubAccessToken) {
           session_token
         }
       }
@@ -27,5 +27,5 @@ export async function startCuddlefishSession<Cache>(
     variables: { githubAccessToken },
   });
   assert(m.errors === undefined, "graphql errors");
-  return notNull(m.data).StartCuddlefishSession2.session_token;
+  return notNull(m.data).StartCuddlefishSession.session_token;
 }

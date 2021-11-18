@@ -167,8 +167,7 @@ export enum Lines_Select_Column {
 export type Mutation_Root = {
   __typename?: 'mutation_root';
   CalculateBlameLines: Scalars['Boolean'];
-  StartCuddlefishSession: Scalars['String'];
-  StartCuddlefishSession2: StartCuddlefishSessionResponse;
+  StartCuddlefishSession: StartCuddlefishSessionResponse;
   StartThread: Scalars['String'];
 };
 
@@ -183,12 +182,6 @@ export type Mutation_RootCalculateBlameLinesArgs = {
 
 /** mutation root */
 export type Mutation_RootStartCuddlefishSessionArgs = {
-  githubAccessToken: Scalars['String'];
-};
-
-
-/** mutation root */
-export type Mutation_RootStartCuddlefishSession2Args = {
   github_access_token: Scalars['String'];
 };
 
@@ -312,4 +305,4 @@ export type StartCuddlefishSessionMutationVariables = Exact<{
 }>;
 
 
-export type StartCuddlefishSessionMutation = { __typename?: 'mutation_root', StartCuddlefishSession2: { __typename?: 'StartCuddlefishSessionResponse', session_token: string } };
+export type StartCuddlefishSessionMutation = { __typename?: 'mutation_root', StartCuddlefishSession: { __typename?: 'StartCuddlefishSessionResponse', session_token: string } };
