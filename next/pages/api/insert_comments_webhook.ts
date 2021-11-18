@@ -4,6 +4,7 @@ import { isRight } from "fp-ts/lib/Either";
 import * as t from "io-ts";
 import { DateFromISOString } from "io-ts-types/lib/DateFromISOString";
 import type { NextApiRequest } from "next";
+import pino from "pino";
 import ReactDOMServer from "react-dom/server";
 import { assert, isString, notNull } from "../../src/common_utils";
 import {
@@ -51,7 +52,10 @@ const RequestData = t.strict({
   table: t.strict({ schema: t.literal("public"), name: t.literal("comments") }),
 });
 
-export default logHandlerErrors(async function (req: NextApiRequest) {
+export default logHandlerErrors(async function (
+  req: NextApiRequest,
+  log: pino.Logger
+) {
   // Verify request is coming from hasura or some other trusted source
   assert400(hasCorrectApiSecret(req), "incorrect api secret");
 
@@ -59,6 +63,7 @@ export default logHandlerErrors(async function (req: NextApiRequest) {
   const decoded = RequestData.decode(req.body);
   assert400(isRight(decoded), "parse fail");
   const payload = decoded.right;
+  log.info({ payload }, "successfully parsed request");
 
   const newCommentId = payload.event.data.new.id;
   const apolloClient = ADMIN_buildApolloClient();
@@ -106,6 +111,7 @@ export default logHandlerErrors(async function (req: NextApiRequest) {
   assert(q.error === undefined, "hasura returned errors");
   assert(q.errors === undefined, "hasura returned errors");
   const comment = notNull(q.data.comments_by_pk);
+  log.info({ comment }, "successfully queried comment context");
 
   // Find all comments that came before the current one. Technically, we could
   // get away with a takeWhile here since we're sorting on created_at in the
@@ -126,6 +132,7 @@ export default logHandlerErrors(async function (req: NextApiRequest) {
   );
   // For now we just pick the first github repo. Commits should be globally unique anyhow.
   const repoId = comment.thread.github_repos[0].repo_github_node_id;
+  log.info({ repoId }, "found github repo");
 
   // Use the user's GitHub access token if we have it. We might not have it if the user has never logged in before, but
   // has responded to one of our emails.
@@ -136,6 +143,7 @@ export default logHandlerErrors(async function (req: NextApiRequest) {
 
   // Find a repo containing this commit
   const repo = await lookupRepoByNodeId(octokit, repoId);
+  log.info({ repo }, "found github repo");
 
   // Lookup the commit details to get code author and committer
   const commit = (
@@ -144,6 +152,7 @@ export default logHandlerErrors(async function (req: NextApiRequest) {
       commit_sha: comment.thread.original_commit_hash,
     })
   ).data;
+  log.info({ commit }, "found commit details");
   // Example commit.url: https://api.github.com/repos/samuela/personal-website/git/commits/208b81bafe9d66ca29fd0b78cbbb68256ab543fc
   // Example commit.html_url: https://github.com/samuela/personal-website/commit/208b81bafe9d66ca29fd0b78cbbb68256ab543fc
 
