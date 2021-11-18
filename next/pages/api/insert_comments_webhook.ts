@@ -18,7 +18,7 @@ import {
   CommentContextQueryVariables,
 } from "../../src/generated/admin-hasura-types";
 import { ADMIN_getOctokit, lookupRepoByNodeId } from "../../src/github";
-import { getSendgrid } from "../../src/server_utils";
+import { getSendgrid, hasCorrectApiSecret } from "../../src/server_utils";
 import NewCommentEmail from "../emails/new_comment";
 import NewThreadEmail from "../emails/new_thread";
 import { CF_APP_EMAIL } from "./config";
@@ -57,10 +57,7 @@ export default logHandlerErrors(async function (
   res: NextApiResponse<{}>
 ) {
   // Verify request is coming from hasura or some other trusted source
-  assert400(
-    req.headers["x-api-secret"] === notNull(process.env.API_SECRET),
-    "incorrect api secret"
-  );
+  assert400(hasCorrectApiSecret(req), "incorrect api secret");
 
   assert400(req.method === "POST", "expected POST request");
   const decoded = RequestData.decode(req.body);
@@ -474,7 +471,7 @@ function emailSubject(emailBody: string) {
   return `💬 ${truncate(emailBody.replaceAll("\n", " "), 100)}`;
 }
 
-function commentIdToMessageId(id: string) {
+export function commentIdToMessageId(id: string) {
   return `<comment_${id}@email.cuddlefish.app>`;
 }
 

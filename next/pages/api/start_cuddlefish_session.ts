@@ -15,6 +15,7 @@ import {
   UpsertUserStartSessionMutation,
   UpsertUserStartSessionMutationVariables,
 } from "../../src/generated/admin-hasura-types";
+import { hasCorrectApiSecret } from "../../src/server_utils";
 
 const RequestData = t.strict({
   session_variables: t.type({
@@ -42,10 +43,7 @@ export default logHandlerErrors(async function (
   res: NextApiResponse<StartCuddlefishSessionResponse>
 ) {
   // Verify request is coming from hasura or some other trusted source
-  assert400(
-    req.headers["x-api-secret"] === notNull(process.env.API_SECRET),
-    "incorrect api secret"
-  );
+  assert400(hasCorrectApiSecret(req), "incorrect api secret");
 
   assert400(req.method === "POST", "expected POST request");
   const decoded = RequestData.decode(req.body);
