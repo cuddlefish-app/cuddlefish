@@ -9,10 +9,6 @@ Requisite environment variables:
 - `SENDGRID_API_KEY`
 - `GITHUB_API_TOKEN`
 
-Run `npm run gql:codegen -- --watch` in development to generate GraphQL types.
+Run `yarn run gql:codegen -- --watch` in development to generate GraphQL types.
 
-Run the development server:
-
-```
-npm run dev
-```
+Run the development server: `./dev.sh`.

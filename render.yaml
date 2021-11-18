@@ -100,9 +100,8 @@ services:
   - name: cf-next
     type: web
     env: node
-    # See https://stackoverflow.com/questions/60065865/is-there-a-way-of-making-npm-ci-install-devdependencies-or-npm-install-not
-    buildCommand: cd next/ && npm ci --include=dev && npm run build
-    startCommand: cd next/ && npm run start
+    buildCommand: cd next/ && yarn install --frozen-lockfile && yarn run build
+    startCommand: cd next/ && yarn run start
     healthCheckPath: /api/healthz
     envVars:
       # Hasura stuff
