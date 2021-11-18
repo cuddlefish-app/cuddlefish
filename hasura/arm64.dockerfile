@@ -1,13 +1,17 @@
-# See https://hasura.io/docs/1.0/graphql/core/migrations/advanced/auto-apply-migrations.html
-# Dockerfile is here: https://github.com/hasura/graphql-engine/blob/master/scripts/cli-migrations/v3/Dockerfile
-FROM hasura/graphql-engine:v2.0.10.cli-migrations-v3
+# This is based on the x86_64 Dockerfile which we still use in production.
+# Unfortunately there's no official arm64 hasura image yet:
+# https://github.com/hasura/graphql-engine/issues/6337.
+FROM fedormelexin/graphql-engine-arm64:v2.0.10.cli-migrations-v3
 
 # See https://github.com/hasura/graphql-engine/issues/7676#issuecomment-954439822
 # as to why this is necessary in the first place. See https://wiki.postgresql.org/wiki/Apt
 # for more info on the PGDG apt repo.
+# fedormelexin/graphql-engine-arm64 is based on ubuntu focal (20.04), whereas
+# the official hasura/graphql-engine is based on debian buster (10). Therefore,
+# we pull from `focal-pgdg`.
 RUN apt-get update \
   && apt-get install -y curl gnupg2 \
-  && echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+  && echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
   && curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
   && apt-get update \
   && apt-get install -y postgresql-client-14

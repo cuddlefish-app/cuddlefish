@@ -16,7 +16,9 @@ services:
       POSTGRES_PASSWORD: postgrespassword
 
   graphql-engine:
-    build: .
+    build:
+      context: .
+      dockerfile: arm64.dockerfile
     depends_on:
       - "postgres"
     ports:
