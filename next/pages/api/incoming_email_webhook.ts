@@ -36,7 +36,7 @@ function parseEmail(s: string): string | null {
 const handler = nc()
   .use(multer().none())
   .post(
-    logHandlerErrors(async (req) => {
+    logHandlerErrors(async (req, log) => {
       assert400(req.body.to === CF_APP_EMAIL, "bad to address");
 
       const emailRaw: string = req.body.email;
@@ -45,12 +45,12 @@ const handler = nc()
       // For example: Samuel Ainsworth <skainsworth@gmail.com>
       const fromEmailRaw = notNull400(email.from).text;
       const fromEmail = notNull400(parseEmail(fromEmailRaw));
-      console.log(`Received email from ${fromEmail}`);
+      log.info(`Received email from ${fromEmail}`);
 
       // For example: <comment_a8502bb8-6b65-4290-a2b0-144e65775682@email.cuddlefish.app>
       const inReplyToRaw = notNull400(email.inReplyTo);
       const inReplyTo = notNull400(parseCuddlefishMessageId(inReplyToRaw));
-      console.log(`... in response to comment ${inReplyTo}`);
+      log.info(`... in response to comment ${inReplyTo}`);
 
       // TODO there's probably other separators to look out for. Not sure why someone would ever forward an email to us.
       const emailText = notNull400(email.text)
@@ -59,7 +59,7 @@ const handler = nc()
 
       // Note: this returns null if we can't find anyone with that email.
       const githubUser = await ADMIN_lookupsertSingleUserByEmail(fromEmail);
-      console.log(`... from GitHub user ${githubUser?.login}`);
+      log.info(`... from GitHub user ${githubUser?.login}`);
 
       // Lookup inReplyTo comment id in hasura
       const apolloClient = ADMIN_buildApolloClient();
@@ -81,7 +81,7 @@ const handler = nc()
       assert(q1.error === undefined, "hasura returned errors");
       assert(q1.errors === undefined, "hasura returned errors");
       const threadId = notNull(q1.data.comments_by_pk).thread_id;
-      console.log(`... regarding thread ${threadId}`);
+      log.info(`... regarding thread ${threadId}`);
 
       // Insert comment in hasura for the thread corresponding to the comment
       // id. Note that the author is guaranteed to exist in `github_users` since
@@ -116,7 +116,7 @@ const handler = nc()
         });
         assert(m.errors === undefined, "hasura returned errors");
         const newCommentId = notNull(m.data?.insert_comments_one?.id);
-        console.log(`Created comment ${newCommentId}`);
+        log.info(`Created comment ${newCommentId}`);
       } else {
         const m = await apolloClient.mutate<
           EmailCommentMutation,
@@ -147,7 +147,7 @@ const handler = nc()
         });
         assert(m.errors === undefined, "hasura returned errors");
         const newCommentId = notNull(m.data?.insert_comments_one?.id);
-        console.log(`Created comment ${newCommentId}`);
+        log.info(`Created comment ${newCommentId}`);
       }
 
       return {};
