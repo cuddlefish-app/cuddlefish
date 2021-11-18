@@ -1,0 +1,32 @@
+overwrite: true
+generates:
+  src/generated/admin-hasura-types.d.ts:
+    documents:
+      - "pages/api/**/*.ts"
+      # TODO: we may need to adjust this once we start writing pages/etc that
+      # should be using the user/anonymous roles instead of admin.
+      - "src/**/*.ts"
+      - "!src/github.ts"
+    schema:
+      - "http://localhost:8080/v1/graphql":
+          headers:
+            x-hasura-role: admin
+            x-hasura-admin-secret: "hasurasecret"
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+    config:
+      scalars:
+        uuid: string
+  src/generated/github-types.d.ts:
+    documents: "src/github.ts"
+    schema:
+      - "https://api.github.com/graphql":
+          headers:
+            authorization: "Bearer ${GITHUB_API_TOKEN}"
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+    config:
+      scalars:
+        GitObjectID: string
