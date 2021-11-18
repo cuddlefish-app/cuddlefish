@@ -1,17 +1,18 @@
 import { Octokit } from "@octokit/rest";
 import gql from "graphql-tag";
-import { ADMIN_buildApolloClient, assert } from "./common_utils";
+import { assert } from "../common_utils";
 import {
   LookupUsersByEmailQuery,
   LookupUsersByEmailQueryVariables,
   UpsertUsersMutation,
   UpsertUsersMutationVariables,
-} from "./generated/admin-hasura-types";
+} from "../generated/admin-hasura-types";
 import {
   ADMIN_getOctokit,
   lookupGitHubUsersByEmail,
   mostActiveGitHubUser,
 } from "./github";
+import { ADMIN_buildApolloClient } from "./utils";
 
 async function lookupSingleHasuraUserByEmail(octokit: Octokit, email: string) {
   const q = await ADMIN_buildApolloClient().query<

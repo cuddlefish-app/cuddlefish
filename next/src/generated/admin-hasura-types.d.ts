@@ -1,4 +1,5 @@
 export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -15,15 +16,15 @@ export type Scalars = {
 
 /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
 export type Int_Comparison_Exp = {
-  _eq?: Maybe<Scalars['Int']>;
-  _gt?: Maybe<Scalars['Int']>;
-  _gte?: Maybe<Scalars['Int']>;
-  _in?: Maybe<Array<Scalars['Int']>>;
-  _is_null?: Maybe<Scalars['Boolean']>;
-  _lt?: Maybe<Scalars['Int']>;
-  _lte?: Maybe<Scalars['Int']>;
-  _neq?: Maybe<Scalars['Int']>;
-  _nin?: Maybe<Array<Scalars['Int']>>;
+  _eq?: InputMaybe<Scalars['Int']>;
+  _gt?: InputMaybe<Scalars['Int']>;
+  _gte?: InputMaybe<Scalars['Int']>;
+  _in?: InputMaybe<Array<Scalars['Int']>>;
+  _is_null?: InputMaybe<Scalars['Boolean']>;
+  _lt?: InputMaybe<Scalars['Int']>;
+  _lte?: InputMaybe<Scalars['Int']>;
+  _neq?: InputMaybe<Scalars['Int']>;
+  _nin?: InputMaybe<Array<Scalars['Int']>>;
 };
 
 export type StartCuddlefishSessionResponse = {
@@ -33,35 +34,35 @@ export type StartCuddlefishSessionResponse = {
 
 /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
 export type String_Comparison_Exp = {
-  _eq?: Maybe<Scalars['String']>;
-  _gt?: Maybe<Scalars['String']>;
-  _gte?: Maybe<Scalars['String']>;
+  _eq?: InputMaybe<Scalars['String']>;
+  _gt?: InputMaybe<Scalars['String']>;
+  _gte?: InputMaybe<Scalars['String']>;
   /** does the column match the given case-insensitive pattern */
-  _ilike?: Maybe<Scalars['String']>;
-  _in?: Maybe<Array<Scalars['String']>>;
+  _ilike?: InputMaybe<Scalars['String']>;
+  _in?: InputMaybe<Array<Scalars['String']>>;
   /** does the column match the given POSIX regular expression, case insensitive */
-  _iregex?: Maybe<Scalars['String']>;
-  _is_null?: Maybe<Scalars['Boolean']>;
+  _iregex?: InputMaybe<Scalars['String']>;
+  _is_null?: InputMaybe<Scalars['Boolean']>;
   /** does the column match the given pattern */
-  _like?: Maybe<Scalars['String']>;
-  _lt?: Maybe<Scalars['String']>;
-  _lte?: Maybe<Scalars['String']>;
-  _neq?: Maybe<Scalars['String']>;
+  _like?: InputMaybe<Scalars['String']>;
+  _lt?: InputMaybe<Scalars['String']>;
+  _lte?: InputMaybe<Scalars['String']>;
+  _neq?: InputMaybe<Scalars['String']>;
   /** does the column NOT match the given case-insensitive pattern */
-  _nilike?: Maybe<Scalars['String']>;
-  _nin?: Maybe<Array<Scalars['String']>>;
+  _nilike?: InputMaybe<Scalars['String']>;
+  _nin?: InputMaybe<Array<Scalars['String']>>;
   /** does the column NOT match the given POSIX regular expression, case insensitive */
-  _niregex?: Maybe<Scalars['String']>;
+  _niregex?: InputMaybe<Scalars['String']>;
   /** does the column NOT match the given pattern */
-  _nlike?: Maybe<Scalars['String']>;
+  _nlike?: InputMaybe<Scalars['String']>;
   /** does the column NOT match the given POSIX regular expression, case sensitive */
-  _nregex?: Maybe<Scalars['String']>;
+  _nregex?: InputMaybe<Scalars['String']>;
   /** does the column NOT match the given SQL regular expression */
-  _nsimilar?: Maybe<Scalars['String']>;
+  _nsimilar?: InputMaybe<Scalars['String']>;
   /** does the column match the given POSIX regular expression, case sensitive */
-  _regex?: Maybe<Scalars['String']>;
+  _regex?: InputMaybe<Scalars['String']>;
   /** does the column match the given SQL regular expression */
-  _similar?: Maybe<Scalars['String']>;
+  _similar?: InputMaybe<Scalars['String']>;
 };
 
 /**
@@ -109,8 +110,8 @@ export type Blamelines_Aggregate_Fields = {
 
 /** aggregate fields of "blamelines" */
 export type Blamelines_Aggregate_FieldsCountArgs = {
-  columns?: Maybe<Array<Blamelines_Select_Column>>;
-  distinct?: Maybe<Scalars['Boolean']>;
+  columns?: InputMaybe<Array<Blamelines_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']>;
 };
 
 /** aggregate avg on columns */
@@ -122,16 +123,16 @@ export type Blamelines_Avg_Fields = {
 
 /** Boolean expression to filter rows from the table "blamelines". All fields are combined with a logical 'AND'. */
 export type Blamelines_Bool_Exp = {
-  _and?: Maybe<Array<Blamelines_Bool_Exp>>;
-  _not?: Maybe<Blamelines_Bool_Exp>;
-  _or?: Maybe<Array<Blamelines_Bool_Exp>>;
-  original_commit_hash?: Maybe<String_Comparison_Exp>;
-  original_file_path?: Maybe<String_Comparison_Exp>;
-  original_line?: Maybe<Lines_Bool_Exp>;
-  original_line_number?: Maybe<Int_Comparison_Exp>;
-  x_commit_hash?: Maybe<String_Comparison_Exp>;
-  x_file_path?: Maybe<String_Comparison_Exp>;
-  x_line_number?: Maybe<Int_Comparison_Exp>;
+  _and?: InputMaybe<Array<Blamelines_Bool_Exp>>;
+  _not?: InputMaybe<Blamelines_Bool_Exp>;
+  _or?: InputMaybe<Array<Blamelines_Bool_Exp>>;
+  original_commit_hash?: InputMaybe<String_Comparison_Exp>;
+  original_file_path?: InputMaybe<String_Comparison_Exp>;
+  original_line?: InputMaybe<Lines_Bool_Exp>;
+  original_line_number?: InputMaybe<Int_Comparison_Exp>;
+  x_commit_hash?: InputMaybe<String_Comparison_Exp>;
+  x_file_path?: InputMaybe<String_Comparison_Exp>;
+  x_line_number?: InputMaybe<Int_Comparison_Exp>;
 };
 
 /** unique or primary key constraints on table "blamelines" */
@@ -142,19 +143,19 @@ export enum Blamelines_Constraint {
 
 /** input type for incrementing numeric columns in table "blamelines" */
 export type Blamelines_Inc_Input = {
-  original_line_number?: Maybe<Scalars['Int']>;
-  x_line_number?: Maybe<Scalars['Int']>;
+  original_line_number?: InputMaybe<Scalars['Int']>;
+  x_line_number?: InputMaybe<Scalars['Int']>;
 };
 
 /** input type for inserting data into table "blamelines" */
 export type Blamelines_Insert_Input = {
-  original_commit_hash?: Maybe<Scalars['String']>;
-  original_file_path?: Maybe<Scalars['String']>;
-  original_line?: Maybe<Lines_Obj_Rel_Insert_Input>;
-  original_line_number?: Maybe<Scalars['Int']>;
-  x_commit_hash?: Maybe<Scalars['String']>;
-  x_file_path?: Maybe<Scalars['String']>;
-  x_line_number?: Maybe<Scalars['Int']>;
+  original_commit_hash?: InputMaybe<Scalars['String']>;
+  original_file_path?: InputMaybe<Scalars['String']>;
+  original_line?: InputMaybe<Lines_Obj_Rel_Insert_Input>;
+  original_line_number?: InputMaybe<Scalars['Int']>;
+  x_commit_hash?: InputMaybe<Scalars['String']>;
+  x_file_path?: InputMaybe<Scalars['String']>;
+  x_line_number?: InputMaybe<Scalars['Int']>;
 };
 
 /** aggregate max on columns */
@@ -192,18 +193,18 @@ export type Blamelines_Mutation_Response = {
 export type Blamelines_On_Conflict = {
   constraint: Blamelines_Constraint;
   update_columns?: Array<Blamelines_Update_Column>;
-  where?: Maybe<Blamelines_Bool_Exp>;
+  where?: InputMaybe<Blamelines_Bool_Exp>;
 };
 
 /** Ordering options when selecting data from "blamelines". */
 export type Blamelines_Order_By = {
-  original_commit_hash?: Maybe<Order_By>;
-  original_file_path?: Maybe<Order_By>;
-  original_line?: Maybe<Lines_Order_By>;
-  original_line_number?: Maybe<Order_By>;
-  x_commit_hash?: Maybe<Order_By>;
-  x_file_path?: Maybe<Order_By>;
-  x_line_number?: Maybe<Order_By>;
+  original_commit_hash?: InputMaybe<Order_By>;
+  original_file_path?: InputMaybe<Order_By>;
+  original_line?: InputMaybe<Lines_Order_By>;
+  original_line_number?: InputMaybe<Order_By>;
+  x_commit_hash?: InputMaybe<Order_By>;
+  x_file_path?: InputMaybe<Order_By>;
+  x_line_number?: InputMaybe<Order_By>;
 };
 
 /** primary key columns input for table: blamelines */
@@ -231,12 +232,12 @@ export enum Blamelines_Select_Column {
 
 /** input type for updating data in table "blamelines" */
 export type Blamelines_Set_Input = {
-  original_commit_hash?: Maybe<Scalars['String']>;
-  original_file_path?: Maybe<Scalars['String']>;
-  original_line_number?: Maybe<Scalars['Int']>;
-  x_commit_hash?: Maybe<Scalars['String']>;
-  x_file_path?: Maybe<Scalars['String']>;
-  x_line_number?: Maybe<Scalars['Int']>;
+  original_commit_hash?: InputMaybe<Scalars['String']>;
+  original_file_path?: InputMaybe<Scalars['String']>;
+  original_line_number?: InputMaybe<Scalars['Int']>;
+  x_commit_hash?: InputMaybe<Scalars['String']>;
+  x_file_path?: InputMaybe<Scalars['String']>;
+  x_line_number?: InputMaybe<Scalars['Int']>;
 };
 
 /** aggregate stddev on columns */
@@ -338,37 +339,37 @@ export type Comments_Aggregate_Fields = {
 
 /** aggregate fields of "comments" */
 export type Comments_Aggregate_FieldsCountArgs = {
-  columns?: Maybe<Array<Comments_Select_Column>>;
-  distinct?: Maybe<Scalars['Boolean']>;
+  columns?: InputMaybe<Array<Comments_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']>;
 };
 
 /** order by aggregate values of table "comments" */
 export type Comments_Aggregate_Order_By = {
-  count?: Maybe<Order_By>;
-  max?: Maybe<Comments_Max_Order_By>;
-  min?: Maybe<Comments_Min_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Comments_Max_Order_By>;
+  min?: InputMaybe<Comments_Min_Order_By>;
 };
 
 /** input type for inserting array relation for remote table "comments" */
 export type Comments_Arr_Rel_Insert_Input = {
   data: Array<Comments_Insert_Input>;
   /** on conflict condition */
-  on_conflict?: Maybe<Comments_On_Conflict>;
+  on_conflict?: InputMaybe<Comments_On_Conflict>;
 };
 
 /** Boolean expression to filter rows from the table "comments". All fields are combined with a logical 'AND'. */
 export type Comments_Bool_Exp = {
-  _and?: Maybe<Array<Comments_Bool_Exp>>;
-  _not?: Maybe<Comments_Bool_Exp>;
-  _or?: Maybe<Array<Comments_Bool_Exp>>;
-  author_email?: Maybe<String_Comparison_Exp>;
-  author_github_node_id?: Maybe<String_Comparison_Exp>;
-  body?: Maybe<String_Comparison_Exp>;
-  created_at?: Maybe<Timestamptz_Comparison_Exp>;
-  github_user?: Maybe<Github_Users_Bool_Exp>;
-  id?: Maybe<Uuid_Comparison_Exp>;
-  thread?: Maybe<Threads_Bool_Exp>;
-  thread_id?: Maybe<Uuid_Comparison_Exp>;
+  _and?: InputMaybe<Array<Comments_Bool_Exp>>;
+  _not?: InputMaybe<Comments_Bool_Exp>;
+  _or?: InputMaybe<Array<Comments_Bool_Exp>>;
+  author_email?: InputMaybe<String_Comparison_Exp>;
+  author_github_node_id?: InputMaybe<String_Comparison_Exp>;
+  body?: InputMaybe<String_Comparison_Exp>;
+  created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  github_user?: InputMaybe<Github_Users_Bool_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  thread?: InputMaybe<Threads_Bool_Exp>;
+  thread_id?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
 /** unique or primary key constraints on table "comments" */
@@ -379,15 +380,15 @@ export enum Comments_Constraint {
 
 /** input type for inserting data into table "comments" */
 export type Comments_Insert_Input = {
-  author_email?: Maybe<Scalars['String']>;
+  author_email?: InputMaybe<Scalars['String']>;
   /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
-  author_github_node_id?: Maybe<Scalars['String']>;
-  body?: Maybe<Scalars['String']>;
-  created_at?: Maybe<Scalars['timestamptz']>;
-  github_user?: Maybe<Github_Users_Obj_Rel_Insert_Input>;
-  id?: Maybe<Scalars['uuid']>;
-  thread?: Maybe<Threads_Obj_Rel_Insert_Input>;
-  thread_id?: Maybe<Scalars['uuid']>;
+  author_github_node_id?: InputMaybe<Scalars['String']>;
+  body?: InputMaybe<Scalars['String']>;
+  created_at?: InputMaybe<Scalars['timestamptz']>;
+  github_user?: InputMaybe<Github_Users_Obj_Rel_Insert_Input>;
+  id?: InputMaybe<Scalars['uuid']>;
+  thread?: InputMaybe<Threads_Obj_Rel_Insert_Input>;
+  thread_id?: InputMaybe<Scalars['uuid']>;
 };
 
 /** aggregate max on columns */
@@ -404,13 +405,13 @@ export type Comments_Max_Fields = {
 
 /** order by max() on columns of table "comments" */
 export type Comments_Max_Order_By = {
-  author_email?: Maybe<Order_By>;
+  author_email?: InputMaybe<Order_By>;
   /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
-  author_github_node_id?: Maybe<Order_By>;
-  body?: Maybe<Order_By>;
-  created_at?: Maybe<Order_By>;
-  id?: Maybe<Order_By>;
-  thread_id?: Maybe<Order_By>;
+  author_github_node_id?: InputMaybe<Order_By>;
+  body?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  thread_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate min on columns */
@@ -427,13 +428,13 @@ export type Comments_Min_Fields = {
 
 /** order by min() on columns of table "comments" */
 export type Comments_Min_Order_By = {
-  author_email?: Maybe<Order_By>;
+  author_email?: InputMaybe<Order_By>;
   /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
-  author_github_node_id?: Maybe<Order_By>;
-  body?: Maybe<Order_By>;
-  created_at?: Maybe<Order_By>;
-  id?: Maybe<Order_By>;
-  thread_id?: Maybe<Order_By>;
+  author_github_node_id?: InputMaybe<Order_By>;
+  body?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  thread_id?: InputMaybe<Order_By>;
 };
 
 /** response of any mutation on the table "comments" */
@@ -449,19 +450,19 @@ export type Comments_Mutation_Response = {
 export type Comments_On_Conflict = {
   constraint: Comments_Constraint;
   update_columns?: Array<Comments_Update_Column>;
-  where?: Maybe<Comments_Bool_Exp>;
+  where?: InputMaybe<Comments_Bool_Exp>;
 };
 
 /** Ordering options when selecting data from "comments". */
 export type Comments_Order_By = {
-  author_email?: Maybe<Order_By>;
-  author_github_node_id?: Maybe<Order_By>;
-  body?: Maybe<Order_By>;
-  created_at?: Maybe<Order_By>;
-  github_user?: Maybe<Github_Users_Order_By>;
-  id?: Maybe<Order_By>;
-  thread?: Maybe<Threads_Order_By>;
-  thread_id?: Maybe<Order_By>;
+  author_email?: InputMaybe<Order_By>;
+  author_github_node_id?: InputMaybe<Order_By>;
+  body?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  github_user?: InputMaybe<Github_Users_Order_By>;
+  id?: InputMaybe<Order_By>;
+  thread?: InputMaybe<Threads_Order_By>;
+  thread_id?: InputMaybe<Order_By>;
 };
 
 /** primary key columns input for table: comments */
@@ -487,13 +488,13 @@ export enum Comments_Select_Column {
 
 /** input type for updating data in table "comments" */
 export type Comments_Set_Input = {
-  author_email?: Maybe<Scalars['String']>;
+  author_email?: InputMaybe<Scalars['String']>;
   /** The GitHub node id of the user who authored this comment. May be null when author_email is instead present. */
-  author_github_node_id?: Maybe<Scalars['String']>;
-  body?: Maybe<Scalars['String']>;
-  created_at?: Maybe<Scalars['timestamptz']>;
-  id?: Maybe<Scalars['uuid']>;
-  thread_id?: Maybe<Scalars['uuid']>;
+  author_github_node_id?: InputMaybe<Scalars['String']>;
+  body?: InputMaybe<Scalars['String']>;
+  created_at?: InputMaybe<Scalars['timestamptz']>;
+  id?: InputMaybe<Scalars['uuid']>;
+  thread_id?: InputMaybe<Scalars['uuid']>;
 };
 
 /** update columns of table "comments" */
@@ -543,31 +544,31 @@ export type Commit_Github_Repo_Aggregate_Fields = {
 
 /** aggregate fields of "commit_github_repo" */
 export type Commit_Github_Repo_Aggregate_FieldsCountArgs = {
-  columns?: Maybe<Array<Commit_Github_Repo_Select_Column>>;
-  distinct?: Maybe<Scalars['Boolean']>;
+  columns?: InputMaybe<Array<Commit_Github_Repo_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']>;
 };
 
 /** order by aggregate values of table "commit_github_repo" */
 export type Commit_Github_Repo_Aggregate_Order_By = {
-  count?: Maybe<Order_By>;
-  max?: Maybe<Commit_Github_Repo_Max_Order_By>;
-  min?: Maybe<Commit_Github_Repo_Min_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Commit_Github_Repo_Max_Order_By>;
+  min?: InputMaybe<Commit_Github_Repo_Min_Order_By>;
 };
 
 /** input type for inserting array relation for remote table "commit_github_repo" */
 export type Commit_Github_Repo_Arr_Rel_Insert_Input = {
   data: Array<Commit_Github_Repo_Insert_Input>;
   /** on conflict condition */
-  on_conflict?: Maybe<Commit_Github_Repo_On_Conflict>;
+  on_conflict?: InputMaybe<Commit_Github_Repo_On_Conflict>;
 };
 
 /** Boolean expression to filter rows from the table "commit_github_repo". All fields are combined with a logical 'AND'. */
 export type Commit_Github_Repo_Bool_Exp = {
-  _and?: Maybe<Array<Commit_Github_Repo_Bool_Exp>>;
-  _not?: Maybe<Commit_Github_Repo_Bool_Exp>;
-  _or?: Maybe<Array<Commit_Github_Repo_Bool_Exp>>;
-  commit_hash?: Maybe<String_Comparison_Exp>;
-  repo_github_node_id?: Maybe<String_Comparison_Exp>;
+  _and?: InputMaybe<Array<Commit_Github_Repo_Bool_Exp>>;
+  _not?: InputMaybe<Commit_Github_Repo_Bool_Exp>;
+  _or?: InputMaybe<Array<Commit_Github_Repo_Bool_Exp>>;
+  commit_hash?: InputMaybe<String_Comparison_Exp>;
+  repo_github_node_id?: InputMaybe<String_Comparison_Exp>;
 };
 
 /** unique or primary key constraints on table "commit_github_repo" */
@@ -578,8 +579,8 @@ export enum Commit_Github_Repo_Constraint {
 
 /** input type for inserting data into table "commit_github_repo" */
 export type Commit_Github_Repo_Insert_Input = {
-  commit_hash?: Maybe<Scalars['String']>;
-  repo_github_node_id?: Maybe<Scalars['String']>;
+  commit_hash?: InputMaybe<Scalars['String']>;
+  repo_github_node_id?: InputMaybe<Scalars['String']>;
 };
 
 /** aggregate max on columns */
@@ -591,8 +592,8 @@ export type Commit_Github_Repo_Max_Fields = {
 
 /** order by max() on columns of table "commit_github_repo" */
 export type Commit_Github_Repo_Max_Order_By = {
-  commit_hash?: Maybe<Order_By>;
-  repo_github_node_id?: Maybe<Order_By>;
+  commit_hash?: InputMaybe<Order_By>;
+  repo_github_node_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate min on columns */
@@ -604,8 +605,8 @@ export type Commit_Github_Repo_Min_Fields = {
 
 /** order by min() on columns of table "commit_github_repo" */
 export type Commit_Github_Repo_Min_Order_By = {
-  commit_hash?: Maybe<Order_By>;
-  repo_github_node_id?: Maybe<Order_By>;
+  commit_hash?: InputMaybe<Order_By>;
+  repo_github_node_id?: InputMaybe<Order_By>;
 };
 
 /** response of any mutation on the table "commit_github_repo" */
@@ -621,20 +622,20 @@ export type Commit_Github_Repo_Mutation_Response = {
 export type Commit_Github_Repo_Obj_Rel_Insert_Input = {
   data: Commit_Github_Repo_Insert_Input;
   /** on conflict condition */
-  on_conflict?: Maybe<Commit_Github_Repo_On_Conflict>;
+  on_conflict?: InputMaybe<Commit_Github_Repo_On_Conflict>;
 };
 
 /** on conflict condition type for table "commit_github_repo" */
 export type Commit_Github_Repo_On_Conflict = {
   constraint: Commit_Github_Repo_Constraint;
   update_columns?: Array<Commit_Github_Repo_Update_Column>;
-  where?: Maybe<Commit_Github_Repo_Bool_Exp>;
+  where?: InputMaybe<Commit_Github_Repo_Bool_Exp>;
 };
 
 /** Ordering options when selecting data from "commit_github_repo". */
 export type Commit_Github_Repo_Order_By = {
-  commit_hash?: Maybe<Order_By>;
-  repo_github_node_id?: Maybe<Order_By>;
+  commit_hash?: InputMaybe<Order_By>;
+  repo_github_node_id?: InputMaybe<Order_By>;
 };
 
 /** primary key columns input for table: commit_github_repo */
@@ -653,8 +654,8 @@ export enum Commit_Github_Repo_Select_Column {
 
 /** input type for updating data in table "commit_github_repo" */
 export type Commit_Github_Repo_Set_Input = {
-  commit_hash?: Maybe<Scalars['String']>;
-  repo_github_node_id?: Maybe<Scalars['String']>;
+  commit_hash?: InputMaybe<Scalars['String']>;
+  repo_github_node_id?: InputMaybe<Scalars['String']>;
 };
 
 /** update columns of table "commit_github_repo" */
@@ -693,20 +694,20 @@ export type Commits_Aggregate_Fields = {
 
 /** aggregate fields of "commits" */
 export type Commits_Aggregate_FieldsCountArgs = {
-  columns?: Maybe<Array<Commits_Select_Column>>;
-  distinct?: Maybe<Scalars['Boolean']>;
+  columns?: InputMaybe<Array<Commits_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']>;
 };
 
 /** Boolean expression to filter rows from the table "commits". All fields are combined with a logical 'AND'. */
 export type Commits_Bool_Exp = {
-  _and?: Maybe<Array<Commits_Bool_Exp>>;
-  _not?: Maybe<Commits_Bool_Exp>;
-  _or?: Maybe<Array<Commits_Bool_Exp>>;
-  author_email?: Maybe<String_Comparison_Exp>;
-  author_name?: Maybe<String_Comparison_Exp>;
-  commit_hash?: Maybe<String_Comparison_Exp>;
-  committer_email?: Maybe<String_Comparison_Exp>;
-  committer_name?: Maybe<String_Comparison_Exp>;
+  _and?: InputMaybe<Array<Commits_Bool_Exp>>;
+  _not?: InputMaybe<Commits_Bool_Exp>;
+  _or?: InputMaybe<Array<Commits_Bool_Exp>>;
+  author_email?: InputMaybe<String_Comparison_Exp>;
+  author_name?: InputMaybe<String_Comparison_Exp>;
+  commit_hash?: InputMaybe<String_Comparison_Exp>;
+  committer_email?: InputMaybe<String_Comparison_Exp>;
+  committer_name?: InputMaybe<String_Comparison_Exp>;
 };
 
 /** unique or primary key constraints on table "commits" */
@@ -717,11 +718,11 @@ export enum Commits_Constraint {
 
 /** input type for inserting data into table "commits" */
 export type Commits_Insert_Input = {
-  author_email?: Maybe<Scalars['String']>;
-  author_name?: Maybe<Scalars['String']>;
-  commit_hash?: Maybe<Scalars['String']>;
-  committer_email?: Maybe<Scalars['String']>;
-  committer_name?: Maybe<Scalars['String']>;
+  author_email?: InputMaybe<Scalars['String']>;
+  author_name?: InputMaybe<Scalars['String']>;
+  commit_hash?: InputMaybe<Scalars['String']>;
+  committer_email?: InputMaybe<Scalars['String']>;
+  committer_name?: InputMaybe<Scalars['String']>;
 };
 
 /** aggregate max on columns */
@@ -757,16 +758,16 @@ export type Commits_Mutation_Response = {
 export type Commits_On_Conflict = {
   constraint: Commits_Constraint;
   update_columns?: Array<Commits_Update_Column>;
-  where?: Maybe<Commits_Bool_Exp>;
+  where?: InputMaybe<Commits_Bool_Exp>;
 };
 
 /** Ordering options when selecting data from "commits". */
 export type Commits_Order_By = {
-  author_email?: Maybe<Order_By>;
-  author_name?: Maybe<Order_By>;
-  commit_hash?: Maybe<Order_By>;
-  committer_email?: Maybe<Order_By>;
-  committer_name?: Maybe<Order_By>;
+  author_email?: InputMaybe<Order_By>;
+  author_name?: InputMaybe<Order_By>;
+  commit_hash?: InputMaybe<Order_By>;
+  committer_email?: InputMaybe<Order_By>;
+  committer_name?: InputMaybe<Order_By>;
 };
 
 /** primary key columns input for table: commits */
@@ -790,11 +791,11 @@ export enum Commits_Select_Column {
 
 /** input type for updating data in table "commits" */
 export type Commits_Set_Input = {
-  author_email?: Maybe<Scalars['String']>;
-  author_name?: Maybe<Scalars['String']>;
-  commit_hash?: Maybe<Scalars['String']>;
-  committer_email?: Maybe<Scalars['String']>;
-  committer_name?: Maybe<Scalars['String']>;
+  author_email?: InputMaybe<Scalars['String']>;
+  author_name?: InputMaybe<Scalars['String']>;
+  commit_hash?: InputMaybe<Scalars['String']>;
+  committer_email?: InputMaybe<Scalars['String']>;
+  committer_name?: InputMaybe<Scalars['String']>;
 };
 
 /** update columns of table "commits" */
@@ -861,8 +862,8 @@ export type Github_Users_Aggregate_Fields = {
 
 /** aggregate fields of "github_users" */
 export type Github_Users_Aggregate_FieldsCountArgs = {
-  columns?: Maybe<Array<Github_Users_Select_Column>>;
-  distinct?: Maybe<Scalars['Boolean']>;
+  columns?: InputMaybe<Array<Github_Users_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']>;
 };
 
 /** aggregate avg on columns */
@@ -874,17 +875,17 @@ export type Github_Users_Avg_Fields = {
 
 /** Boolean expression to filter rows from the table "github_users". All fields are combined with a logical 'AND'. */
 export type Github_Users_Bool_Exp = {
-  _and?: Maybe<Array<Github_Users_Bool_Exp>>;
-  _not?: Maybe<Github_Users_Bool_Exp>;
-  _or?: Maybe<Array<Github_Users_Bool_Exp>>;
-  access_token?: Maybe<String_Comparison_Exp>;
-  created_at?: Maybe<Timestamptz_Comparison_Exp>;
-  email?: Maybe<String_Comparison_Exp>;
-  github_database_id?: Maybe<Int_Comparison_Exp>;
-  github_name?: Maybe<String_Comparison_Exp>;
-  github_node_id?: Maybe<String_Comparison_Exp>;
-  github_username?: Maybe<String_Comparison_Exp>;
-  updated_at?: Maybe<Timestamptz_Comparison_Exp>;
+  _and?: InputMaybe<Array<Github_Users_Bool_Exp>>;
+  _not?: InputMaybe<Github_Users_Bool_Exp>;
+  _or?: InputMaybe<Array<Github_Users_Bool_Exp>>;
+  access_token?: InputMaybe<String_Comparison_Exp>;
+  created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  email?: InputMaybe<String_Comparison_Exp>;
+  github_database_id?: InputMaybe<Int_Comparison_Exp>;
+  github_name?: InputMaybe<String_Comparison_Exp>;
+  github_node_id?: InputMaybe<String_Comparison_Exp>;
+  github_username?: InputMaybe<String_Comparison_Exp>;
+  updated_at?: InputMaybe<Timestamptz_Comparison_Exp>;
 };
 
 /** unique or primary key constraints on table "github_users" */
@@ -904,24 +905,24 @@ export enum Github_Users_Constraint {
 /** input type for incrementing numeric columns in table "github_users" */
 export type Github_Users_Inc_Input = {
   /** An integer id that GitHub gives every user. Use github_node_id instead whenever possible. */
-  github_database_id?: Maybe<Scalars['Int']>;
+  github_database_id?: InputMaybe<Scalars['Int']>;
 };
 
 /** input type for inserting data into table "github_users" */
 export type Github_Users_Insert_Input = {
   /** Can be null if a user emails us, but doesn't login via OAuth. */
-  access_token?: Maybe<Scalars['String']>;
-  created_at?: Maybe<Scalars['timestamptz']>;
+  access_token?: InputMaybe<Scalars['String']>;
+  created_at?: InputMaybe<Scalars['timestamptz']>;
   /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. Note that GitHub does not enforce that emails must be unique, eg. @drshrey and @shreyasjag have the same email. */
-  email?: Maybe<Scalars['String']>;
+  email?: InputMaybe<Scalars['String']>;
   /** An integer id that GitHub gives every user. Use github_node_id instead whenever possible. */
-  github_database_id?: Maybe<Scalars['Int']>;
+  github_database_id?: InputMaybe<Scalars['Int']>;
   /** User's name according to GitHub, eg. "Barack Obama". */
-  github_name?: Maybe<Scalars['String']>;
+  github_name?: InputMaybe<Scalars['String']>;
   /** Eg., "MDQ6VXNlcjIyNjg3Mg==". Seems to be used in the v4 GraphQL GitHub API. */
-  github_node_id?: Maybe<Scalars['String']>;
-  github_username?: Maybe<Scalars['String']>;
-  updated_at?: Maybe<Scalars['timestamptz']>;
+  github_node_id?: InputMaybe<Scalars['String']>;
+  github_username?: InputMaybe<Scalars['String']>;
+  updated_at?: InputMaybe<Scalars['timestamptz']>;
 };
 
 /** aggregate max on columns */
@@ -973,26 +974,26 @@ export type Github_Users_Mutation_Response = {
 export type Github_Users_Obj_Rel_Insert_Input = {
   data: Github_Users_Insert_Input;
   /** on conflict condition */
-  on_conflict?: Maybe<Github_Users_On_Conflict>;
+  on_conflict?: InputMaybe<Github_Users_On_Conflict>;
 };
 
 /** on conflict condition type for table "github_users" */
 export type Github_Users_On_Conflict = {
   constraint: Github_Users_Constraint;
   update_columns?: Array<Github_Users_Update_Column>;
-  where?: Maybe<Github_Users_Bool_Exp>;
+  where?: InputMaybe<Github_Users_Bool_Exp>;
 };
 
 /** Ordering options when selecting data from "github_users". */
 export type Github_Users_Order_By = {
-  access_token?: Maybe<Order_By>;
-  created_at?: Maybe<Order_By>;
-  email?: Maybe<Order_By>;
-  github_database_id?: Maybe<Order_By>;
-  github_name?: Maybe<Order_By>;
-  github_node_id?: Maybe<Order_By>;
-  github_username?: Maybe<Order_By>;
-  updated_at?: Maybe<Order_By>;
+  access_token?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  email?: InputMaybe<Order_By>;
+  github_database_id?: InputMaybe<Order_By>;
+  github_name?: InputMaybe<Order_By>;
+  github_node_id?: InputMaybe<Order_By>;
+  github_username?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** primary key columns input for table: github_users */
@@ -1024,18 +1025,18 @@ export enum Github_Users_Select_Column {
 /** input type for updating data in table "github_users" */
 export type Github_Users_Set_Input = {
   /** Can be null if a user emails us, but doesn't login via OAuth. */
-  access_token?: Maybe<Scalars['String']>;
-  created_at?: Maybe<Scalars['timestamptz']>;
+  access_token?: InputMaybe<Scalars['String']>;
+  created_at?: InputMaybe<Scalars['timestamptz']>;
   /** User's email according to their GitHub account. We assume that all GitHub accounts have an email associated with it. Note that GitHub does not enforce that emails must be unique, eg. @drshrey and @shreyasjag have the same email. */
-  email?: Maybe<Scalars['String']>;
+  email?: InputMaybe<Scalars['String']>;
   /** An integer id that GitHub gives every user. Use github_node_id instead whenever possible. */
-  github_database_id?: Maybe<Scalars['Int']>;
+  github_database_id?: InputMaybe<Scalars['Int']>;
   /** User's name according to GitHub, eg. "Barack Obama". */
-  github_name?: Maybe<Scalars['String']>;
+  github_name?: InputMaybe<Scalars['String']>;
   /** Eg., "MDQ6VXNlcjIyNjg3Mg==". Seems to be used in the v4 GraphQL GitHub API. */
-  github_node_id?: Maybe<Scalars['String']>;
-  github_username?: Maybe<Scalars['String']>;
-  updated_at?: Maybe<Scalars['timestamptz']>;
+  github_node_id?: InputMaybe<Scalars['String']>;
+  github_username?: InputMaybe<Scalars['String']>;
+  updated_at?: InputMaybe<Scalars['timestamptz']>;
 };
 
 /** aggregate stddev on columns */
@@ -1136,11 +1137,11 @@ export type Lines = {
  *
  */
 export type LinesThreadsArgs = {
-  distinct_on?: Maybe<Array<Threads_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Threads_Order_By>>;
-  where?: Maybe<Threads_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Threads_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Threads_Order_By>>;
+  where?: InputMaybe<Threads_Bool_Exp>;
 };
 
 
@@ -1152,11 +1153,11 @@ export type LinesThreadsArgs = {
  *
  */
 export type LinesThreads_AggregateArgs = {
-  distinct_on?: Maybe<Array<Threads_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Threads_Order_By>>;
-  where?: Maybe<Threads_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Threads_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Threads_Order_By>>;
+  where?: InputMaybe<Threads_Bool_Exp>;
 };
 
 /** aggregated selection of "lines" */
@@ -1185,8 +1186,8 @@ export type Lines_Aggregate_Fields = {
 
 /** aggregate fields of "lines" */
 export type Lines_Aggregate_FieldsCountArgs = {
-  columns?: Maybe<Array<Lines_Select_Column>>;
-  distinct?: Maybe<Scalars['Boolean']>;
+  columns?: InputMaybe<Array<Lines_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']>;
 };
 
 /** aggregate avg on columns */
@@ -1197,14 +1198,14 @@ export type Lines_Avg_Fields = {
 
 /** Boolean expression to filter rows from the table "lines". All fields are combined with a logical 'AND'. */
 export type Lines_Bool_Exp = {
-  _and?: Maybe<Array<Lines_Bool_Exp>>;
-  _not?: Maybe<Lines_Bool_Exp>;
-  _or?: Maybe<Array<Lines_Bool_Exp>>;
-  commit_hash?: Maybe<String_Comparison_Exp>;
-  file_path?: Maybe<String_Comparison_Exp>;
-  github_repos?: Maybe<Commit_Github_Repo_Bool_Exp>;
-  line_number?: Maybe<Int_Comparison_Exp>;
-  threads?: Maybe<Threads_Bool_Exp>;
+  _and?: InputMaybe<Array<Lines_Bool_Exp>>;
+  _not?: InputMaybe<Lines_Bool_Exp>;
+  _or?: InputMaybe<Array<Lines_Bool_Exp>>;
+  commit_hash?: InputMaybe<String_Comparison_Exp>;
+  file_path?: InputMaybe<String_Comparison_Exp>;
+  github_repos?: InputMaybe<Commit_Github_Repo_Bool_Exp>;
+  line_number?: InputMaybe<Int_Comparison_Exp>;
+  threads?: InputMaybe<Threads_Bool_Exp>;
 };
 
 /** unique or primary key constraints on table "lines" */
@@ -1215,16 +1216,16 @@ export enum Lines_Constraint {
 
 /** input type for incrementing numeric columns in table "lines" */
 export type Lines_Inc_Input = {
-  line_number?: Maybe<Scalars['Int']>;
+  line_number?: InputMaybe<Scalars['Int']>;
 };
 
 /** input type for inserting data into table "lines" */
 export type Lines_Insert_Input = {
-  commit_hash?: Maybe<Scalars['String']>;
-  file_path?: Maybe<Scalars['String']>;
-  github_repos?: Maybe<Commit_Github_Repo_Obj_Rel_Insert_Input>;
-  line_number?: Maybe<Scalars['Int']>;
-  threads?: Maybe<Threads_Arr_Rel_Insert_Input>;
+  commit_hash?: InputMaybe<Scalars['String']>;
+  file_path?: InputMaybe<Scalars['String']>;
+  github_repos?: InputMaybe<Commit_Github_Repo_Obj_Rel_Insert_Input>;
+  line_number?: InputMaybe<Scalars['Int']>;
+  threads?: InputMaybe<Threads_Arr_Rel_Insert_Input>;
 };
 
 /** aggregate max on columns */
@@ -1256,23 +1257,23 @@ export type Lines_Mutation_Response = {
 export type Lines_Obj_Rel_Insert_Input = {
   data: Lines_Insert_Input;
   /** on conflict condition */
-  on_conflict?: Maybe<Lines_On_Conflict>;
+  on_conflict?: InputMaybe<Lines_On_Conflict>;
 };
 
 /** on conflict condition type for table "lines" */
 export type Lines_On_Conflict = {
   constraint: Lines_Constraint;
   update_columns?: Array<Lines_Update_Column>;
-  where?: Maybe<Lines_Bool_Exp>;
+  where?: InputMaybe<Lines_Bool_Exp>;
 };
 
 /** Ordering options when selecting data from "lines". */
 export type Lines_Order_By = {
-  commit_hash?: Maybe<Order_By>;
-  file_path?: Maybe<Order_By>;
-  github_repos?: Maybe<Commit_Github_Repo_Order_By>;
-  line_number?: Maybe<Order_By>;
-  threads_aggregate?: Maybe<Threads_Aggregate_Order_By>;
+  commit_hash?: InputMaybe<Order_By>;
+  file_path?: InputMaybe<Order_By>;
+  github_repos?: InputMaybe<Commit_Github_Repo_Order_By>;
+  line_number?: InputMaybe<Order_By>;
+  threads_aggregate?: InputMaybe<Threads_Aggregate_Order_By>;
 };
 
 /** primary key columns input for table: lines */
@@ -1294,9 +1295,9 @@ export enum Lines_Select_Column {
 
 /** input type for updating data in table "lines" */
 export type Lines_Set_Input = {
-  commit_hash?: Maybe<Scalars['String']>;
-  file_path?: Maybe<Scalars['String']>;
-  line_number?: Maybe<Scalars['Int']>;
+  commit_hash?: InputMaybe<Scalars['String']>;
+  file_path?: InputMaybe<Scalars['String']>;
+  line_number?: InputMaybe<Scalars['Int']>;
 };
 
 /** aggregate stddev on columns */
@@ -1584,231 +1585,231 @@ export type Mutation_RootDelete_User_Sessions_By_PkArgs = {
 /** mutation root */
 export type Mutation_RootInsert_BlamelinesArgs = {
   objects: Array<Blamelines_Insert_Input>;
-  on_conflict?: Maybe<Blamelines_On_Conflict>;
+  on_conflict?: InputMaybe<Blamelines_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootInsert_Blamelines_OneArgs = {
   object: Blamelines_Insert_Input;
-  on_conflict?: Maybe<Blamelines_On_Conflict>;
+  on_conflict?: InputMaybe<Blamelines_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootInsert_CommentsArgs = {
   objects: Array<Comments_Insert_Input>;
-  on_conflict?: Maybe<Comments_On_Conflict>;
+  on_conflict?: InputMaybe<Comments_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootInsert_Comments_OneArgs = {
   object: Comments_Insert_Input;
-  on_conflict?: Maybe<Comments_On_Conflict>;
+  on_conflict?: InputMaybe<Comments_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootInsert_Commit_Github_RepoArgs = {
   objects: Array<Commit_Github_Repo_Insert_Input>;
-  on_conflict?: Maybe<Commit_Github_Repo_On_Conflict>;
+  on_conflict?: InputMaybe<Commit_Github_Repo_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootInsert_Commit_Github_Repo_OneArgs = {
   object: Commit_Github_Repo_Insert_Input;
-  on_conflict?: Maybe<Commit_Github_Repo_On_Conflict>;
+  on_conflict?: InputMaybe<Commit_Github_Repo_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootInsert_CommitsArgs = {
   objects: Array<Commits_Insert_Input>;
-  on_conflict?: Maybe<Commits_On_Conflict>;
+  on_conflict?: InputMaybe<Commits_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootInsert_Commits_OneArgs = {
   object: Commits_Insert_Input;
-  on_conflict?: Maybe<Commits_On_Conflict>;
+  on_conflict?: InputMaybe<Commits_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootInsert_Github_UsersArgs = {
   objects: Array<Github_Users_Insert_Input>;
-  on_conflict?: Maybe<Github_Users_On_Conflict>;
+  on_conflict?: InputMaybe<Github_Users_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootInsert_Github_Users_OneArgs = {
   object: Github_Users_Insert_Input;
-  on_conflict?: Maybe<Github_Users_On_Conflict>;
+  on_conflict?: InputMaybe<Github_Users_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootInsert_LinesArgs = {
   objects: Array<Lines_Insert_Input>;
-  on_conflict?: Maybe<Lines_On_Conflict>;
+  on_conflict?: InputMaybe<Lines_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootInsert_Lines_OneArgs = {
   object: Lines_Insert_Input;
-  on_conflict?: Maybe<Lines_On_Conflict>;
+  on_conflict?: InputMaybe<Lines_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootInsert_ThreadsArgs = {
   objects: Array<Threads_Insert_Input>;
-  on_conflict?: Maybe<Threads_On_Conflict>;
+  on_conflict?: InputMaybe<Threads_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootInsert_Threads_OneArgs = {
   object: Threads_Insert_Input;
-  on_conflict?: Maybe<Threads_On_Conflict>;
+  on_conflict?: InputMaybe<Threads_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootInsert_User_SessionsArgs = {
   objects: Array<User_Sessions_Insert_Input>;
-  on_conflict?: Maybe<User_Sessions_On_Conflict>;
+  on_conflict?: InputMaybe<User_Sessions_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootInsert_User_Sessions_OneArgs = {
   object: User_Sessions_Insert_Input;
-  on_conflict?: Maybe<User_Sessions_On_Conflict>;
+  on_conflict?: InputMaybe<User_Sessions_On_Conflict>;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_BlamelinesArgs = {
-  _inc?: Maybe<Blamelines_Inc_Input>;
-  _set?: Maybe<Blamelines_Set_Input>;
+  _inc?: InputMaybe<Blamelines_Inc_Input>;
+  _set?: InputMaybe<Blamelines_Set_Input>;
   where: Blamelines_Bool_Exp;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_Blamelines_By_PkArgs = {
-  _inc?: Maybe<Blamelines_Inc_Input>;
-  _set?: Maybe<Blamelines_Set_Input>;
+  _inc?: InputMaybe<Blamelines_Inc_Input>;
+  _set?: InputMaybe<Blamelines_Set_Input>;
   pk_columns: Blamelines_Pk_Columns_Input;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_CommentsArgs = {
-  _set?: Maybe<Comments_Set_Input>;
+  _set?: InputMaybe<Comments_Set_Input>;
   where: Comments_Bool_Exp;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_Comments_By_PkArgs = {
-  _set?: Maybe<Comments_Set_Input>;
+  _set?: InputMaybe<Comments_Set_Input>;
   pk_columns: Comments_Pk_Columns_Input;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_Commit_Github_RepoArgs = {
-  _set?: Maybe<Commit_Github_Repo_Set_Input>;
+  _set?: InputMaybe<Commit_Github_Repo_Set_Input>;
   where: Commit_Github_Repo_Bool_Exp;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_Commit_Github_Repo_By_PkArgs = {
-  _set?: Maybe<Commit_Github_Repo_Set_Input>;
+  _set?: InputMaybe<Commit_Github_Repo_Set_Input>;
   pk_columns: Commit_Github_Repo_Pk_Columns_Input;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_CommitsArgs = {
-  _set?: Maybe<Commits_Set_Input>;
+  _set?: InputMaybe<Commits_Set_Input>;
   where: Commits_Bool_Exp;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_Commits_By_PkArgs = {
-  _set?: Maybe<Commits_Set_Input>;
+  _set?: InputMaybe<Commits_Set_Input>;
   pk_columns: Commits_Pk_Columns_Input;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_Github_UsersArgs = {
-  _inc?: Maybe<Github_Users_Inc_Input>;
-  _set?: Maybe<Github_Users_Set_Input>;
+  _inc?: InputMaybe<Github_Users_Inc_Input>;
+  _set?: InputMaybe<Github_Users_Set_Input>;
   where: Github_Users_Bool_Exp;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_Github_Users_By_PkArgs = {
-  _inc?: Maybe<Github_Users_Inc_Input>;
-  _set?: Maybe<Github_Users_Set_Input>;
+  _inc?: InputMaybe<Github_Users_Inc_Input>;
+  _set?: InputMaybe<Github_Users_Set_Input>;
   pk_columns: Github_Users_Pk_Columns_Input;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_LinesArgs = {
-  _inc?: Maybe<Lines_Inc_Input>;
-  _set?: Maybe<Lines_Set_Input>;
+  _inc?: InputMaybe<Lines_Inc_Input>;
+  _set?: InputMaybe<Lines_Set_Input>;
   where: Lines_Bool_Exp;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_Lines_By_PkArgs = {
-  _inc?: Maybe<Lines_Inc_Input>;
-  _set?: Maybe<Lines_Set_Input>;
+  _inc?: InputMaybe<Lines_Inc_Input>;
+  _set?: InputMaybe<Lines_Set_Input>;
   pk_columns: Lines_Pk_Columns_Input;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_ThreadsArgs = {
-  _inc?: Maybe<Threads_Inc_Input>;
-  _set?: Maybe<Threads_Set_Input>;
+  _inc?: InputMaybe<Threads_Inc_Input>;
+  _set?: InputMaybe<Threads_Set_Input>;
   where: Threads_Bool_Exp;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_Threads_By_PkArgs = {
-  _inc?: Maybe<Threads_Inc_Input>;
-  _set?: Maybe<Threads_Set_Input>;
+  _inc?: InputMaybe<Threads_Inc_Input>;
+  _set?: InputMaybe<Threads_Set_Input>;
   pk_columns: Threads_Pk_Columns_Input;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_User_SessionsArgs = {
-  _set?: Maybe<User_Sessions_Set_Input>;
+  _set?: InputMaybe<User_Sessions_Set_Input>;
   where: User_Sessions_Bool_Exp;
 };
 
 
 /** mutation root */
 export type Mutation_RootUpdate_User_Sessions_By_PkArgs = {
-  _set?: Maybe<User_Sessions_Set_Input>;
+  _set?: InputMaybe<User_Sessions_Set_Input>;
   pk_columns: User_Sessions_Pk_Columns_Input;
 };
 
@@ -1883,20 +1884,20 @@ export type Query_Root = {
 
 
 export type Query_RootBlamelinesArgs = {
-  distinct_on?: Maybe<Array<Blamelines_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Blamelines_Order_By>>;
-  where?: Maybe<Blamelines_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Blamelines_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Blamelines_Order_By>>;
+  where?: InputMaybe<Blamelines_Bool_Exp>;
 };
 
 
 export type Query_RootBlamelines_AggregateArgs = {
-  distinct_on?: Maybe<Array<Blamelines_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Blamelines_Order_By>>;
-  where?: Maybe<Blamelines_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Blamelines_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Blamelines_Order_By>>;
+  where?: InputMaybe<Blamelines_Bool_Exp>;
 };
 
 
@@ -1908,20 +1909,20 @@ export type Query_RootBlamelines_By_PkArgs = {
 
 
 export type Query_RootCommentsArgs = {
-  distinct_on?: Maybe<Array<Comments_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Comments_Order_By>>;
-  where?: Maybe<Comments_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Comments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Comments_Order_By>>;
+  where?: InputMaybe<Comments_Bool_Exp>;
 };
 
 
 export type Query_RootComments_AggregateArgs = {
-  distinct_on?: Maybe<Array<Comments_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Comments_Order_By>>;
-  where?: Maybe<Comments_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Comments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Comments_Order_By>>;
+  where?: InputMaybe<Comments_Bool_Exp>;
 };
 
 
@@ -1931,20 +1932,20 @@ export type Query_RootComments_By_PkArgs = {
 
 
 export type Query_RootCommit_Github_RepoArgs = {
-  distinct_on?: Maybe<Array<Commit_Github_Repo_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Commit_Github_Repo_Order_By>>;
-  where?: Maybe<Commit_Github_Repo_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Commit_Github_Repo_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Commit_Github_Repo_Order_By>>;
+  where?: InputMaybe<Commit_Github_Repo_Bool_Exp>;
 };
 
 
 export type Query_RootCommit_Github_Repo_AggregateArgs = {
-  distinct_on?: Maybe<Array<Commit_Github_Repo_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Commit_Github_Repo_Order_By>>;
-  where?: Maybe<Commit_Github_Repo_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Commit_Github_Repo_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Commit_Github_Repo_Order_By>>;
+  where?: InputMaybe<Commit_Github_Repo_Bool_Exp>;
 };
 
 
@@ -1955,20 +1956,20 @@ export type Query_RootCommit_Github_Repo_By_PkArgs = {
 
 
 export type Query_RootCommitsArgs = {
-  distinct_on?: Maybe<Array<Commits_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Commits_Order_By>>;
-  where?: Maybe<Commits_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Commits_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Commits_Order_By>>;
+  where?: InputMaybe<Commits_Bool_Exp>;
 };
 
 
 export type Query_RootCommits_AggregateArgs = {
-  distinct_on?: Maybe<Array<Commits_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Commits_Order_By>>;
-  where?: Maybe<Commits_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Commits_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Commits_Order_By>>;
+  where?: InputMaybe<Commits_Bool_Exp>;
 };
 
 
@@ -1978,20 +1979,20 @@ export type Query_RootCommits_By_PkArgs = {
 
 
 export type Query_RootGithub_UsersArgs = {
-  distinct_on?: Maybe<Array<Github_Users_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Github_Users_Order_By>>;
-  where?: Maybe<Github_Users_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Github_Users_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Github_Users_Order_By>>;
+  where?: InputMaybe<Github_Users_Bool_Exp>;
 };
 
 
 export type Query_RootGithub_Users_AggregateArgs = {
-  distinct_on?: Maybe<Array<Github_Users_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Github_Users_Order_By>>;
-  where?: Maybe<Github_Users_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Github_Users_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Github_Users_Order_By>>;
+  where?: InputMaybe<Github_Users_Bool_Exp>;
 };
 
 
@@ -2001,20 +2002,20 @@ export type Query_RootGithub_Users_By_PkArgs = {
 
 
 export type Query_RootLinesArgs = {
-  distinct_on?: Maybe<Array<Lines_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Lines_Order_By>>;
-  where?: Maybe<Lines_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Lines_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Lines_Order_By>>;
+  where?: InputMaybe<Lines_Bool_Exp>;
 };
 
 
 export type Query_RootLines_AggregateArgs = {
-  distinct_on?: Maybe<Array<Lines_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Lines_Order_By>>;
-  where?: Maybe<Lines_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Lines_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Lines_Order_By>>;
+  where?: InputMaybe<Lines_Bool_Exp>;
 };
 
 
@@ -2026,20 +2027,20 @@ export type Query_RootLines_By_PkArgs = {
 
 
 export type Query_RootThreadsArgs = {
-  distinct_on?: Maybe<Array<Threads_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Threads_Order_By>>;
-  where?: Maybe<Threads_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Threads_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Threads_Order_By>>;
+  where?: InputMaybe<Threads_Bool_Exp>;
 };
 
 
 export type Query_RootThreads_AggregateArgs = {
-  distinct_on?: Maybe<Array<Threads_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Threads_Order_By>>;
-  where?: Maybe<Threads_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Threads_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Threads_Order_By>>;
+  where?: InputMaybe<Threads_Bool_Exp>;
 };
 
 
@@ -2049,20 +2050,20 @@ export type Query_RootThreads_By_PkArgs = {
 
 
 export type Query_RootUser_SessionsArgs = {
-  distinct_on?: Maybe<Array<User_Sessions_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<User_Sessions_Order_By>>;
-  where?: Maybe<User_Sessions_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<User_Sessions_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<User_Sessions_Order_By>>;
+  where?: InputMaybe<User_Sessions_Bool_Exp>;
 };
 
 
 export type Query_RootUser_Sessions_AggregateArgs = {
-  distinct_on?: Maybe<Array<User_Sessions_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<User_Sessions_Order_By>>;
-  where?: Maybe<User_Sessions_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<User_Sessions_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<User_Sessions_Order_By>>;
+  where?: InputMaybe<User_Sessions_Bool_Exp>;
 };
 
 
@@ -2124,20 +2125,20 @@ export type Subscription_Root = {
 
 
 export type Subscription_RootBlamelinesArgs = {
-  distinct_on?: Maybe<Array<Blamelines_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Blamelines_Order_By>>;
-  where?: Maybe<Blamelines_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Blamelines_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Blamelines_Order_By>>;
+  where?: InputMaybe<Blamelines_Bool_Exp>;
 };
 
 
 export type Subscription_RootBlamelines_AggregateArgs = {
-  distinct_on?: Maybe<Array<Blamelines_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Blamelines_Order_By>>;
-  where?: Maybe<Blamelines_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Blamelines_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Blamelines_Order_By>>;
+  where?: InputMaybe<Blamelines_Bool_Exp>;
 };
 
 
@@ -2149,20 +2150,20 @@ export type Subscription_RootBlamelines_By_PkArgs = {
 
 
 export type Subscription_RootCommentsArgs = {
-  distinct_on?: Maybe<Array<Comments_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Comments_Order_By>>;
-  where?: Maybe<Comments_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Comments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Comments_Order_By>>;
+  where?: InputMaybe<Comments_Bool_Exp>;
 };
 
 
 export type Subscription_RootComments_AggregateArgs = {
-  distinct_on?: Maybe<Array<Comments_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Comments_Order_By>>;
-  where?: Maybe<Comments_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Comments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Comments_Order_By>>;
+  where?: InputMaybe<Comments_Bool_Exp>;
 };
 
 
@@ -2172,20 +2173,20 @@ export type Subscription_RootComments_By_PkArgs = {
 
 
 export type Subscription_RootCommit_Github_RepoArgs = {
-  distinct_on?: Maybe<Array<Commit_Github_Repo_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Commit_Github_Repo_Order_By>>;
-  where?: Maybe<Commit_Github_Repo_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Commit_Github_Repo_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Commit_Github_Repo_Order_By>>;
+  where?: InputMaybe<Commit_Github_Repo_Bool_Exp>;
 };
 
 
 export type Subscription_RootCommit_Github_Repo_AggregateArgs = {
-  distinct_on?: Maybe<Array<Commit_Github_Repo_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Commit_Github_Repo_Order_By>>;
-  where?: Maybe<Commit_Github_Repo_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Commit_Github_Repo_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Commit_Github_Repo_Order_By>>;
+  where?: InputMaybe<Commit_Github_Repo_Bool_Exp>;
 };
 
 
@@ -2196,20 +2197,20 @@ export type Subscription_RootCommit_Github_Repo_By_PkArgs = {
 
 
 export type Subscription_RootCommitsArgs = {
-  distinct_on?: Maybe<Array<Commits_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Commits_Order_By>>;
-  where?: Maybe<Commits_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Commits_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Commits_Order_By>>;
+  where?: InputMaybe<Commits_Bool_Exp>;
 };
 
 
 export type Subscription_RootCommits_AggregateArgs = {
-  distinct_on?: Maybe<Array<Commits_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Commits_Order_By>>;
-  where?: Maybe<Commits_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Commits_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Commits_Order_By>>;
+  where?: InputMaybe<Commits_Bool_Exp>;
 };
 
 
@@ -2219,20 +2220,20 @@ export type Subscription_RootCommits_By_PkArgs = {
 
 
 export type Subscription_RootGithub_UsersArgs = {
-  distinct_on?: Maybe<Array<Github_Users_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Github_Users_Order_By>>;
-  where?: Maybe<Github_Users_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Github_Users_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Github_Users_Order_By>>;
+  where?: InputMaybe<Github_Users_Bool_Exp>;
 };
 
 
 export type Subscription_RootGithub_Users_AggregateArgs = {
-  distinct_on?: Maybe<Array<Github_Users_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Github_Users_Order_By>>;
-  where?: Maybe<Github_Users_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Github_Users_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Github_Users_Order_By>>;
+  where?: InputMaybe<Github_Users_Bool_Exp>;
 };
 
 
@@ -2242,20 +2243,20 @@ export type Subscription_RootGithub_Users_By_PkArgs = {
 
 
 export type Subscription_RootLinesArgs = {
-  distinct_on?: Maybe<Array<Lines_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Lines_Order_By>>;
-  where?: Maybe<Lines_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Lines_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Lines_Order_By>>;
+  where?: InputMaybe<Lines_Bool_Exp>;
 };
 
 
 export type Subscription_RootLines_AggregateArgs = {
-  distinct_on?: Maybe<Array<Lines_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Lines_Order_By>>;
-  where?: Maybe<Lines_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Lines_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Lines_Order_By>>;
+  where?: InputMaybe<Lines_Bool_Exp>;
 };
 
 
@@ -2267,20 +2268,20 @@ export type Subscription_RootLines_By_PkArgs = {
 
 
 export type Subscription_RootThreadsArgs = {
-  distinct_on?: Maybe<Array<Threads_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Threads_Order_By>>;
-  where?: Maybe<Threads_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Threads_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Threads_Order_By>>;
+  where?: InputMaybe<Threads_Bool_Exp>;
 };
 
 
 export type Subscription_RootThreads_AggregateArgs = {
-  distinct_on?: Maybe<Array<Threads_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Threads_Order_By>>;
-  where?: Maybe<Threads_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Threads_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Threads_Order_By>>;
+  where?: InputMaybe<Threads_Bool_Exp>;
 };
 
 
@@ -2290,20 +2291,20 @@ export type Subscription_RootThreads_By_PkArgs = {
 
 
 export type Subscription_RootUser_SessionsArgs = {
-  distinct_on?: Maybe<Array<User_Sessions_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<User_Sessions_Order_By>>;
-  where?: Maybe<User_Sessions_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<User_Sessions_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<User_Sessions_Order_By>>;
+  where?: InputMaybe<User_Sessions_Bool_Exp>;
 };
 
 
 export type Subscription_RootUser_Sessions_AggregateArgs = {
-  distinct_on?: Maybe<Array<User_Sessions_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<User_Sessions_Order_By>>;
-  where?: Maybe<User_Sessions_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<User_Sessions_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<User_Sessions_Order_By>>;
+  where?: InputMaybe<User_Sessions_Bool_Exp>;
 };
 
 
@@ -2345,11 +2346,11 @@ export type Threads = {
  *
  */
 export type ThreadsCommentsArgs = {
-  distinct_on?: Maybe<Array<Comments_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Comments_Order_By>>;
-  where?: Maybe<Comments_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Comments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Comments_Order_By>>;
+  where?: InputMaybe<Comments_Bool_Exp>;
 };
 
 
@@ -2361,11 +2362,11 @@ export type ThreadsCommentsArgs = {
  *
  */
 export type ThreadsComments_AggregateArgs = {
-  distinct_on?: Maybe<Array<Comments_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Comments_Order_By>>;
-  where?: Maybe<Comments_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Comments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Comments_Order_By>>;
+  where?: InputMaybe<Comments_Bool_Exp>;
 };
 
 
@@ -2377,11 +2378,11 @@ export type ThreadsComments_AggregateArgs = {
  *
  */
 export type ThreadsGithub_ReposArgs = {
-  distinct_on?: Maybe<Array<Commit_Github_Repo_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Commit_Github_Repo_Order_By>>;
-  where?: Maybe<Commit_Github_Repo_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Commit_Github_Repo_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Commit_Github_Repo_Order_By>>;
+  where?: InputMaybe<Commit_Github_Repo_Bool_Exp>;
 };
 
 
@@ -2393,11 +2394,11 @@ export type ThreadsGithub_ReposArgs = {
  *
  */
 export type ThreadsGithub_Repos_AggregateArgs = {
-  distinct_on?: Maybe<Array<Commit_Github_Repo_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Commit_Github_Repo_Order_By>>;
-  where?: Maybe<Commit_Github_Repo_Bool_Exp>;
+  distinct_on?: InputMaybe<Array<Commit_Github_Repo_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Commit_Github_Repo_Order_By>>;
+  where?: InputMaybe<Commit_Github_Repo_Bool_Exp>;
 };
 
 /** aggregated selection of "threads" */
@@ -2426,30 +2427,30 @@ export type Threads_Aggregate_Fields = {
 
 /** aggregate fields of "threads" */
 export type Threads_Aggregate_FieldsCountArgs = {
-  columns?: Maybe<Array<Threads_Select_Column>>;
-  distinct?: Maybe<Scalars['Boolean']>;
+  columns?: InputMaybe<Array<Threads_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']>;
 };
 
 /** order by aggregate values of table "threads" */
 export type Threads_Aggregate_Order_By = {
-  avg?: Maybe<Threads_Avg_Order_By>;
-  count?: Maybe<Order_By>;
-  max?: Maybe<Threads_Max_Order_By>;
-  min?: Maybe<Threads_Min_Order_By>;
-  stddev?: Maybe<Threads_Stddev_Order_By>;
-  stddev_pop?: Maybe<Threads_Stddev_Pop_Order_By>;
-  stddev_samp?: Maybe<Threads_Stddev_Samp_Order_By>;
-  sum?: Maybe<Threads_Sum_Order_By>;
-  var_pop?: Maybe<Threads_Var_Pop_Order_By>;
-  var_samp?: Maybe<Threads_Var_Samp_Order_By>;
-  variance?: Maybe<Threads_Variance_Order_By>;
+  avg?: InputMaybe<Threads_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Threads_Max_Order_By>;
+  min?: InputMaybe<Threads_Min_Order_By>;
+  stddev?: InputMaybe<Threads_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Threads_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Threads_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Threads_Sum_Order_By>;
+  var_pop?: InputMaybe<Threads_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Threads_Var_Samp_Order_By>;
+  variance?: InputMaybe<Threads_Variance_Order_By>;
 };
 
 /** input type for inserting array relation for remote table "threads" */
 export type Threads_Arr_Rel_Insert_Input = {
   data: Array<Threads_Insert_Input>;
   /** on conflict condition */
-  on_conflict?: Maybe<Threads_On_Conflict>;
+  on_conflict?: InputMaybe<Threads_On_Conflict>;
 };
 
 /** aggregate avg on columns */
@@ -2460,21 +2461,21 @@ export type Threads_Avg_Fields = {
 
 /** order by avg() on columns of table "threads" */
 export type Threads_Avg_Order_By = {
-  original_line_number?: Maybe<Order_By>;
+  original_line_number?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to filter rows from the table "threads". All fields are combined with a logical 'AND'. */
 export type Threads_Bool_Exp = {
-  _and?: Maybe<Array<Threads_Bool_Exp>>;
-  _not?: Maybe<Threads_Bool_Exp>;
-  _or?: Maybe<Array<Threads_Bool_Exp>>;
-  comments?: Maybe<Comments_Bool_Exp>;
-  github_repos?: Maybe<Commit_Github_Repo_Bool_Exp>;
-  id?: Maybe<Uuid_Comparison_Exp>;
-  original_commit_hash?: Maybe<String_Comparison_Exp>;
-  original_file_path?: Maybe<String_Comparison_Exp>;
-  original_line?: Maybe<Lines_Bool_Exp>;
-  original_line_number?: Maybe<Int_Comparison_Exp>;
+  _and?: InputMaybe<Array<Threads_Bool_Exp>>;
+  _not?: InputMaybe<Threads_Bool_Exp>;
+  _or?: InputMaybe<Array<Threads_Bool_Exp>>;
+  comments?: InputMaybe<Comments_Bool_Exp>;
+  github_repos?: InputMaybe<Commit_Github_Repo_Bool_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  original_commit_hash?: InputMaybe<String_Comparison_Exp>;
+  original_file_path?: InputMaybe<String_Comparison_Exp>;
+  original_line?: InputMaybe<Lines_Bool_Exp>;
+  original_line_number?: InputMaybe<Int_Comparison_Exp>;
 };
 
 /** unique or primary key constraints on table "threads" */
@@ -2487,18 +2488,18 @@ export enum Threads_Constraint {
 
 /** input type for incrementing numeric columns in table "threads" */
 export type Threads_Inc_Input = {
-  original_line_number?: Maybe<Scalars['Int']>;
+  original_line_number?: InputMaybe<Scalars['Int']>;
 };
 
 /** input type for inserting data into table "threads" */
 export type Threads_Insert_Input = {
-  comments?: Maybe<Comments_Arr_Rel_Insert_Input>;
-  github_repos?: Maybe<Commit_Github_Repo_Arr_Rel_Insert_Input>;
-  id?: Maybe<Scalars['uuid']>;
-  original_commit_hash?: Maybe<Scalars['String']>;
-  original_file_path?: Maybe<Scalars['String']>;
-  original_line?: Maybe<Lines_Obj_Rel_Insert_Input>;
-  original_line_number?: Maybe<Scalars['Int']>;
+  comments?: InputMaybe<Comments_Arr_Rel_Insert_Input>;
+  github_repos?: InputMaybe<Commit_Github_Repo_Arr_Rel_Insert_Input>;
+  id?: InputMaybe<Scalars['uuid']>;
+  original_commit_hash?: InputMaybe<Scalars['String']>;
+  original_file_path?: InputMaybe<Scalars['String']>;
+  original_line?: InputMaybe<Lines_Obj_Rel_Insert_Input>;
+  original_line_number?: InputMaybe<Scalars['Int']>;
 };
 
 /** aggregate max on columns */
@@ -2512,10 +2513,10 @@ export type Threads_Max_Fields = {
 
 /** order by max() on columns of table "threads" */
 export type Threads_Max_Order_By = {
-  id?: Maybe<Order_By>;
-  original_commit_hash?: Maybe<Order_By>;
-  original_file_path?: Maybe<Order_By>;
-  original_line_number?: Maybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  original_commit_hash?: InputMaybe<Order_By>;
+  original_file_path?: InputMaybe<Order_By>;
+  original_line_number?: InputMaybe<Order_By>;
 };
 
 /** aggregate min on columns */
@@ -2529,10 +2530,10 @@ export type Threads_Min_Fields = {
 
 /** order by min() on columns of table "threads" */
 export type Threads_Min_Order_By = {
-  id?: Maybe<Order_By>;
-  original_commit_hash?: Maybe<Order_By>;
-  original_file_path?: Maybe<Order_By>;
-  original_line_number?: Maybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  original_commit_hash?: InputMaybe<Order_By>;
+  original_file_path?: InputMaybe<Order_By>;
+  original_line_number?: InputMaybe<Order_By>;
 };
 
 /** response of any mutation on the table "threads" */
@@ -2548,25 +2549,25 @@ export type Threads_Mutation_Response = {
 export type Threads_Obj_Rel_Insert_Input = {
   data: Threads_Insert_Input;
   /** on conflict condition */
-  on_conflict?: Maybe<Threads_On_Conflict>;
+  on_conflict?: InputMaybe<Threads_On_Conflict>;
 };
 
 /** on conflict condition type for table "threads" */
 export type Threads_On_Conflict = {
   constraint: Threads_Constraint;
   update_columns?: Array<Threads_Update_Column>;
-  where?: Maybe<Threads_Bool_Exp>;
+  where?: InputMaybe<Threads_Bool_Exp>;
 };
 
 /** Ordering options when selecting data from "threads". */
 export type Threads_Order_By = {
-  comments_aggregate?: Maybe<Comments_Aggregate_Order_By>;
-  github_repos_aggregate?: Maybe<Commit_Github_Repo_Aggregate_Order_By>;
-  id?: Maybe<Order_By>;
-  original_commit_hash?: Maybe<Order_By>;
-  original_file_path?: Maybe<Order_By>;
-  original_line?: Maybe<Lines_Order_By>;
-  original_line_number?: Maybe<Order_By>;
+  comments_aggregate?: InputMaybe<Comments_Aggregate_Order_By>;
+  github_repos_aggregate?: InputMaybe<Commit_Github_Repo_Aggregate_Order_By>;
+  id?: InputMaybe<Order_By>;
+  original_commit_hash?: InputMaybe<Order_By>;
+  original_file_path?: InputMaybe<Order_By>;
+  original_line?: InputMaybe<Lines_Order_By>;
+  original_line_number?: InputMaybe<Order_By>;
 };
 
 /** primary key columns input for table: threads */
@@ -2588,10 +2589,10 @@ export enum Threads_Select_Column {
 
 /** input type for updating data in table "threads" */
 export type Threads_Set_Input = {
-  id?: Maybe<Scalars['uuid']>;
-  original_commit_hash?: Maybe<Scalars['String']>;
-  original_file_path?: Maybe<Scalars['String']>;
-  original_line_number?: Maybe<Scalars['Int']>;
+  id?: InputMaybe<Scalars['uuid']>;
+  original_commit_hash?: InputMaybe<Scalars['String']>;
+  original_file_path?: InputMaybe<Scalars['String']>;
+  original_line_number?: InputMaybe<Scalars['Int']>;
 };
 
 /** aggregate stddev on columns */
@@ -2602,7 +2603,7 @@ export type Threads_Stddev_Fields = {
 
 /** order by stddev() on columns of table "threads" */
 export type Threads_Stddev_Order_By = {
-  original_line_number?: Maybe<Order_By>;
+  original_line_number?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_pop on columns */
@@ -2613,7 +2614,7 @@ export type Threads_Stddev_Pop_Fields = {
 
 /** order by stddev_pop() on columns of table "threads" */
 export type Threads_Stddev_Pop_Order_By = {
-  original_line_number?: Maybe<Order_By>;
+  original_line_number?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_samp on columns */
@@ -2624,7 +2625,7 @@ export type Threads_Stddev_Samp_Fields = {
 
 /** order by stddev_samp() on columns of table "threads" */
 export type Threads_Stddev_Samp_Order_By = {
-  original_line_number?: Maybe<Order_By>;
+  original_line_number?: InputMaybe<Order_By>;
 };
 
 /** aggregate sum on columns */
@@ -2635,7 +2636,7 @@ export type Threads_Sum_Fields = {
 
 /** order by sum() on columns of table "threads" */
 export type Threads_Sum_Order_By = {
-  original_line_number?: Maybe<Order_By>;
+  original_line_number?: InputMaybe<Order_By>;
 };
 
 /** update columns of table "threads" */
@@ -2658,7 +2659,7 @@ export type Threads_Var_Pop_Fields = {
 
 /** order by var_pop() on columns of table "threads" */
 export type Threads_Var_Pop_Order_By = {
-  original_line_number?: Maybe<Order_By>;
+  original_line_number?: InputMaybe<Order_By>;
 };
 
 /** aggregate var_samp on columns */
@@ -2669,7 +2670,7 @@ export type Threads_Var_Samp_Fields = {
 
 /** order by var_samp() on columns of table "threads" */
 export type Threads_Var_Samp_Order_By = {
-  original_line_number?: Maybe<Order_By>;
+  original_line_number?: InputMaybe<Order_By>;
 };
 
 /** aggregate variance on columns */
@@ -2680,20 +2681,20 @@ export type Threads_Variance_Fields = {
 
 /** order by variance() on columns of table "threads" */
 export type Threads_Variance_Order_By = {
-  original_line_number?: Maybe<Order_By>;
+  original_line_number?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
 export type Timestamptz_Comparison_Exp = {
-  _eq?: Maybe<Scalars['timestamptz']>;
-  _gt?: Maybe<Scalars['timestamptz']>;
-  _gte?: Maybe<Scalars['timestamptz']>;
-  _in?: Maybe<Array<Scalars['timestamptz']>>;
-  _is_null?: Maybe<Scalars['Boolean']>;
-  _lt?: Maybe<Scalars['timestamptz']>;
-  _lte?: Maybe<Scalars['timestamptz']>;
-  _neq?: Maybe<Scalars['timestamptz']>;
-  _nin?: Maybe<Array<Scalars['timestamptz']>>;
+  _eq?: InputMaybe<Scalars['timestamptz']>;
+  _gt?: InputMaybe<Scalars['timestamptz']>;
+  _gte?: InputMaybe<Scalars['timestamptz']>;
+  _in?: InputMaybe<Array<Scalars['timestamptz']>>;
+  _is_null?: InputMaybe<Scalars['Boolean']>;
+  _lt?: InputMaybe<Scalars['timestamptz']>;
+  _lte?: InputMaybe<Scalars['timestamptz']>;
+  _neq?: InputMaybe<Scalars['timestamptz']>;
+  _nin?: InputMaybe<Array<Scalars['timestamptz']>>;
 };
 
 /**
@@ -2732,19 +2733,19 @@ export type User_Sessions_Aggregate_Fields = {
 
 /** aggregate fields of "user_sessions" */
 export type User_Sessions_Aggregate_FieldsCountArgs = {
-  columns?: Maybe<Array<User_Sessions_Select_Column>>;
-  distinct?: Maybe<Scalars['Boolean']>;
+  columns?: InputMaybe<Array<User_Sessions_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']>;
 };
 
 /** Boolean expression to filter rows from the table "user_sessions". All fields are combined with a logical 'AND'. */
 export type User_Sessions_Bool_Exp = {
-  _and?: Maybe<Array<User_Sessions_Bool_Exp>>;
-  _not?: Maybe<User_Sessions_Bool_Exp>;
-  _or?: Maybe<Array<User_Sessions_Bool_Exp>>;
-  created_at?: Maybe<Timestamptz_Comparison_Exp>;
-  github_user?: Maybe<Github_Users_Bool_Exp>;
-  id?: Maybe<Uuid_Comparison_Exp>;
-  user_github_node_id?: Maybe<String_Comparison_Exp>;
+  _and?: InputMaybe<Array<User_Sessions_Bool_Exp>>;
+  _not?: InputMaybe<User_Sessions_Bool_Exp>;
+  _or?: InputMaybe<Array<User_Sessions_Bool_Exp>>;
+  created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  github_user?: InputMaybe<Github_Users_Bool_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  user_github_node_id?: InputMaybe<String_Comparison_Exp>;
 };
 
 /** unique or primary key constraints on table "user_sessions" */
@@ -2755,12 +2756,12 @@ export enum User_Sessions_Constraint {
 
 /** input type for inserting data into table "user_sessions" */
 export type User_Sessions_Insert_Input = {
-  created_at?: Maybe<Scalars['timestamptz']>;
-  github_user?: Maybe<Github_Users_Obj_Rel_Insert_Input>;
+  created_at?: InputMaybe<Scalars['timestamptz']>;
+  github_user?: InputMaybe<Github_Users_Obj_Rel_Insert_Input>;
   /** Also used as "session token". */
-  id?: Maybe<Scalars['uuid']>;
+  id?: InputMaybe<Scalars['uuid']>;
   /** The GitHub node id of the user associated with this session. Not unique since a single user may have multiple sessions. */
-  user_github_node_id?: Maybe<Scalars['String']>;
+  user_github_node_id?: InputMaybe<Scalars['String']>;
 };
 
 /** aggregate max on columns */
@@ -2796,15 +2797,15 @@ export type User_Sessions_Mutation_Response = {
 export type User_Sessions_On_Conflict = {
   constraint: User_Sessions_Constraint;
   update_columns?: Array<User_Sessions_Update_Column>;
-  where?: Maybe<User_Sessions_Bool_Exp>;
+  where?: InputMaybe<User_Sessions_Bool_Exp>;
 };
 
 /** Ordering options when selecting data from "user_sessions". */
 export type User_Sessions_Order_By = {
-  created_at?: Maybe<Order_By>;
-  github_user?: Maybe<Github_Users_Order_By>;
-  id?: Maybe<Order_By>;
-  user_github_node_id?: Maybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  github_user?: InputMaybe<Github_Users_Order_By>;
+  id?: InputMaybe<Order_By>;
+  user_github_node_id?: InputMaybe<Order_By>;
 };
 
 /** primary key columns input for table: user_sessions */
@@ -2825,11 +2826,11 @@ export enum User_Sessions_Select_Column {
 
 /** input type for updating data in table "user_sessions" */
 export type User_Sessions_Set_Input = {
-  created_at?: Maybe<Scalars['timestamptz']>;
+  created_at?: InputMaybe<Scalars['timestamptz']>;
   /** Also used as "session token". */
-  id?: Maybe<Scalars['uuid']>;
+  id?: InputMaybe<Scalars['uuid']>;
   /** The GitHub node id of the user associated with this session. Not unique since a single user may have multiple sessions. */
-  user_github_node_id?: Maybe<Scalars['String']>;
+  user_github_node_id?: InputMaybe<Scalars['String']>;
 };
 
 /** update columns of table "user_sessions" */
@@ -2844,15 +2845,15 @@ export enum User_Sessions_Update_Column {
 
 /** Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'. */
 export type Uuid_Comparison_Exp = {
-  _eq?: Maybe<Scalars['uuid']>;
-  _gt?: Maybe<Scalars['uuid']>;
-  _gte?: Maybe<Scalars['uuid']>;
-  _in?: Maybe<Array<Scalars['uuid']>>;
-  _is_null?: Maybe<Scalars['Boolean']>;
-  _lt?: Maybe<Scalars['uuid']>;
-  _lte?: Maybe<Scalars['uuid']>;
-  _neq?: Maybe<Scalars['uuid']>;
-  _nin?: Maybe<Array<Scalars['uuid']>>;
+  _eq?: InputMaybe<Scalars['uuid']>;
+  _gt?: InputMaybe<Scalars['uuid']>;
+  _gte?: InputMaybe<Scalars['uuid']>;
+  _in?: InputMaybe<Array<Scalars['uuid']>>;
+  _is_null?: InputMaybe<Scalars['Boolean']>;
+  _lt?: InputMaybe<Scalars['uuid']>;
+  _lte?: InputMaybe<Scalars['uuid']>;
+  _neq?: InputMaybe<Scalars['uuid']>;
+  _nin?: InputMaybe<Array<Scalars['uuid']>>;
 };
 
 export type Unnamed_1_QueryVariables = Exact<{ [key: string]: never; }>;

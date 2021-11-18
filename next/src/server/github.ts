@@ -4,13 +4,13 @@
 import { gql } from "@apollo/client/core";
 import { Octokit } from "@octokit/rest";
 import { print } from "graphql/language/printer";
-import { assert, assertNotNull, notNull } from "./common_utils";
+import { assert, assertNotNull, notNull } from "../common_utils";
 import {
   CommitLookupQuery,
   CommitLookupQueryVariables,
   LookupRepoByNodeIdQuery,
   LookupUserByNodeIdQuery,
-} from "./generated/github-types";
+} from "../generated/github-types";
 
 export function ADMIN_getOctokit() {
   return new Octokit({ auth: notNull(process.env.GITHUB_API_TOKEN) });

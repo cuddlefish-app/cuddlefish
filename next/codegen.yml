@@ -6,7 +6,7 @@ generates:
       # TODO: we may need to adjust this once we start writing pages/etc that
       # should be using the user/anonymous roles instead of admin.
       - "src/**/*.ts"
-      - "!src/github.ts"
+      - "!src/server/github.ts"
     schema:
       - "http://localhost:8080/v1/graphql":
           headers:
@@ -19,7 +19,7 @@ generates:
       scalars:
         uuid: string
   src/generated/github-types.d.ts:
-    documents: "src/github.ts"
+    documents: "src/server/github.ts"
     schema:
       - "https://api.github.com/graphql":
           headers:

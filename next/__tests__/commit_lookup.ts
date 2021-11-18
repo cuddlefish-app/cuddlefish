@@ -1,4 +1,4 @@
-import { ADMIN_getOctokit, lookupCommit } from "../src/github";
+import { ADMIN_getOctokit, lookupCommit } from "../src/server/github";
 
 // Try commit signature email first, check for signature overrides, fall back
 // to user.email, fall back to looking up the email for user.id in hasura. If

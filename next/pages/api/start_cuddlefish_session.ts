@@ -2,20 +2,19 @@ import { Octokit } from "@octokit/rest";
 import { isRight } from "fp-ts/lib/Either";
 import gql from "graphql-tag";
 import * as t from "io-ts";
-import { NextApiRequest, NextApiResponse } from "next";
-import {
-  ADMIN_buildApolloClient,
-  assert,
-  assert400,
-  logHandlerErrors,
-  notNull,
-} from "../../src/common_utils";
+import { NextApiRequest } from "next";
+import { assert, notNull } from "../../src/common_utils";
 import {
   StartCuddlefishSessionResponse,
   UpsertUserStartSessionMutation,
   UpsertUserStartSessionMutationVariables,
 } from "../../src/generated/admin-hasura-types";
-import { hasCorrectApiSecret } from "../../src/server_utils";
+import {
+  ADMIN_buildApolloClient,
+  assert400,
+  hasCorrectApiSecret,
+  logHandlerErrors,
+} from "../../src/server/utils";
 
 const RequestData = t.strict({
   session_variables: t.type({
@@ -38,9 +37,8 @@ const RequestData = t.strict({
   }),
 });
 
-export default logHandlerErrors(async function (
-  req: NextApiRequest,
-  res: NextApiResponse<StartCuddlefishSessionResponse>
+export default logHandlerErrors<StartCuddlefishSessionResponse>(async function (
+  req: NextApiRequest
 ) {
   // Verify request is coming from hasura or some other trusted source
   assert400(hasCorrectApiSecret(req), "incorrect api secret");
@@ -110,7 +108,7 @@ export default logHandlerErrors(async function (
   });
   assert(m.errors === undefined, "hasura returned errors");
 
-  res.status(200).json({
+  return {
     session_token: notNull(m.data?.insert_user_sessions_one?.id),
-  });
+  };
 });

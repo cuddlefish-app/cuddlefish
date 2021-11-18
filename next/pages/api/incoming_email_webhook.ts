@@ -3,14 +3,7 @@ import { gql } from "@apollo/client/core";
 import { simpleParser } from "mailparser";
 import multer from "multer";
 import nc from "next-connect";
-import {
-  ADMIN_buildApolloClient,
-  assert,
-  assert400,
-  logHandlerErrors,
-  notNull,
-  notNull400,
-} from "../../src/common_utils";
+import { assert, notNull } from "../../src/common_utils";
 import {
   EmailCommentMutation,
   EmailCommentMutationVariables,
@@ -19,7 +12,13 @@ import {
   UserCommentMutation,
   UserCommentMutationVariables,
 } from "../../src/generated/admin-hasura-types";
-import { ADMIN_lookupsertSingleUserByEmail } from "../../src/users";
+import { ADMIN_lookupsertSingleUserByEmail } from "../../src/server/users";
+import {
+  ADMIN_buildApolloClient,
+  assert400,
+  logHandlerErrors,
+  notNull400,
+} from "../../src/server/utils";
 import { CF_APP_EMAIL } from "./config";
 
 export const config = { api: { bodyParser: false } };
@@ -37,7 +36,7 @@ function parseEmail(s: string): string | null {
 const handler = nc()
   .use(multer().none())
   .post(
-    logHandlerErrors(async (req, res) => {
+    logHandlerErrors(async (req) => {
       assert400(req.body.to === CF_APP_EMAIL, "bad to address");
 
       const emailRaw: string = req.body.email;
@@ -151,7 +150,7 @@ const handler = nc()
         console.log(`Created comment ${newCommentId}`);
       }
 
-      res.status(200).send({});
+      return {};
     })
   );
 

@@ -1,48 +1,6 @@
-import {
-  ApolloClient,
-  ApolloLink,
-  HttpLink,
-  InMemoryCache,
-} from "@apollo/client/core";
-import { setContext } from "@apollo/client/link/context";
-import { NextApiRequest, NextApiResponse } from "next";
-
-export function ADMIN_buildApolloClient() {
-  const hasuraHost = notNull(process.env.HASURA_HOST);
-  const hasuraPort = notNull(process.env.HASURA_PORT);
-  const uri = `http://${hasuraHost}:${hasuraPort}/v1/graphql`;
-
-  // See https://www.apollographql.com/docs/react/networking/authentication/#header
-  // See https://github.com/apollographql/apollo-client/issues/8967 as to why
-  // we can't do this the simple way.
-  const authLink = setContext((_operation, previousContext) => ({
-    ...previousContext,
-    headers: {
-      ...previousContext.headers,
-      "x-hasura-admin-secret": notNull(process.env.HASURA_GRAPHQL_ADMIN_SECRET),
-    },
-  }));
-  return new ApolloClient({
-    link: ApolloLink.from([authLink, new HttpLink({ uri, fetch })]),
-    cache: new InMemoryCache(),
-  });
-}
-
-// See https://stackoverflow.com/questions/31626231/custom-error-class-in-typescript
-export class Error400 extends Error {
-  constructor(message: string) {
-    super(message);
-
-    // Set the prototype explicitly.
-    Object.setPrototypeOf(this, Error400.prototype);
-
-    return this;
-  }
-}
-
 // See https://github.com/Microsoft/TypeScript/issues/7556.
 type ErrorT = { new (message: string): Error };
-function _assert(
+export function _assert(
   errorType: ErrorT,
   condition: boolean,
   message: string
@@ -56,14 +14,8 @@ function _assert(
 export function assert(condition: boolean, message: string): asserts condition {
   _assert(Error, condition, message);
 }
-export function assert400(
-  condition: boolean,
-  message: string
-): asserts condition {
-  _assert(Error400, condition, message);
-}
 
-function _assertNotNull<T>(
+export function _assertNotNull<T>(
   errorType: ErrorT,
   v: T | null | undefined,
   message?: string
@@ -78,12 +30,9 @@ function _assertNotNull<T>(
 export function assertNotNull<T>(v: T | null | undefined): asserts v is T {
   _assertNotNull(Error, v);
 }
-export function assertNotNull400<T>(v: T | null | undefined): asserts v is T {
-  _assertNotNull(Error400, v);
-}
 
 // Note that currently it is not possible to combine this with `assertNotNull` due to https://github.com/microsoft/TypeScript/issues/40562.
-function _notNull<T>(
+export function _notNull<T>(
   errorType: ErrorT,
   v: T | null | undefined,
   message?: string
@@ -92,33 +41,10 @@ function _notNull<T>(
   return v;
 }
 
-function notNull<T>(v: T | null | undefined, message?: string) {
+export function notNull<T>(v: T | null | undefined, message?: string) {
   return _notNull(Error, v, message);
-}
-function notNull400<T>(v: T | null | undefined, message?: string) {
-  return _notNull(Error400, v, message);
 }
 
 // See https://stackoverflow.com/questions/4059147/check-if-a-variable-is-a-string-in-javascript
 export const isString = (x: any) =>
   typeof x === "string" || x instanceof String;
-
-export function logHandlerErrors<T>(
-  handler: (req: NextApiRequest, res: NextApiResponse<T>) => Promise<void>
-): (req: NextApiRequest, res: NextApiResponse<T>) => Promise<void> {
-  return async (req: NextApiRequest, res: NextApiResponse<T>) => {
-    try {
-      await handler(req, res);
-    } catch (err) {
-      console.error(err);
-      if (err instanceof Error400) {
-        // We have to cast to any because we promised to return a T.
-        res.status(400).send("bad request" as any);
-      } else {
-        res.status(500).send("internal server error" as any);
-      }
-    }
-  };
-}
-
-export { notNull, notNull400 };

@@ -3,22 +3,21 @@ import { Octokit } from "@octokit/rest";
 import { isRight } from "fp-ts/lib/Either";
 import * as t from "io-ts";
 import { DateFromISOString } from "io-ts-types/lib/DateFromISOString";
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest } from "next";
 import ReactDOMServer from "react-dom/server";
-import {
-  ADMIN_buildApolloClient,
-  assert,
-  assert400,
-  isString,
-  logHandlerErrors,
-  notNull,
-} from "../../src/common_utils";
+import { assert, isString, notNull } from "../../src/common_utils";
 import {
   CommentContextQuery,
   CommentContextQueryVariables,
 } from "../../src/generated/admin-hasura-types";
-import { ADMIN_getOctokit, lookupRepoByNodeId } from "../../src/github";
-import { getSendgrid, hasCorrectApiSecret } from "../../src/server_utils";
+import { ADMIN_getOctokit, lookupRepoByNodeId } from "../../src/server/github";
+import {
+  ADMIN_buildApolloClient,
+  assert400,
+  getSendgrid,
+  hasCorrectApiSecret,
+  logHandlerErrors,
+} from "../../src/server/utils";
 import NewCommentEmail from "../emails/new_comment";
 import NewThreadEmail from "../emails/new_thread";
 import { CF_APP_EMAIL } from "./config";
@@ -52,10 +51,7 @@ const RequestData = t.strict({
   table: t.strict({ schema: t.literal("public"), name: t.literal("comments") }),
 });
 
-export default logHandlerErrors(async function (
-  req: NextApiRequest,
-  res: NextApiResponse<{}>
-) {
+export default logHandlerErrors(async function (req: NextApiRequest) {
   // Verify request is coming from hasura or some other trusted source
   assert400(hasCorrectApiSecret(req), "incorrect api secret");
 
@@ -180,7 +176,7 @@ export default logHandlerErrors(async function (
     );
   }
 
-  res.status(200).json({});
+  return {};
 });
 
 async function sendNewCommentEmails(
