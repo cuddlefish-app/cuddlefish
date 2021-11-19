@@ -104,6 +104,10 @@ services:
     startCommand: cd next/ && yarn run start
     healthCheckPath: /api/healthz
     envVars:
+      # See https://community.render.com/t/render-doesnt-respect-engines-setting-in-package-json-as-the-docs-suggest/2805/2
+      - key: NODE_VERSION
+        value: 16.13.0
+
       # Hasura stuff
       - key: HASURA_HOST
         fromService:
