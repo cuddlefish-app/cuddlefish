@@ -28,6 +28,8 @@ export async function lookupRepoByNodeId(
       query LookupRepoByNodeId($nodeId: ID!) {
         node(id: $nodeId) {
           ... on Repository {
+            # __typename is necessary to keep the type checker happy
+            __typename
             owner {
               login
             }
