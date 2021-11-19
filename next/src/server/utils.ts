@@ -73,7 +73,9 @@ export function logHandlerErrors<T>(
   handler: (req: NextApiRequest, logger: pino.Logger) => Promise<T>
 ): (req: NextApiRequest, res: NextApiResponse<T>) => Promise<void> {
   return async (req: NextApiRequest, res: NextApiResponse<T>) => {
-    const reqlogger = LOGGER.child({ requestId: uuidv4() });
+    // It's helpful to put url here even though it's already available in
+    // req.url, so we can filter all the logs by url.
+    const reqlogger = LOGGER.child({ requestId: uuidv4(), url: req.url });
 
     reqlogger.info({ req }, `--> ${req.method} ${req.url}`);
     const t0 = process.hrtime.bigint();
@@ -85,7 +87,7 @@ export function logHandlerErrors<T>(
       const elapsedMillis = elapsedNanos / 1000000n;
       reqlogger.info(
         { status: 200, resBody, elapsedNanos, elapsedMillis },
-        `<-- ${req.method} ${req.url} 200 ${elapsedMillis} ms`
+        `<-- ${req.method} ${req.url} 200`
       );
     } catch (err) {
       reqlogger.error(err);
@@ -98,7 +100,7 @@ export function logHandlerErrors<T>(
         const elapsedMillis = elapsedNanos / 1000000n;
         reqlogger.info(
           { status: 400, elapsedNanos, elapsedMillis },
-          `<-- ${req.method} ${req.url} 400 ${elapsedMillis} ms`
+          `<-- ${req.method} ${req.url} 400`
         );
       } else {
         res.status(500).send("internal server error" as any);
@@ -107,7 +109,7 @@ export function logHandlerErrors<T>(
         const elapsedMillis = elapsedNanos / 1000000n;
         reqlogger.info(
           { status: 500, elapsedNanos, elapsedMillis },
-          `<-- ${req.method} ${req.url} 500 ${elapsedMillis} ms`
+          `<-- ${req.method} ${req.url} 500`
         );
       }
     }
