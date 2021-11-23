@@ -6,7 +6,6 @@ import React from "react";
 import ReactDOMServer from "react-dom/server";
 import * as shiki from "shiki";
 import { isString, notNull } from "../../src/common_utils";
-import styles from "../../styles/emails/NewThreadEmail.module.css";
 
 const CODE_WINDOW_SIZE = 5;
 
@@ -78,10 +77,7 @@ function NewThreadEmail({
       }}
     >
       <main>
-        <div
-          className={styles.codeSnippet}
-          dangerouslySetInnerHTML={{ __html: codeSnippetHtml }}
-        />
+        <div dangerouslySetInnerHTML={{ __html: codeSnippetHtml }} />
         <p>
           Hi {recipient.name.length > 0 ? recipient.name : recipient.email}!
         </p>
@@ -212,6 +208,14 @@ export function renderToJsx(
           </span>
         );
       });
+      const lineStyles: React.CSSProperties = {
+        paddingLeft: "1em",
+        width: "100%",
+      };
+      if (lineNumber === highlightedLine) {
+        lineStyles.backgroundColor = "rgba(174, 123, 20, 0.15)";
+        lineStyles.boxShadow = "inset 4px 0 0 rgba(174, 123, 20, 0.4)";
+      }
       return (
         <tr
           key={lineIx}
@@ -219,8 +223,18 @@ export function renderToJsx(
             highlightedLine: lineNumber === highlightedLine,
           })}
         >
-          <td className="lineNumber">{lineNumber}</td>
-          <td className="lineTokens">{tokensJsx}</td>
+          <td
+            style={{
+              minWidth: "1em",
+              marginRight: "0.5em",
+              display: "inline-block",
+              textAlign: "right",
+              color: "rgba(115, 138, 148, 0.4)",
+            }}
+          >
+            {lineNumber}
+          </td>
+          <td style={lineStyles}>{tokensJsx}</td>
         </tr>
       );
     } else {
@@ -229,9 +243,17 @@ export function renderToJsx(
     }
   });
   return (
-    <pre className="shiki" style={{ backgroundColor: bg }}>
-      <code>
-        <table>
+    <pre
+      className="shiki"
+      style={{
+        backgroundColor: bg,
+        padding: "2em",
+        borderRadius: "1em",
+        overflowX: "scroll",
+      }}
+    >
+      <code style={{ display: "inline-block", minWidth: "100%" }}>
+        <table style={{ minWidth: "100%" }}>
           <tbody>{linesJsx}</tbody>
         </table>
       </code>
