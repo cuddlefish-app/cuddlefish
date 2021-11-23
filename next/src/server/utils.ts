@@ -77,18 +77,23 @@ export function logHandlerErrors<T>(
     // req.url, so we can filter all the logs by url.
     const reqlogger = LOGGER.child({ requestId: uuidv4(), url: req.url });
 
-    reqlogger.info({ req }, `--> ${req.method} ${req.url}`);
+    const isHealthz = req.url!.endsWith("/api/healthz");
+    if (!isHealthz) {
+      reqlogger.info(`--> ${req.method} ${req.url}`);
+    }
     const t0 = process.hrtime.bigint();
     try {
       const resBody = await handler(req, reqlogger);
       res.status(200).json(resBody);
 
-      const elapsedNanos = process.hrtime.bigint() - t0;
-      const elapsedMillis = elapsedNanos / 1000000n;
-      reqlogger.info(
-        { status: 200, resBody, elapsedNanos, elapsedMillis },
-        `<-- ${req.method} ${req.url} 200`
-      );
+      if (!isHealthz) {
+        const elapsedNanos = process.hrtime.bigint() - t0;
+        const elapsedMillis = elapsedNanos / 1000000n;
+        reqlogger.info(
+          { status: 200, resBody, elapsedNanos, elapsedMillis },
+          `<-- ${req.method} ${req.url} 200`
+        );
+      }
     } catch (err) {
       reqlogger.error(err);
 
@@ -108,7 +113,7 @@ export function logHandlerErrors<T>(
         const elapsedNanos = process.hrtime.bigint() - t0;
         const elapsedMillis = elapsedNanos / 1000000n;
         reqlogger.info(
-          { status: 500, elapsedNanos, elapsedMillis },
+          { req, status: 500, elapsedNanos, elapsedMillis },
           `<-- ${req.method} ${req.url} 500`
         );
       }
