@@ -258,7 +258,7 @@ export function renderToJsx(
 }
 
 const FILE_EXTENSIONS: Array<{ ext: string; lang: shiki.Lang }> = [
-  { lang: "asm", ext: "asm" },
+  { lang: "asm", ext: ".asm" },
   { lang: "bash", ext: ".bash" },
   { lang: "bat", ext: ".bat" },
   { lang: "c", ext: ".c" },
@@ -352,11 +352,14 @@ const FILE_EXTENSIONS: Array<{ ext: string; lang: shiki.Lang }> = [
   { lang: "yaml", ext: ".yml" },
   { lang: "zsh", ext: ".zsh" },
 ];
-function getLangFromName(
+
+// TODO write tests (Dockerfile vs dockerfile, check for no extension collisions, check that almost all of them have start with ".", .ts, .d.ts, .tsx, .js, .jsx, Makefile vs makefile)
+function getLangFromExtension(
   log: pino.Logger,
   filePath: string
 ): shiki.Lang | undefined {
-  const lang = FILE_EXTENSIONS.find((x) => filePath.endsWith(x.ext));
+  const filePathLower = filePath.toLowerCase();
+  const lang = FILE_EXTENSIONS.find((x) => filePathLower.endsWith(x.ext));
   if (lang) {
     return lang.lang;
   } else {
@@ -385,7 +388,7 @@ export async function getCodeSnippetHtml(
   ).data;
   const highlightedTokens = highlighter.codeToThemedTokens(
     fileContents,
-    getLangFromName(log, thread.original_file_path)
+    getLangFromExtension(log, thread.original_file_path)
   );
   const codeSnippet = renderToJsx(
     highlightedTokens,
