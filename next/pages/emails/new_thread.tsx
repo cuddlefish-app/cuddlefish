@@ -211,6 +211,7 @@ export function renderToJsx(
       const lineStyles: React.CSSProperties = {
         paddingLeft: "1em",
         width: "100%",
+        fontFamily: "monospace",
       };
       if (lineNumber === highlightedLine) {
         lineStyles.backgroundColor = "rgba(174, 123, 20, 0.15)";
@@ -230,6 +231,7 @@ export function renderToJsx(
               display: "inline-block",
               textAlign: "right",
               color: "rgba(115, 138, 148, 0.4)",
+              fontFamily: "monospace",
             }}
           >
             {lineNumber}
