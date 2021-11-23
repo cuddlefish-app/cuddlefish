@@ -1,5 +1,4 @@
 import axios from "axios";
-import classNames from "classnames";
 import MarkdownIt from "markdown-it";
 import pino from "pino";
 import React from "react";
@@ -218,12 +217,7 @@ export function renderToJsx(
         lineStyles.boxShadow = "inset 4px 0 0 rgba(174, 123, 20, 0.4)";
       }
       return (
-        <tr
-          key={lineIx}
-          className={classNames("line", {
-            highlightedLine: lineNumber === highlightedLine,
-          })}
-        >
+        <tr key={lineIx}>
           <td
             style={{
               minWidth: "1em",
@@ -246,7 +240,6 @@ export function renderToJsx(
   });
   return (
     <pre
-      className="shiki"
       style={{
         backgroundColor: bg,
         padding: "2em",
