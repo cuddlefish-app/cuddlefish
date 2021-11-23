@@ -243,7 +243,7 @@ export function renderToJsx(
     <pre
       style={{
         backgroundColor: bg,
-        padding: "2em",
+        padding: "1.5em",
         borderRadius: "1em",
         overflowX: "scroll",
       }}
