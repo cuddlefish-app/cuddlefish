@@ -211,10 +211,11 @@ export function renderToJsx(
         paddingLeft: "1em",
         width: "100%",
         fontFamily: "monospace",
+        borderLeft: "4px solid transparent",
       };
       if (lineNumber === highlightedLine) {
         lineStyles.backgroundColor = "rgba(174, 123, 20, 0.15)";
-        lineStyles.boxShadow = "inset 4px 0 0 rgba(174, 123, 20, 0.4)";
+        lineStyles.borderLeft = "4px solid rgba(174, 123, 20, 0.4)";
       }
       return (
         <tr key={lineIx}>
