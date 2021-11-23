@@ -20,7 +20,7 @@ import {
   logHandlerErrors,
 } from "../../src/server/utils";
 import NewCommentEmail from "../emails/new_comment";
-import NewThreadEmail from "../emails/new_thread";
+import NewThreadEmail, { getCodeSnippetHtml } from "../emails/new_thread";
 import { CF_APP_EMAIL } from "./config";
 
 // TODO types could be improved in this module to reflect the fact that every
@@ -164,6 +164,7 @@ export default logHandlerErrors(async function (
     // This is the first comment => new thread email
     // Note: notNull should be safe here because new threads can only be started by GitHub users, not email-author comments.
     await sendNewThreadEmails(
+      log,
       codeAuthor,
       codeCommitter,
       repo,
@@ -358,6 +359,7 @@ async function sendNewCommentEmail(
 }
 
 async function sendNewThreadEmails(
+  log: pino.Logger,
   codeAuthor: { name: string; email: string },
   codeCommitter: { name: string; email: string },
   repo: { owner: string; repo: string },
@@ -382,8 +384,11 @@ async function sendNewThreadEmails(
     access_token?: string | null | undefined;
   }
 ) {
+  const codeSnippetHtml = await getCodeSnippetHtml(log, repo, thread);
+
   // Send an email to me
   await sendNewThreadEmail(
+    codeSnippetHtml,
     { email: "sam@cuddlefish.app", name: "Sam ADMIN" },
     "admin",
     repo,
@@ -395,6 +400,7 @@ async function sendNewThreadEmails(
   // Send an email to the author
   if (newCommentAuthor.email !== codeAuthor.email) {
     await sendNewThreadEmail(
+      codeSnippetHtml,
       codeAuthor,
       "author",
       repo,
@@ -410,6 +416,7 @@ async function sendNewThreadEmails(
     codeCommitter.email !== newCommentAuthor.email
   ) {
     await sendNewThreadEmail(
+      codeSnippetHtml,
       codeCommitter,
       "committer",
       repo,
@@ -421,6 +428,7 @@ async function sendNewThreadEmails(
 }
 
 async function sendNewThreadEmail(
+  codeSnippetHtml: string,
   recipient: { name: string; email: string },
   role: "author" | "committer" | "admin",
   repo: { owner: string; repo: string },
@@ -449,6 +457,7 @@ async function sendNewThreadEmail(
 
   const html = ReactDOMServer.renderToStaticMarkup(
     NewThreadEmail({
+      codeSnippetHtml,
       repo,
       thread,
       newComment,

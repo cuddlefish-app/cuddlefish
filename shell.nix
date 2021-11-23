@@ -18,7 +18,10 @@ pkgs.mkShell {
     # Necessary for node and npm
     nodejs-16_x
 
-    yarn
+    # See https://github.com/NixOS/nixpkgs/issues/145634
+    (yarn.override {
+      nodejs = nodejs-16_x;
+    })
 
     # Necessary for `yarn relay --watch`.
     # watchman
