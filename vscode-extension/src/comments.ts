@@ -104,8 +104,6 @@ export class CommentJefe {
             commit_hash: { _eq: blameline.origCommitHash },
             // eslint-disable-next-line @typescript-eslint/naming-convention
             file_path: { _eq: blameline.filepath },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            line_number: { _eq: blameline.origLine },
           })),
         },
       },
@@ -118,11 +116,13 @@ export class CommentJefe {
         filepath: line.file_path,
         origLine: line.line_number,
       };
-      // We should only ever be querying for threads that would have lines
-      // existing in our document.
-      const currLine = notNull(
-        blamelineToCurrLine.get(blamelineToString(orig))
-      );
+
+      // It's possible that we select a line that is not actually in this file
+      // since we don't select on the line number for performance reasons.
+      const currLine = blamelineToCurrLine.get(blamelineToString(orig));
+      if (currLine === undefined) {
+        continue;
+      }
 
       // It may occasionally be the case that there is an entry in the `lines`
       // table that has no corresponding threads. This is somewhat
