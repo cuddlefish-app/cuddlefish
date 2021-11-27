@@ -42,6 +42,7 @@ export class GitHubCredentials {
             apolloClient.client.resetStore();
           }
           apolloClient = undefined;
+          eraseCuddlefishSessionToken(context);
 
           await this.getSessionQuiet();
         }
