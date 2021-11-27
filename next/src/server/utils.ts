@@ -104,7 +104,7 @@ export function logHandlerErrors<T>(
         const elapsedNanos = process.hrtime.bigint() - t0;
         const elapsedMillis = elapsedNanos / 1000000n;
         reqlogger.info(
-          { status: 400, elapsedNanos, elapsedMillis },
+          { req, status: 400, elapsedNanos, elapsedMillis },
           `<-- ${req.method} ${req.url} 400`
         );
       } else {
