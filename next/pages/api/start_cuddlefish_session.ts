@@ -37,6 +37,14 @@ const RequestData = t.strict({
   }),
 });
 
+async function getPrimaryEmail(octokit: Octokit) {
+  const emails = (
+    await octokit.users.listEmailsForAuthenticatedUser()
+  ).data.filter((x) => x.primary);
+  assert(emails.length === 1, "expected exactly one primary email");
+  return emails[0].email;
+}
+
 export default logHandlerErrors<StartCuddlefishSessionResponse>(async function (
   req: NextApiRequest
 ) {
@@ -52,6 +60,9 @@ export default logHandlerErrors<StartCuddlefishSessionResponse>(async function (
   const octokit = new Octokit({ auth: githubAccessToken });
   const userInfo = await octokit.users.getAuthenticated();
 
+  // Can't use `userInfo.email` as that can be null. See https://stackoverflow.com/questions/35373995/github-user-email-is-null-despite-useremail-scope.
+  const email = await getPrimaryEmail(octokit);
+
   const apolloClient = ADMIN_buildApolloClient();
   const m = await apolloClient.mutate<
     UpsertUserStartSessionMutation,
@@ -63,7 +74,7 @@ export default logHandlerErrors<StartCuddlefishSessionResponse>(async function (
         $githubDatabaseId: Int!
         $githubName: String
         $githubUsername: String!
-        $email: String
+        $email: String!
         $accessToken: String!
       ) {
         insert_github_users_one(
@@ -102,7 +113,7 @@ export default logHandlerErrors<StartCuddlefishSessionResponse>(async function (
       githubDatabaseId: userInfo.data.id,
       githubName: userInfo.data.name,
       githubUsername: userInfo.data.login,
-      email: userInfo.data.email,
+      email,
       accessToken: payload.input.github_access_token,
     },
   });
