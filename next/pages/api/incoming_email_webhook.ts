@@ -15,11 +15,9 @@ import {
 import { ADMIN_lookupsertSingleUserByEmail } from "../../src/server/users";
 import {
   ADMIN_buildApolloClient,
-  assert400,
   logHandlerErrors,
   notNull400,
 } from "../../src/server/utils";
-import { CF_APP_EMAIL } from "./config";
 
 export const config = { api: { bodyParser: false } };
 
@@ -37,7 +35,7 @@ const handler = nc()
   .use(multer().none())
   .post(
     logHandlerErrors(async (req, log) => {
-      assert400(req.body.to === CF_APP_EMAIL, "bad to address");
+      // assert400(req.body.to === CF_APP_EMAIL, "bad to address");
 
       const emailRaw: string = req.body.email;
       const email = await simpleParser(emailRaw);
