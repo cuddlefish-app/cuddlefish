@@ -6,10 +6,11 @@ import { Octokit } from "@octokit/rest";
 import { print } from "graphql/language/printer";
 import { assert, assertNotNull, notNull } from "../common_utils";
 import {
-  CommitLookupQuery,
-  CommitLookupQueryVariables,
-  LookupRepoByNodeIdQuery,
-  LookupUserByNodeIdQuery,
+  Gh_CommitLookupQuery,
+  Gh_CommitLookupQueryVariables,
+  Gh_LookupRepoByNodeIdQuery,
+  Gh_LookupUserByNodeIdQuery,
+  Gh_LookupUsersByEmailQuery,
 } from "../generated/github-types";
 
 export function ADMIN_getOctokit() {
@@ -23,9 +24,9 @@ export async function lookupRepoByNodeId(
   // TODO write some tests for this
   // At the time of writing (11/5/2021), the GH graphql api doesn't offer much
   // info about the commit (author, etc). Still gotta use the rest api for that.
-  const q = await octokit.graphql<LookupRepoByNodeIdQuery>(
+  const q = await octokit.graphql<Gh_LookupRepoByNodeIdQuery>(
     print(gql`
-      query LookupRepoByNodeId($nodeId: ID!) {
+      query gh_LookupRepoByNodeId($nodeId: ID!) {
         node(id: $nodeId) {
           ... on Repository {
             # __typename is necessary to keep the type checker happy
@@ -53,9 +54,9 @@ export async function lookupGitHubUserByNodeId(
   databaseId?: number | null | undefined;
   login: string;
 }> {
-  const q = await octokit.graphql<LookupUserByNodeIdQuery>(
+  const q = await octokit.graphql<Gh_LookupUserByNodeIdQuery>(
     print(gql`
-      query LookupUserByNodeId($nodeId: ID!) {
+      query gh_LookupUserByNodeId($nodeId: ID!) {
         node(id: $nodeId) {
           ... on User {
             id
@@ -77,13 +78,59 @@ export async function lookupGitHubUserByNodeId(
 export async function lookupGitHubUsersByEmail(
   octokit: Octokit,
   email: string
-) {
-  // GitHub does not seem to support searching on partial emails/modifications
-  // of emails, which is exactly what we want.
-  const res = await octokit.search.users({ q: email });
-  // Note: It's possible that there are multiple users with the same email. For
-  // example, @drshrey and @shreyasjag.
-  return res.data.items;
+): Promise<
+  Array<{
+    login: string;
+    nodeId: string;
+    databaseId: number;
+    name?: string | null;
+  }>
+> {
+  // Notes:
+  // - GitHub does not require email addresses to be unique. For example,
+  //   @drshrey and @shreyasjag.
+  // - `octokit.search.users` doesn't work with emails that include '+'. Doesn't
+  //   work with encodeURIComponent, wrapping in quotes, or %2B either.
+  // - The GraphQL API works with '+'.
+  const q = await octokit.graphql<Gh_LookupUsersByEmailQuery>(
+    print(gql`
+      query gh_LookupUsersByEmail($email: String!) {
+        search(query: $email, type: USER, first: 100) {
+          nodes {
+            __typename
+            ... on User {
+              databaseId
+              id
+              login
+              name
+            }
+          }
+        }
+      }
+    `),
+    { email }
+  );
+  assertNotNull(q.search.nodes);
+
+  // Unfortunately TS type inference is not smart enough to do this yet, so we're stuck with a for loop :/
+  // return q.search.nodes.filter((x) => x.__typename === "User");
+
+  const res = [];
+  for (const node of q.search.nodes) {
+    if (node?.__typename === "User") {
+      // Notes:
+      // - `databaseId` is actually an optional field in the schema, but it's
+      // always present AFAICT.
+      // - `name` will be null when the user does not have a public name.
+      res.push({
+        databaseId: notNull(node.databaseId),
+        nodeId: node.id,
+        login: node.login,
+        name: node.name,
+      });
+    }
+  }
+  return res;
 }
 
 /**
@@ -145,7 +192,7 @@ export async function lookupCommit(
   repo: string,
   commitHash: string
 ) {
-  const variables: CommitLookupQueryVariables = {
+  const variables: Gh_CommitLookupQueryVariables = {
     owner,
     name: repo,
     commitHash,
@@ -164,9 +211,9 @@ export async function lookupCommit(
   //     ['user:email', 'read:user'], but your token has only been granted the:
   //     [''] scopes. Please modify your token's scopes at:
   //     https://github.com/settings/tokens.
-  const q = await octokit.graphql<CommitLookupQuery>(
+  const q = await octokit.graphql<Gh_CommitLookupQuery>(
     print(gql`
-      query CommitLookup(
+      query gh_CommitLookup(
         $owner: String!
         $name: String!
         $commitHash: GitObjectID!

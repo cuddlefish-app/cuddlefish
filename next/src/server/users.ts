@@ -78,8 +78,8 @@ export async function ADMIN_lookupsertGitHubUsersByEmail(email: string) {
     variables: {
       users: users.map((u) => ({
         email,
-        github_database_id: u.id,
-        github_node_id: u.node_id,
+        github_database_id: u.databaseId,
+        github_node_id: u.nodeId,
         github_username: u.login,
         github_name: u.name,
       })),
@@ -131,11 +131,7 @@ export async function ADMIN_lookupsertSingleUserByEmail(
   // If we didn't find a user in Hasura, try looking them up in GitHub.
   const githubUser = await ADMIN_lookupsertSingleGitHubUserByEmail(email);
   if (githubUser !== null) {
-    return {
-      nodeId: githubUser.node_id,
-      databaseId: githubUser.id,
-      login: githubUser.login,
-    };
+    return githubUser;
   }
 
   // Couldn't find a user in Hasura or GitHub.

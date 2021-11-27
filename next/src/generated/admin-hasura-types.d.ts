@@ -2898,7 +2898,7 @@ export type UpsertUserStartSessionMutationVariables = Exact<{
   githubDatabaseId: Scalars['Int'];
   githubName?: Maybe<Scalars['String']>;
   githubUsername: Scalars['String'];
-  email?: Maybe<Scalars['String']>;
+  email: Scalars['String'];
   accessToken: Scalars['String'];
 }>;
 
