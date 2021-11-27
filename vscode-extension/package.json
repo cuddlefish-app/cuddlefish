@@ -2,7 +2,7 @@
 	"name": "cuddlefish-comments",
 	"displayName": "Cuddlefish Comments",
 	"description": "Google Docs-style comments for code.",
-	"version": "0.0.13",
+	"version": "0.0.14",
 	"publisher": "cuddlefish-app",
 	"license": "MIT",
 	"repository": {
