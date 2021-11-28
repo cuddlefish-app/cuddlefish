@@ -1,8 +1,10 @@
 // See https://pkprosol.medium.com/sendgrid-inbound-parse-with-next-js-8cc9d0ad650c
 import { gql } from "@apollo/client/core";
+import basicAuth from "basic-auth";
 import { simpleParser } from "mailparser";
 import multer from "multer";
 import nc from "next-connect";
+import replyParser from "node-email-reply-parser";
 import { assert, notNull } from "../../src/common_utils";
 import {
   EmailCommentMutation,
@@ -15,6 +17,7 @@ import {
 import { ADMIN_lookupsertSingleUserByEmail } from "../../src/server/users";
 import {
   ADMIN_buildApolloClient,
+  assert400,
   logHandlerErrors,
   notNull400,
 } from "../../src/server/utils";
@@ -26,40 +29,83 @@ function parseCuddlefishMessageId(s: string): string | null {
   return parsed !== null ? parsed[1] : null;
 }
 
-function parseEmail(s: string): string | null {
-  const parsed = /.*<([^\s@]+@[^\s@]+\.[^\s@]+)>/.exec(s);
-  return parsed !== null ? parsed[1] : null;
-}
+// It seems that the email parser already pulls these values out. Leaving this
+// here for now in case the email parser library breaks.
+// function parseEmail(s: string): string | null {
+//   const parsed = /.*<([^\s@]+@[^\s@]+\.[^\s@]+)>/.exec(s);
+//   return parsed !== null ? parsed[1] : null;
+// }
 
 const handler = nc()
   .use(multer().none())
   .post(
     logHandlerErrors(async (req, log) => {
-      // assert400(req.body.to === CF_APP_EMAIL, "bad to address");
+      // Check HTTP Basic auth
+      {
+        const { name, pass } = notNull400(basicAuth(req));
+        assert400(name === "sendgrid", "bad auth");
+        assert400(pass === notNull(process.env.API_SECRET), "bad auth");
+      }
 
       const emailRaw: string = req.body.email;
       const email = await simpleParser(emailRaw);
+      log.info({ email });
 
-      // For example: Samuel Ainsworth <skainsworth@gmail.com>
-      const fromEmailRaw = notNull400(email.from).text;
-      const fromEmail = notNull400(parseEmail(fromEmailRaw));
-      log.info(`Received email from ${fromEmail}`);
+      // fromEmailRaw example: Samuel Ainsworth <foo@bar.com>
+      // const fromEmailRaw = notNull400(email.from).text;
+      // const fromEmail = notNull400(parseEmail(fromEmailRaw));
 
-      // For example: <comment_a8502bb8-6b65-4290-a2b0-144e65775682@email.cuddlefish.app>
-      const inReplyToRaw = notNull400(email.inReplyTo);
-      const inReplyTo = notNull400(parseCuddlefishMessageId(inReplyToRaw));
-      log.info(`... in response to comment ${inReplyTo}`);
+      // When could email.from ever have multiple values?
+      assert(
+        email.from?.value.length === 1,
+        "expected exactly one from address"
+      );
+      // fromEmail example: foo@bar.com
+      const fromEmail = notNull400(email.from?.value[0].address);
+      log.info({ fromEmail });
 
-      // TODO there's probably other separators to look out for. Not sure why someone would ever forward an email to us.
-      const emailText = notNull400(email.text)
-        .split("---------- Forwarded message ---------")[0]
+      // It's possible that the user email replies to their own email reply.
+      // That first email will have a random, uncontrollable message id. Then
+      // when the user replies to their own email, the in-reply-to will be sad.
+      const commentId = notNull400(
+        (() => {
+          // inReplyToRaw example: <comment_a8502bb8-6b65-4290-a2b0-144e65775682@email.cuddlefish.app>
+          const inReplyToRaw = notNull400(email.inReplyTo);
+          const inReplyTo = parseCuddlefishMessageId(inReplyToRaw);
+          if (inReplyTo !== null) {
+            log.info({ inReplyTo });
+            return inReplyTo;
+          } else {
+            log.info({ references: email.references });
+            if (typeof email.references === "string") {
+              // It seems that we receive a string when there is exactly one
+              // reference :/
+              return parseCuddlefishMessageId(email.references);
+            } else if (Array.isArray(email.references)) {
+              return email.references
+                .map((s) => parseCuddlefishMessageId(s))
+                .find((s) => s !== null);
+            } else {
+              log.info("email.references was not a string or string[]");
+              return null;
+            }
+          }
+        })(),
+        "could not find a comment id in email in-reply-to or references"
+      );
+
+      const emailText = replyParser(
+        notNull400(email.text, "expected email.text")
+      )
+        .getVisibleText()
         .trim();
+      log.info({ emailText });
 
       // Note: this returns null if we can't find anyone with that email.
       const githubUser = await ADMIN_lookupsertSingleUserByEmail(fromEmail);
-      log.info(`... from GitHub user ${githubUser?.login}`);
+      log.info({ githubUser });
 
-      // Lookup inReplyTo comment id in hasura
+      // Lookup comment id to get thread id in hasura
       const apolloClient = ADMIN_buildApolloClient();
       const q1 = await apolloClient.query<
         ThreadContainingCommentQuery,
@@ -72,19 +118,21 @@ const handler = nc()
             }
           }
         `,
-        variables: {
-          commentId: inReplyTo,
-        },
+        variables: { commentId },
       });
       assert(q1.error === undefined, "hasura returned errors");
       assert(q1.errors === undefined, "hasura returned errors");
-      const threadId = notNull(q1.data.comments_by_pk).thread_id;
-      log.info(`... regarding thread ${threadId}`);
+      const threadId = notNull(
+        q1.data.comments_by_pk,
+        "could not find thread id"
+      ).thread_id;
+      log.info({ threadId });
 
       // Insert comment in hasura for the thread corresponding to the comment
       // id. Note that the author is guaranteed to exist in `github_users` since
       // `ADMIN_lookupsertSingleUserByEmail` does an upsert for us.
       if (githubUser !== null) {
+        log.info({ authorType: "github_user" });
         const m = await apolloClient.mutate<
           UserCommentMutation,
           UserCommentMutationVariables
@@ -114,8 +162,9 @@ const handler = nc()
         });
         assert(m.errors === undefined, "hasura returned errors");
         const newCommentId = notNull(m.data?.insert_comments_one?.id);
-        log.info(`Created comment ${newCommentId}`);
+        log.info({ newCommentId });
       } else {
+        log.info({ authorType: "email" });
         const m = await apolloClient.mutate<
           EmailCommentMutation,
           EmailCommentMutationVariables
@@ -145,7 +194,7 @@ const handler = nc()
         });
         assert(m.errors === undefined, "hasura returned errors");
         const newCommentId = notNull(m.data?.insert_comments_one?.id);
-        log.info(`Created comment ${newCommentId}`);
+        log.info({ newCommentId });
       }
 
       return {};
