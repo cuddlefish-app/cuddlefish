@@ -74,6 +74,19 @@ export class CommentJefe {
 
     // TODO make this a subscription
     const client = await this._getApolloClient();
+    const variables: AllThreadsQueryVariables = {
+      cond: {
+        _or: new SafeSet(
+          Array.from(currLineToBlameline.values(), (blameline) => ({
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            commit_hash: { _eq: blameline.origCommitHash },
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            file_path: { _eq: blameline.filepath },
+          }))
+        ).values(),
+      },
+    };
+    console.log(variables.cond);
     const res = await client.query<AllThreadsQuery, AllThreadsQueryVariables>({
       query: gql`
         query AllThreads($cond: lines_bool_exp!) {
@@ -97,18 +110,7 @@ export class CommentJefe {
           }
         }
       `,
-      variables: {
-        cond: {
-          _or: new SafeSet(
-            Array.from(currLineToBlameline.values(), (blameline) => ({
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              commit_hash: { _eq: blameline.origCommitHash },
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              file_path: { _eq: blameline.filepath },
-            }))
-          ).values(),
-        },
-      },
+      variables,
     });
     assert(res.error === undefined, "graphql errors");
     assert(res.errors === undefined, "graphql errors");
