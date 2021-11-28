@@ -48,3 +48,34 @@ export function notNull<T>(v: T | null | undefined, message?: string) {
 // See https://stackoverflow.com/questions/4059147/check-if-a-variable-is-a-string-in-javascript
 export const isString = (x: any) =>
   typeof x === "string" || x instanceof String;
+
+export class SafeSet<T> {
+  mapping: Map<string, T>;
+
+  constructor(xs: T[]) {
+    this.mapping = new Map();
+    for (const x of xs) {
+      this.mapping.set(JSON.stringify(x), x);
+    }
+  }
+
+  add(x: T) {
+    this.mapping.set(JSON.stringify(x), x);
+  }
+
+  has(x: T) {
+    return this.mapping.has(JSON.stringify(x));
+  }
+
+  delete(x: T) {
+    this.mapping.delete(JSON.stringify(x));
+  }
+
+  values(): T[] {
+    return Array.from(this.mapping.values());
+  }
+
+  size(): number {
+    return this.mapping.size;
+  }
+}

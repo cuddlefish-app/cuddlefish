@@ -137,3 +137,35 @@ export function asyncMemo1<T, U>(
     return y;
   };
 }
+
+// Always practice safe sets, folks.
+export class SafeSet<T> {
+  mapping: Map<string, T>;
+
+  constructor(xs: T[]) {
+    this.mapping = new Map();
+    for (const x of xs) {
+      this.mapping.set(JSON.stringify(x), x);
+    }
+  }
+
+  add(x: T) {
+    this.mapping.set(JSON.stringify(x), x);
+  }
+
+  has(x: T) {
+    return this.mapping.has(JSON.stringify(x));
+  }
+
+  delete(x: T) {
+    this.mapping.delete(JSON.stringify(x));
+  }
+
+  values(): T[] {
+    return Array.from(this.mapping.values());
+  }
+
+  size(): number {
+    return this.mapping.size;
+  }
+}
