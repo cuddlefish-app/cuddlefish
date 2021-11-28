@@ -77,6 +77,8 @@ const handler = nc()
             return inReplyTo;
           } else {
             log.info({ references: email.references });
+            // Note: doesn't make much sense to use `isString` here since it
+            // doesn't play nice with type inference.
             if (typeof email.references === "string") {
               // It seems that we receive a string when there is exactly one
               // reference :/
