@@ -20,7 +20,7 @@ import {
   BlameLine,
   blamelineToString,
 } from "./git";
-import { assert, notNull } from "./utils";
+import { assert, notNull, SafeSet } from "./utils";
 
 function gitHubAuthor(
   username: string,
@@ -99,12 +99,14 @@ export class CommentJefe {
       `,
       variables: {
         cond: {
-          _or: Array.from(currLineToBlameline.values(), (blameline) => ({
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            commit_hash: { _eq: blameline.origCommitHash },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            file_path: { _eq: blameline.filepath },
-          })),
+          _or: new SafeSet(
+            Array.from(currLineToBlameline.values(), (blameline) => ({
+              // eslint-disable-next-line @typescript-eslint/naming-convention
+              commit_hash: { _eq: blameline.origCommitHash },
+              // eslint-disable-next-line @typescript-eslint/naming-convention
+              file_path: { _eq: blameline.filepath },
+            }))
+          ).values(),
         },
       },
     });
