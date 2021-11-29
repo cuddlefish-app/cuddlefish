@@ -96,7 +96,7 @@ export class CommentJefe {
             line_number
             threads {
               id
-              comments(order_by: { created_at: desc }) {
+              comments(order_by: { created_at: asc }) {
                 id
                 body
                 author_github_node_id
