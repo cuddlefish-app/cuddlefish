@@ -1,12 +1,12 @@
 import { randomBytes } from "crypto";
 import type { NextApiRequest } from "next";
+import { CF_APP_EMAIL } from "../../src/server/config";
 import {
   assert400,
   getSendgrid,
   hasCorrectApiSecret,
   logHandlerErrors,
 } from "../../src/server/utils";
-import { CF_APP_EMAIL } from "./config";
 import { commentIdToMessageId } from "./insert_comments_webhook";
 
 export default logHandlerErrors(async (req: NextApiRequest) => {

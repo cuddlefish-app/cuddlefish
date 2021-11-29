@@ -11,6 +11,7 @@ import {
   CommentContextQuery,
   CommentContextQueryVariables,
 } from "../../src/generated/admin-hasura-types";
+import { CF_APP_EMAIL } from "../../src/server/config";
 import { ADMIN_getOctokit, lookupRepoByNodeId } from "../../src/server/github";
 import {
   ADMIN_buildApolloClient,
@@ -21,7 +22,6 @@ import {
 } from "../../src/server/utils";
 import NewCommentEmail from "../emails/new_comment";
 import NewThreadEmail, { getCodeSnippetHtml } from "../emails/new_thread";
-import { CF_APP_EMAIL } from "./config";
 
 // TODO types could be improved in this module to reflect the fact that every
 // comment has either github_user or author_email, but never both.
