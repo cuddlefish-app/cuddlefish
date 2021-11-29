@@ -102,6 +102,7 @@ const handler = nc()
         .getVisibleText()
         .trim();
       log.info({ emailText });
+      assert400(emailText.length > 0, "expected email.text to have length > 0");
 
       // Note: this returns null if we can't find anyone with that email.
       const githubUser = await ADMIN_lookupsertSingleUserByEmail(fromEmail);
