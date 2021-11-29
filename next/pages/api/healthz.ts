@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client/core";
 import axios from "axios";
+import axiosRetry from "axios-retry";
 import type { NextApiRequest } from "next";
 import { assert, notNull } from "../../src/common_utils";
 import {
@@ -8,13 +9,15 @@ import {
   logHandlerErrors,
 } from "../../src/server/utils";
 
+// See https://stackoverflow.com/questions/56074531/how-to-retry-5xx-requests-using-axios
+axiosRetry(axios, { retries: 5, retryDelay: axiosRetry.exponentialDelay });
+
 // Put individual checks into their own functions so that it's easier to
 // identify what's failing from stack traces.
 
 async function checkSendgrid() {
   // Confirm that our Sendgrid API key is valid. `setApiKey` sadly doesn't do this for us.
   // See https://stackoverflow.com/questions/61658558/how-to-test-sendgrid-api-key-is-valid-or-not-without-sending-emails
-  // TODO use https://stackoverflow.com/questions/56074531/how-to-retry-5xx-requests-using-axios for retries
   await axios.get("https://api.sendgrid.com/v3/scopes", {
     headers: {
       Authorization: `Bearer ${notNull(process.env.SENDGRID_API_KEY)}`,
