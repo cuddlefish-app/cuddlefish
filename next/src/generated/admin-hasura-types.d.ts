@@ -2856,6 +2856,13 @@ export type Uuid_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['uuid']>>;
 };
 
+export type LookupSessionQueryVariables = Exact<{
+  session_token: Scalars['uuid'];
+}>;
+
+
+export type LookupSessionQuery = { __typename?: 'query_root', user_sessions_by_pk?: { __typename?: 'user_sessions', user_github_node_id: string } | null | undefined };
+
 export type Unnamed_1_QueryVariables = Exact<{ [key: string]: never; }>;
 
 

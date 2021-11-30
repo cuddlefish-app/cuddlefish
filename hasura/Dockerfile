@@ -29,7 +29,7 @@ RUN apt-get update \
 # - NEXT_HOST, NEXT_PORT: connection info for the next.js app. Tells Hasura
 #   where to call actions.
 RUN sed -i "2iexport HASURA_GRAPHQL_ENABLE_CONSOLE=false" /bin/docker-entrypoint.sh \
-  && sed -i "2iexport HASURA_GRAPHQL_AUTH_HOOK=http://\$API_HOST:\$API_PORT/hasura_auth_webhook" /bin/docker-entrypoint.sh \
+  && sed -i "2iexport HASURA_GRAPHQL_AUTH_HOOK=http://\$NEXT_HOST:\$NEXT_PORT/api/hasura_auth_webhook" /bin/docker-entrypoint.sh \
   && sed -i "2iexport API_GRAPHQL_ENDPOINT=http://\$API_HOST:\$API_PORT/graphql" /bin/docker-entrypoint.sh \
   && sed -i "2iexport INSERT_COMMENTS_WEBHOOK_URL=http://\$NEXT_HOST:\$NEXT_PORT/api/insert_comments_webhook" /bin/docker-entrypoint.sh \
   && sed -i "2iexport API_SECRET=\$API_SECRET" /bin/docker-entrypoint.sh \
