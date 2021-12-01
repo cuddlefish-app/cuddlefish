@@ -189,7 +189,7 @@ export class CommentJefe {
   }
 
   async startThread(
-    githubRemotes: string[],
+    githubRemotes: { owner: string; repo: string }[],
     origCommitHash: string,
     filepath: string,
     origLine: number,
@@ -213,23 +213,25 @@ export class CommentJefe {
       >({
         mutation: gql`
           mutation StartThread(
-            $repoIds: [String!]!
+            $repos: [GitHubRepo!]!
             $commitHash: String!
             $filePath: String!
             $lineNumber: Int!
             $body: String!
           ) {
             StartThread(
-              repoIds: $repoIds
-              commitHash: $commitHash
-              filePath: $filePath
-              lineNumber: $lineNumber
+              repos: $repos
+              commit_hash: $commitHash
+              file_path: $filePath
+              line_number: $lineNumber
               body: $body
-            )
+            ) {
+              new_thread_id
+            }
           }
         `,
         variables: {
-          repoIds: githubRemotes,
+          repos: githubRemotes,
           commitHash: origCommitHash,
           filePath: filepath,
           lineNumber: origLine,
@@ -237,7 +239,7 @@ export class CommentJefe {
         },
       });
       assert(res.errors === undefined, "graphql errors");
-      const newCFThreadId = notNull(res.data).StartThread;
+      const newCFThreadId = notNull(res.data?.StartThread?.new_thread_id);
 
       // Put this new thread into cfThreadIdToCommentThread
       const uriString = reply.thread.uri.toString();

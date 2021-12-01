@@ -13,6 +13,11 @@ export type Scalars = {
   uuid: string;
 };
 
+export type GitHubRepo = {
+  owner: Scalars['String'];
+  repo: Scalars['String'];
+};
+
 /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
 export type Int_Comparison_Exp = {
   _eq?: Maybe<Scalars['Int']>;
@@ -24,6 +29,11 @@ export type Int_Comparison_Exp = {
   _lte?: Maybe<Scalars['Int']>;
   _neq?: Maybe<Scalars['Int']>;
   _nin?: Maybe<Array<Scalars['Int']>>;
+};
+
+export type StartThreadResponse = {
+  __typename?: 'StartThreadResponse';
+  new_thread_id: Scalars['uuid'];
 };
 
 /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
@@ -335,8 +345,7 @@ export enum Lines_Select_Column {
 /** mutation root */
 export type Mutation_Root = {
   __typename?: 'mutation_root';
-  CalculateBlameLines: Scalars['Boolean'];
-  StartThread: Scalars['String'];
+  StartThread?: Maybe<StartThreadResponse>;
   /** insert data into the table: "comments" */
   insert_comments?: Maybe<Comments_Mutation_Response>;
   /** insert a single row into the table: "comments" */
@@ -345,20 +354,12 @@ export type Mutation_Root = {
 
 
 /** mutation root */
-export type Mutation_RootCalculateBlameLinesArgs = {
-  filePath: Scalars['String'];
-  lastCommit: Scalars['String'];
-  repoId: Scalars['String'];
-};
-
-
-/** mutation root */
 export type Mutation_RootStartThreadArgs = {
   body: Scalars['String'];
-  commitHash: Scalars['String'];
-  filePath: Scalars['String'];
-  lineNumber: Scalars['Int'];
-  repoIds: Array<Scalars['String']>;
+  commit_hash: Scalars['String'];
+  file_path: Scalars['String'];
+  line_number: Scalars['Int'];
+  repos: Array<GitHubRepo>;
 };
 
 
@@ -407,7 +408,6 @@ export type Query_Root = {
   lines: Array<Lines>;
   /** fetch data from the table: "lines" using primary key columns */
   lines_by_pk?: Maybe<Lines>;
-  noop: Scalars['Boolean'];
   /** An array relationship */
   threads: Array<Threads>;
   /** fetch data from the table: "threads" using primary key columns */
@@ -761,7 +761,7 @@ export type AllThreadsQueryVariables = Exact<{
 export type AllThreadsQuery = { __typename?: 'query_root', lines: Array<{ __typename?: 'lines', commit_hash: string, file_path: string, line_number: number, threads: Array<{ __typename?: 'threads', id: string, comments: Array<{ __typename?: 'comments', id: string, body: string, author_github_node_id?: string | null | undefined, author_email?: string | null | undefined, github_user?: { __typename?: 'github_users', github_username: string, github_name?: string | null | undefined } | null | undefined }> }> }> };
 
 export type StartThreadMutationVariables = Exact<{
-  repoIds: Array<Scalars['String']> | Scalars['String'];
+  repos: Array<GitHubRepo> | GitHubRepo;
   commitHash: Scalars['String'];
   filePath: Scalars['String'];
   lineNumber: Scalars['Int'];
@@ -769,7 +769,7 @@ export type StartThreadMutationVariables = Exact<{
 }>;
 
 
-export type StartThreadMutation = { __typename?: 'mutation_root', StartThread: string };
+export type StartThreadMutation = { __typename?: 'mutation_root', StartThread?: { __typename?: 'StartThreadResponse', new_thread_id: string } | null | undefined };
 
 export type AddCommentMutationVariables = Exact<{
   body: Scalars['String'];

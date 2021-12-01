@@ -41,8 +41,6 @@ services:
       # aware of a cross-platform solution.
       # See eg https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds.
 
-      API_HOST: "host.docker.internal"
-      API_PORT: 3001
       NEXT_HOST: "host.docker.internal"
       NEXT_PORT: 3002
 

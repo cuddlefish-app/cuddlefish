@@ -4,7 +4,26 @@ type Mutation {
   ): StartCuddlefishSessionResponse!
 }
 
+type Mutation {
+  StartThread(
+    repos: [GitHubRepo!]!
+    commit_hash: String!
+    file_path: String!
+    line_number: Int!
+    body: String!
+  ): StartThreadResponse
+}
+
+input GitHubRepo {
+  owner: String!
+  repo: String!
+}
+
 type StartCuddlefishSessionResponse {
   session_token: String!
+}
+
+type StartThreadResponse {
+  new_thread_id: uuid!
 }
 

@@ -166,33 +166,13 @@ export enum Lines_Select_Column {
 /** mutation root */
 export type Mutation_Root = {
   __typename?: 'mutation_root';
-  CalculateBlameLines: Scalars['Boolean'];
   StartCuddlefishSession: StartCuddlefishSessionResponse;
-  StartThread: Scalars['String'];
-};
-
-
-/** mutation root */
-export type Mutation_RootCalculateBlameLinesArgs = {
-  filePath: Scalars['String'];
-  lastCommit: Scalars['String'];
-  repoId: Scalars['String'];
 };
 
 
 /** mutation root */
 export type Mutation_RootStartCuddlefishSessionArgs = {
   github_access_token: Scalars['String'];
-};
-
-
-/** mutation root */
-export type Mutation_RootStartThreadArgs = {
-  body: Scalars['String'];
-  commitHash: Scalars['String'];
-  filePath: Scalars['String'];
-  lineNumber: Scalars['Int'];
-  repoIds: Array<Scalars['String']>;
 };
 
 /** column ordering options */
@@ -221,7 +201,6 @@ export type Query_Root = {
   lines: Array<Lines>;
   /** fetch data from the table: "lines" using primary key columns */
   lines_by_pk?: Maybe<Lines>;
-  noop: Scalars['Boolean'];
 };
 
 

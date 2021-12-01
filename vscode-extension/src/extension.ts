@@ -250,8 +250,7 @@ export async function activate(context: vscode.ExtensionContext) {
         // that's in a git repo.
         const gitRepoRoot = notNull(await git.repoRoot(reply.thread.uri));
         const githubRemotes = Array.from(
-          (await git.getGitHubRemotes(gitRepoRoot)).values(),
-          git.repoId
+          (await git.getGitHubRemotes(gitRepoRoot)).values()
         );
         const document = notNull(
           uriToDocument.get(reply.thread.uri.toString())

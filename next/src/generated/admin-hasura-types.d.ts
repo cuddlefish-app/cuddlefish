@@ -14,6 +14,11 @@ export type Scalars = {
   uuid: string;
 };
 
+export type GitHubRepo = {
+  owner: Scalars['String'];
+  repo: Scalars['String'];
+};
+
 /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
 export type Int_Comparison_Exp = {
   _eq?: InputMaybe<Scalars['Int']>;
@@ -30,6 +35,11 @@ export type Int_Comparison_Exp = {
 export type StartCuddlefishSessionResponse = {
   __typename?: 'StartCuddlefishSessionResponse';
   session_token: Scalars['String'];
+};
+
+export type StartThreadResponse = {
+  __typename?: 'StartThreadResponse';
+  new_thread_id: Scalars['uuid'];
 };
 
 /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
@@ -1355,9 +1365,8 @@ export type Lines_Variance_Fields = {
 /** mutation root */
 export type Mutation_Root = {
   __typename?: 'mutation_root';
-  CalculateBlameLines: Scalars['Boolean'];
   StartCuddlefishSession: StartCuddlefishSessionResponse;
-  StartThread: Scalars['String'];
+  StartThread?: Maybe<StartThreadResponse>;
   /** delete data from the table: "blamelines" */
   delete_blamelines?: Maybe<Blamelines_Mutation_Response>;
   /** delete single row from the table: "blamelines" */
@@ -1458,14 +1467,6 @@ export type Mutation_Root = {
 
 
 /** mutation root */
-export type Mutation_RootCalculateBlameLinesArgs = {
-  filePath: Scalars['String'];
-  lastCommit: Scalars['String'];
-  repoId: Scalars['String'];
-};
-
-
-/** mutation root */
 export type Mutation_RootStartCuddlefishSessionArgs = {
   github_access_token: Scalars['String'];
 };
@@ -1474,10 +1475,10 @@ export type Mutation_RootStartCuddlefishSessionArgs = {
 /** mutation root */
 export type Mutation_RootStartThreadArgs = {
   body: Scalars['String'];
-  commitHash: Scalars['String'];
-  filePath: Scalars['String'];
-  lineNumber: Scalars['Int'];
-  repoIds: Array<Scalars['String']>;
+  commit_hash: Scalars['String'];
+  file_path: Scalars['String'];
+  line_number: Scalars['Int'];
+  repos: Array<GitHubRepo>;
 };
 
 
@@ -1867,7 +1868,6 @@ export type Query_Root = {
   lines_aggregate: Lines_Aggregate;
   /** fetch data from the table: "lines" using primary key columns */
   lines_by_pk?: Maybe<Lines>;
-  noop: Scalars['Boolean'];
   /** An array relationship */
   threads: Array<Threads>;
   /** An aggregate relationship */
@@ -2911,6 +2911,31 @@ export type UpsertUserStartSessionMutationVariables = Exact<{
 
 
 export type UpsertUserStartSessionMutation = { __typename?: 'mutation_root', insert_github_users_one?: { __typename?: 'github_users', github_node_id: string } | null | undefined, insert_user_sessions_one?: { __typename?: 'user_sessions', id: string } | null | undefined };
+
+export type Start_Thread_LookupGhTokenQueryVariables = Exact<{
+  github_node_id: Scalars['String'];
+}>;
+
+
+export type Start_Thread_LookupGhTokenQuery = { __typename?: 'query_root', github_users_by_pk?: { __typename?: 'github_users', access_token?: string | null | undefined } | null | undefined };
+
+export type Start_Thread_AssociateCommitReposMutationVariables = Exact<{
+  objects: Array<Commit_Github_Repo_Insert_Input> | Commit_Github_Repo_Insert_Input;
+}>;
+
+
+export type Start_Thread_AssociateCommitReposMutation = { __typename?: 'mutation_root', insert_commit_github_repo?: { __typename?: 'commit_github_repo_mutation_response', affected_rows: number } | null | undefined };
+
+export type Start_Thread_InsertThreadMutationVariables = Exact<{
+  commit_hash: Scalars['String'];
+  file_path: Scalars['String'];
+  line_number: Scalars['Int'];
+  body: Scalars['String'];
+  author_github_node_id: Scalars['String'];
+}>;
+
+
+export type Start_Thread_InsertThreadMutation = { __typename?: 'mutation_root', insert_lines_one?: { __typename?: 'lines', commit_hash: string, file_path: string, line_number: number } | null | undefined, insert_threads_one?: { __typename?: 'threads', id: string, comments: Array<{ __typename?: 'comments', id: string }> } | null | undefined };
 
 export type LookupUsersByEmailQueryVariables = Exact<{
   email: Scalars['String'];

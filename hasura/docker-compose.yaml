@@ -29,8 +29,6 @@ services:
 
       API_SECRET: "apisecret"
 
-      API_HOST: "localhost"
-      API_PORT: 3001
       NEXT_HOST: "localhost"
       NEXT_PORT: 3002
 

@@ -20,16 +20,6 @@ services:
       - key: PORT
         value: 8080
 
-      # Rust API stuff
-      - key: API_HOST
-        fromService:
-          name: cf-api
-          type: web
-          property: host
-      # Render is incredibly buggy/broken. Ports are all wrong. See https://community.render.com/t/service-cannot-reach-itself-via-host-port-combo/755/4?u=samuela
-      - key: API_PORT
-        value: 10000
-
       - key: API_SECRET
         fromService:
           name: cf-next
@@ -46,56 +36,6 @@ services:
           name: cf-next
           type: web
           property: port
-
-  - name: cf-api
-    type: web
-    env: rust
-    # See https://community.render.com/t/rust-environment-build-caching-doesnt-work-with-monorepos/910/5?u=samuela.
-    buildCommand: cargo build --release --manifest-path=./api/Cargo.toml --target-dir=./target
-    startCommand: cargo run --release --manifest-path=./api/Cargo.toml --target-dir=./target
-    healthCheckPath: /healthz
-    envVars:
-      # See https://render.com/docs/rust-toolchain
-      - key: RUSTUP_TOOLCHAIN
-        value: 1.56.1
-
-      # Hasura stuff
-      - key: HASURA_HOST
-        fromService:
-          name: cf-hasura
-          type: web
-          property: host
-      # See https://community.render.com/t/service-cannot-reach-itself-via-host-port-combo/755/4?u=samuela.
-      - key: HASURA_PORT
-        value: 10000
-      - key: HASURA_GRAPHQL_ADMIN_SECRET
-        fromService:
-          name: cf-hasura
-          type: web
-          envVarKey: HASURA_GRAPHQL_ADMIN_SECRET
-
-      # Necessary for looking up commits.
-      - key: GITHUB_API_TOKEN
-        sync: false
-
-      # Necessary for the GitHub OAuth signin flow.
-      - key: GITHUB_OAUTH_CLIENT_ID
-        sync: false
-      - key: GITHUB_OAUTH_CLIENT_SECRET
-        sync: false
-      - key: API_PASETO_SECRET_KEY
-        # generateValue is problematic because we need the secret key to be a
-        # specific length.
-        sync: false
-
-      - key: MIRRORS_DIR
-        value: "/tmp/cf-mirrors"
-      - key: RUST_LIB_BACKTRACE
-        value: 1
-      - key: RUST_BACKTRACE
-        value: "full"
-      - key: RUST_LOG
-        value: "api=trace"
 
   - name: cf-next
     type: web

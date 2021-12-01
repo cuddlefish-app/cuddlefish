@@ -20,7 +20,6 @@ RUN apt-get update \
 #   `hasura console` instead. See https://hasura.io/docs/latest/graphql/core/migrations/migrations-setup.html#step-0-disable-the-console-on-the-server
 #   and https://github.com/hasura/graphql-engine/issues/7728.
 # - HASURA_GRAPHQL_AUTH_HOOK: This is the webhook we hit each time to check auth
-# - API_GRAPHQL_ENDPOINT: The remote schema rust API endpoint
 # - INSERT_COMMENTS_WEBHOOK_URL: The webhook we hit whenever a comment is
 #   inserted. Unlike with actions, it doesn't seem we can use templating, must
 #   provide an env var with it.
@@ -30,7 +29,6 @@ RUN apt-get update \
 #   where to call actions.
 RUN sed -i "2iexport HASURA_GRAPHQL_ENABLE_CONSOLE=false" /bin/docker-entrypoint.sh \
   && sed -i "2iexport HASURA_GRAPHQL_AUTH_HOOK=http://\$NEXT_HOST:\$NEXT_PORT/api/hasura_auth_webhook" /bin/docker-entrypoint.sh \
-  && sed -i "2iexport API_GRAPHQL_ENDPOINT=http://\$API_HOST:\$API_PORT/graphql" /bin/docker-entrypoint.sh \
   && sed -i "2iexport INSERT_COMMENTS_WEBHOOK_URL=http://\$NEXT_HOST:\$NEXT_PORT/api/insert_comments_webhook" /bin/docker-entrypoint.sh \
   && sed -i "2iexport API_SECRET=\$API_SECRET" /bin/docker-entrypoint.sh \
   && sed -i "2iexport NEXT_HOST=\$NEXT_HOST" /bin/docker-entrypoint.sh \

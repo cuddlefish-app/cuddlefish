@@ -22456,6 +22456,15 @@ export type WorkflowRunPendingDeploymentRequestsArgs = {
   last?: InputMaybe<Scalars['Int']>;
 };
 
+export type Start_Thread_CommitLookupQueryVariables = Exact<{
+  owner: Scalars['String'];
+  name: Scalars['String'];
+  commit_oid: Scalars['GitObjectID'];
+}>;
+
+
+export type Start_Thread_CommitLookupQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', id: string, databaseId?: number | null | undefined, isPrivate: boolean, object?: { __typename: 'Blob' } | { __typename: 'Commit', id: string, oid: string } | { __typename: 'Tag' } | { __typename: 'Tree' } | null | undefined } | null | undefined };
+
 export type Gh_LookupRepoByNodeIdQueryVariables = Exact<{
   nodeId: Scalars['ID'];
 }>;

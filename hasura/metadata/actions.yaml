@@ -8,9 +8,20 @@ actions:
       value_from_env: API_SECRET
   permissions:
   - role: anonymous
+- name: StartThread
+  definition:
+    kind: synchronous
+    handler: http://{{NEXT_HOST}}:{{NEXT_PORT}}/api/start_thread
+    headers:
+    - name: x-api-secret
+      value_from_env: API_SECRET
+  permissions:
+  - role: user
 custom_types:
   enums: []
-  input_objects: []
+  input_objects:
+  - name: GitHubRepo
   objects:
   - name: StartCuddlefishSessionResponse
+  - name: StartThreadResponse
   scalars: []
