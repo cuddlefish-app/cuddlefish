@@ -11,7 +11,14 @@ import {
   hasuraEndpoint,
 } from "./credentials";
 import * as git from "./git";
-import { assert, logErrors0, logErrors1, logErrors2, notNull } from "./utils";
+import {
+  assert,
+  assertNotNull,
+  logErrors0,
+  logErrors1,
+  logErrors2,
+  notNull,
+} from "./utils";
 
 const exec = util.promisify(child_process.exec);
 
@@ -210,6 +217,12 @@ export async function activate(context: vscode.ExtensionContext) {
             document.getText(),
             undefined
           );
+          if (blameinfo === null) {
+            // It's possible the git blame to return null in case we hit the
+            // timeout, etc. In that case we just don't support commenting on
+            // the file.
+            return [];
+          }
 
           // Load the existing comments and subscribe to updates.
           await commentJefe.trackDocument(document.uri, blameinfo.blamehunks);
@@ -257,14 +270,18 @@ export async function activate(context: vscode.ExtensionContext) {
         );
 
         const currLineNumber = reply.thread.range.start.line + 1;
-        const { blamehunks } = await git.blame(
+        const blame = await git.blame(
           gitRepoRoot,
           reply.thread.uri.path,
           document.getText(),
           currLineNumber
         );
-        assert(blamehunks.length === 1, "expected exactly on blamehunk");
-        const blamehunk = blamehunks[0];
+        assertNotNull(
+          blame,
+          "git blame timed out or returned null for some other reason while starting a new thread"
+        );
+        assert(blame.blamehunks.length === 1, "expected exactly on blamehunk");
+        const blamehunk = blame.blamehunks[0];
         assert(
           blamehunk.origCommitHash !== git.ZERO_HASH,
           "expected non-zero commit hash"

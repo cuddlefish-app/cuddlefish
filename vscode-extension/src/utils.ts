@@ -7,9 +7,14 @@ export function assert(condition: boolean, message: string): asserts condition {
   }
 }
 
-export function assertNotNull<T>(v: T | null | undefined): asserts v is T {
+export function assertNotNull<T>(
+  v: T | null | undefined,
+  message?: string
+): asserts v is T {
   if (v === null || v === undefined) {
-    throw new Error(`Expected non-null, non-undefined, but found ${v}`);
+    throw new Error(
+      message || `Expected non-null, non-undefined, but found ${v}`
+    );
   }
 }
 

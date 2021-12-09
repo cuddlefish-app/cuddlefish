@@ -145,13 +145,21 @@ export async function blame(
   let elapsedMs: bigint;
 
   t0 = process.hrtime.bigint();
-  const { status, stdout } = child_process.spawnSync("git", args, {
+  const { status, stdout, stderr } = child_process.spawnSync("git", args, {
     cwd: repo,
     input: contents,
+    timeout: 1000, // in milliseconds
   });
   elapsedMs = (process.hrtime.bigint() - t0) / 1000000n;
   console.log(`git blame: blaming took ${elapsedMs} ms`);
-  assert(status === 0, "git blame returned non-zero exit code");
+  console.log(`git blame: status ${status}`);
+  console.log(`git blame: stderr ${stderr.toString("utf-8")}`);
+  if (status === null) {
+    // Process was killed, likely due to timeout. See https://github.com/nodejs/node/issues/20561
+    return null;
+  } else {
+    assert(status === 0, "git blame returned non-zero exit code");
+  }
 
   t0 = process.hrtime.bigint();
   const lines = stdout
